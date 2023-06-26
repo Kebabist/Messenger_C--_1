@@ -23,8 +23,6 @@
 //    return a.exec();
 //}
 
-
-
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -32,7 +30,41 @@ int main(int argc, char *argv[])
     QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
     urlmaker newurl("signup" , "token" , arguments);
     const QString url = newurl.generate();
-    http.makeRequest(url);
+
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    if (response.second) {
+        QJsonObject jsonObj = response.first;
+        if (jsonObj.contains("message")) {
+            QString message = jsonObj.value("message").toString();
+            qDebug() << "Message:" << message;
+        } else {
+            qDebug() << "Message key not found in JSON object";
+        }
+        if (jsonObj.contains("code")) {
+            QString code = jsonObj.value("code").toString();
+            qDebug() << "Code:" << code;
+        } else {
+            qDebug() << "Code key not found in JSON object";
+        }
+    } else {
+        qDebug() << "Error: Request was not successful";
+    }
 
     return app.exec();
 }
+
+
+//int main(int argc, char *argv[])
+//{
+//    QCoreApplication app(argc, argv);
+//    HttpHandler http;
+//    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
+//    urlmaker newurl("signup" , "token" , arguments);
+//    const QString url = newurl.generate();
+//    const QJsonObject jsonObj= http.makeRequest(url);
+
+//    QString message = jsonObj.value("message").toString();
+//    QString code = jsonObj.value("code").toString();
+//    qDebug() << "message:" << message << ", code: " << code << Qt::endl;
+//    return app.exec();
+//}
