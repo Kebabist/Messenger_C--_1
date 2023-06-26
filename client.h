@@ -14,7 +14,13 @@ class Client
 public:
     Client(QString, QString , QString , QString);
     void Singup();
-    void Login();
+    void Login(QString username, QString Password) const;
+
+    //getter Merhods
+    QString getToken();
+
+    //setter Methods
+    void setToken(QString);
 };
 
 #endif // CLIENT_H
