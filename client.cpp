@@ -12,8 +12,7 @@ Client::Client(QString username ,QString password ,QString firstname ,QString la
 }
 
 
-void Client::Signup(int argc , char* argv[]){
-    QCoreApplication app(argc , argv);
+void Client::Signup(){
     HttpHandler http;
     QString arguments;
     arguments = "username="+username+"&"+"password="+password+"&"+"firstname="+firstname+"&"+"lastname="+lastname;
@@ -35,6 +34,5 @@ void Client::Signup(int argc , char* argv[]){
             }
         }
     }
-    app.exec();
 }
 

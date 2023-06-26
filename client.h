@@ -13,7 +13,7 @@ class Client
     QString token;
 public:
     Client(QString, QString , QString , QString);
-    void Signup(int , char**);
+    void Signup();
     void Login();
 };
 
