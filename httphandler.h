@@ -21,7 +21,7 @@ public:
     explicit HttpHandler(QObject *parent = nullptr) : QObject(parent), manager(this) {}
 
 public slots:
-    void makeRequest(const QString &);
+    QPair<QJsonObject, bool> makeRequest(const QString &);
 };
 
 #endif // HTTPHANDLER_H
