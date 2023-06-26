@@ -15,7 +15,7 @@ public:
     Client(QString, QString , QString , QString);
   
     void Singup();
-    void Login(QString username, QString Password) const;
+    void Login(QString username, QString Password) ;
 
     //getter Merhods
     QString getToken();
