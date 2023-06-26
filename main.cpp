@@ -26,8 +26,11 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
-    HttpHandler http;
+//    QCoreApplication app(argc, argv);
+//    HttpHandler http;
+//    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
+//    urlmaker newurl("signup" , "token" , arguments);
+//    const QString url = newurl.generate();
 //    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
 //    urlmaker newurl("signup" , arguments);
 //    const QString url = newurl.generate();
@@ -42,6 +45,7 @@ int main(int argc, char *argv[])
 //    QPair<QJsonObject, bool> response = http.makeRequest(url);
 //    if (response.second) {
 //        QJsonObject jsonObj = response.first;
+
 //        QString token = jsonObj.value("token").toString();
 //        qDebug() << "token:" << token;
 //        if (jsonObj.contains("message")) {
@@ -59,6 +63,13 @@ int main(int argc, char *argv[])
 //    } else {
 //        qDebug() << "Error: Request was not successful";
 //    }
+//    HttpHandler http;
+//    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
+//    urlmaker newurl("signup" , "token" , arguments);
+//    const QString url = newurl.generate();
+//    http.makeRequest(url);
+    Client newuser("kebab", "6kebab", "kebabist", "jooj");
+    newuser.Signup();
 
     return app.exec();
 }

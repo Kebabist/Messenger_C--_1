@@ -13,6 +13,7 @@ class Client
     QString token;
 public:
     Client(QString, QString , QString , QString);
+  
     void Singup();
     void Login(QString username, QString Password) const;
 
@@ -21,6 +22,7 @@ public:
 
     //setter Methods
     void setToken(QString);
+
 };
 
 #endif // CLIENT_H
