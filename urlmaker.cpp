@@ -1,5 +1,6 @@
 #include "urlmaker.h"
 
+//urlmaker constructor
 urlmaker::urlmaker(QString command , QString token , QString arguments )
 {
     this->command = command;
@@ -7,13 +8,13 @@ urlmaker::urlmaker(QString command , QString token , QString arguments )
     this->token = token;
 }
 
-
-QString urlmaker::generate(){
+//generates urls for httprequest to the server
+const QString urlmaker::generate(){
     QString url = "http://api.barafardayebehtar.ml:8080/";
     if (command != "signup" && command != "login" && command != "logout"){ // these three dont have token
-        url = url+command+"?"+token+arguments; // pass the arguments as a QString with &
+        url = url+command+"?"+token+arguments; //should pass the arguments as a QString with &
     }else {
-        url = url+command+"?"+arguments; // pass the arguments as a QString with &
+        url = url+command+"?"+arguments; //should pass the arguments as a QString with &
     }
     return url;
 }
