@@ -12,12 +12,14 @@ CONFIG += c++17
 SOURCES += \
     client.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    urlmaker.cpp
 
 HEADERS += \
     client.h \
     mainwindow.h \
-    server
+    server \
+    urlmaker.h
 
 FORMS += \
     mainwindow.ui
