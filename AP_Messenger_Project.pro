@@ -11,25 +11,21 @@ CONFIG += c++17
 
 SOURCES += \
     client.cpp \
+    httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
     urlmaker.cpp
 
 HEADERS += \
     client.h \
+    httphandler.h \
     mainwindow.h \
-    server \
     urlmaker.h
 
 FORMS += \
     mainwindow.ui
 
-TRANSLATIONS += \
-    AP_Messenger_Project_fa_IR.ts
-CONFIG += lrelease
-CONFIG += embed_translations
-
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target

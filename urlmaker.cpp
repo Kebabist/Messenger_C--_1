@@ -8,7 +8,7 @@ urlmaker::urlmaker(QString command , QString token , QString arguments )
 }
 
 
-QString urlmaker::generate(){
+const QString urlmaker::generate(){
     QString url = "http://api.barafardayebehtar.ml:8080/";
     if (command != "signup" && command != "login" && command != "logout"){ // these three dont have token
         url = url+command+"?"+token+arguments; //should pass the arguments as a QString with &
