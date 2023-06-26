@@ -13,8 +13,16 @@ class Client
     QString token;
 public:
     Client(QString, QString , QString , QString);
-    void Signup();
-    void Login();
+  
+    void Singup();
+    void Login(QString username, QString Password) const;
+
+    //getter Merhods
+    QString getToken();
+
+    //setter Methods
+    void setToken(QString);
+
 };
 
 #endif // CLIENT_H

@@ -8,6 +8,13 @@ urlmaker::urlmaker(QString command , QString token , QString arguments )
     this->token = token;
 }
 
+//Special constructor with two arguments for when the token has not been initilized by server
+urlmaker::urlmaker(QString command , QString arguments )
+{
+    this->command = command;
+    this->arguments = arguments;
+}
+
 //generates urls for httprequest to the server
 const QString urlmaker::generate(){
     QString url = "http://api.barafardayebehtar.ml:8080/";

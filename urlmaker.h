@@ -11,6 +11,7 @@ private:
     QString arguments;
 public:
     urlmaker(QString , QString , QString);
+    urlmaker(QString , QString);
     const QString generate();
 };
 
