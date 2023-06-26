@@ -47,7 +47,7 @@ void Client::Signup(){
 }
 
 //get username and password from input and validates the user by communicating with server
-void Client::Login(QString username, QString password) const{
+void Client::Login(QString username, QString password) {
     //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
     QString arguments = "username="+username+"&password="+password;
     urlmaker login_url("login" , arguments);
