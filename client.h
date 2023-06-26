@@ -14,7 +14,7 @@ class Client
 public:
     Client(QString, QString , QString , QString);
   
-    void Singup();
+    void Signup();
     void Login(QString username, QString Password) ;
 
     //getter Merhods

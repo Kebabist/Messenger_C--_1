@@ -26,7 +26,7 @@
 
 int main(int argc, char *argv[])
 {
-//    QCoreApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 //    HttpHandler http;
 //    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
 //    urlmaker newurl("signup" , "token" , arguments);
