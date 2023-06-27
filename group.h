@@ -20,7 +20,7 @@ public:
     void create(Client &c);
     void getmessgae();
     void sendmessage();
-    void getlist();
+    void getlist(Client &c);
     void join(Client &c);
     ~group();
 

@@ -55,13 +55,41 @@ void group::join(Client &c){
                 qDebug() <<message;
             }else if (code == "204") {
                 QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
+                qDebug() << "Making group was unsuccessful because : " <<message << "Error code : " << code;
             }
         }
     }
 }
 
-
+//get list of joined groupes
+void group::getlist(Client &c){
+    HttpHandler http;
+    QString token = c.getToken();
+    QString arguments;
+    urlmaker newurl("getgrouplist", token , arguments);
+    const QString url = newurl.generate();
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    if(response.second){
+        QJsonObject jsonObj = response.first;
+        if (jsonObj.contains("code")){
+            //QString code = jsonObj.value("code").toString();
+            for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                // Check if the current key starts with "block"
+                QString key = it.key();
+                if (key.startsWith("block")) {
+                    QJsonObject blockObject = it.value().toObject();
+                    if (blockObject.contains("group_name")) {
+                        QString groupName = blockObject.value("group_name").toString();
+                        // Process the groupName
+                        qDebug() << "Group Name:" << groupName;
+                    }
+                }
+            }
+            QString message = jsonObj.value("message").toString();
+            qDebug() <<message;
+        }
+    }
+}
 group::~group()
 {
     delete ui;
