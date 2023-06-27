@@ -6,23 +6,6 @@
 #include "httphandler.h"
 #include "urlmaker.h"
 #include "client.h"
-//int main(int argc, char *argv[])
-//{
-//    QApplication a(argc, argv);
-
-//    QTranslator translator;
-//    const QStringList uiLanguages = QLocale::system().uiLanguages();
-//    for (const QString &locale : uiLanguages) {
-//        const QString baseName = "AP_Messenger_Project_" + QLocale(locale).name();
-//        if (translator.load(":/i18n/" + baseName)) {
-//            a.installTranslator(&translator);
-//            break;
-//        }
-//    }
-//    MainWindow w;
-//    w.show();
-//    return a.exec();
-//}
 
 int main(int argc, char *argv[])
 {
@@ -36,7 +19,7 @@ int main(int argc, char *argv[])
 //    const QString url = newurl.generate();
 
         Client cl("kebab","6kebab","kebab","kebab");
-        cl.Login("kebab","6kebab");
+        cl.Logout("kebab","6kebab");
 
 //    QString arguments = "username=kebab&password=6kebab";
 //    urlmaker login_url("logout" , arguments);
@@ -68,8 +51,8 @@ int main(int argc, char *argv[])
 //    urlmaker newurl("signup" , "token" , arguments);
 //    const QString url = newurl.generate();
 //    http.makeRequest(url);
-    Client newuser("kebab", "6kebab", "kebabist", "jooj");
-    newuser.Signup();
+//    Client newuser("kebab", "6kebab", "kebabist", "jooj");
+//    newuser.Signup();
 
     return app.exec();
 }
