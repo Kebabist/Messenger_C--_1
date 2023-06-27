@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     client.cpp \
+    exceptionhandler.cpp \
     group.cpp \
     httphandler.cpp \
     main.cpp \
@@ -19,12 +20,14 @@ SOURCES += \
 
 HEADERS += \
     client.h \
+    exceptionhandler.h \
     group.h \
     httphandler.h \
     mainwindow.h \
     urlmaker.h
 
 FORMS += \
+    exceptionhandler.ui \
     group.ui \
     mainwindow.ui
 
