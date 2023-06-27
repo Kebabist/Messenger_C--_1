@@ -26,8 +26,10 @@ int main(int argc, char *argv[])
     cl.Login("kebab","6kebab");
     group newgroup("newgroup3", "mygroup2");
     newgroup.create(cl);
-    cl.join("newgroup3");
-    cl.getlist();
+    cl.joingroup("newgroup3");
+    cl.getgrouplist();
+    cl.sendgroupmessage("newgroup3" , "bye");
+    cl.getgroupmessages("newgroup3" , "");
     //newgroup.join(cl , "newgroup3");
     //newgroup.getlist(cl);
     //cl.join();

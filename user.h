@@ -9,14 +9,18 @@ namespace Ui {
 class user;
 }
 
-class user : public QWidget
+class user : public virtual QWidget
 {
     Q_OBJECT
 
 public:
     explicit user(QWidget *parent = nullptr);
-    void join(QString);
-    void getlist();
+
+    //group related functions
+    void joingroup(QString);
+    void getgrouplist();
+    void getgroupmessages(QString, QString);
+    void sendgroupmessage(QString , QString);
 
     //getter Merhods
     QString getToken();
@@ -43,3 +47,4 @@ private:
 };
 
 #endif // USER_H
+

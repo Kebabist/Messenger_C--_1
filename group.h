@@ -3,13 +3,14 @@
 #include <QWidget>
 #include "client.h"
 #include "urlmaker.h"
+#include "user.h"
 #include "httphandler.h"
 
 namespace Ui {
 class group;
 }
 
-class group : public QWidget
+class group : public virtual QWidget, public user
 {
     Q_OBJECT
     QString group_name;
@@ -18,10 +19,6 @@ public:
     explicit group(QWidget *parent = nullptr);
     group(QString , QString);
     void create(Client &c);
-    void getmessgae();
-    void sendmessage();
-//    void getlist(Client &c);
-//    void join(Client &c , QString);
     ~group();
 
 private:

@@ -15,7 +15,7 @@ user::~user()
 
 
 //join group note that the function is called on a client object
-void user::join(QString desiredgroup){
+void user::joingroup(QString desiredgroup){
     HttpHandler http;
     QString token = this->getToken();
     QString arguments = "group_name="+desiredgroup;
@@ -31,7 +31,7 @@ void user::join(QString desiredgroup){
                 qDebug() <<message;
             }else if (code == "204") {
                 QString message = jsonObj.value("message").toString();
-                qDebug() << "join group successfully : " <<message << "Error code : " << code;
+                qDebug()  <<message << "Error code : " << code;
             }
         }
     }
@@ -39,7 +39,7 @@ void user::join(QString desiredgroup){
 
 
 //get list of joined groupes
-void user::getlist(){
+void user::getgrouplist(){
     HttpHandler http;
     QString token = this->getToken();
     QString arguments;
@@ -68,6 +68,59 @@ void user::getlist(){
     }
 }
 
+//send message in group
+void user::sendgroupmessage(QString desiredgroup , QString text){
+    HttpHandler http;
+    QString token = this->getToken();
+    QString arguments = "dst="+desiredgroup+"&"+"body="+text;
+    urlmaker newurl("sendmessagegroup", token , arguments);
+    const QString url = newurl.generate();
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    if(response.second){
+        QJsonObject jsonObj = response.first;
+        if (jsonObj.contains("code")){
+            QString code = jsonObj.value("code").toString();
+            if (code == "200"){
+                QString message = jsonObj.value("message").toString();
+                qDebug() <<message;
+            }else if (code == "204") {
+                QString message = jsonObj.value("message").toString();
+                qDebug()  <<message << "Error code : " << code;
+            }
+        }
+    }
+}
+
+//send message in group
+void user::getgroupmessages(QString desiredgroup, QString date){
+    HttpHandler http;
+    QString token = this->getToken();
+    QString arguments = "dst="+desiredgroup+"&"+date;
+    urlmaker newurl("getgroupchats", token , arguments);
+    const QString url = newurl.generate();
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    if(response.second){
+        QJsonObject jsonObj = response.first;
+        if (jsonObj.contains("code")) {
+            QString code = jsonObj.value("code").toString();
+            if (code == "200") {
+                QString message = jsonObj.value("message").toString();
+                qDebug() << message;
+                for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                    QString key = it.key();
+                    if (key.startsWith("block")) {
+                        QJsonObject blockObject = it.value().toObject();
+                        if (blockObject.contains("body") && blockObject.contains("src")) {
+                            QString body = blockObject.value("body").toString();
+                            QString src = blockObject.value("src").toString();
+                            qDebug() << "message: " << body << " sent by : " << src;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 //getter Merhods
 QString user::getToken(){
