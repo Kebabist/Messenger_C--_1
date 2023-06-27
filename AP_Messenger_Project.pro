@@ -15,18 +15,21 @@ SOURCES += \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
-    urlmaker.cpp
+    urlmaker.cpp \
+    user.cpp
 
 HEADERS += \
     client.h \
     group.h \
     httphandler.h \
     mainwindow.h \
-    urlmaker.h
+    urlmaker.h \
+    user.h
 
 FORMS += \
     group.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    user.ui
 
 # Default rules for deployment.
 #qnx: target.path = /tmp/$${TARGET}/bin

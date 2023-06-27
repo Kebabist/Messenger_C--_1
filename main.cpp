@@ -6,6 +6,7 @@
 #include "urlmaker.h"
 #include "client.h"
 #include "group.h"
+#include "user.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,8 +26,11 @@ int main(int argc, char *argv[])
     cl.Login("kebab","6kebab");
     group newgroup("newgroup3", "mygroup2");
     newgroup.create(cl);
-    newgroup.join(cl , "newgroup3");
-    newgroup.getlist(cl);
+    cl.join("newgroup3");
+    cl.getlist();
+    //newgroup.join(cl , "newgroup3");
+    //newgroup.getlist(cl);
+    //cl.join();
 //    QString arguments = "username=kebab&password=6kebab";
 //    urlmaker login_url("logout" , arguments);
 //    const QString url = login_url.generate();

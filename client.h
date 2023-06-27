@@ -3,26 +3,18 @@
 
 #include <QMainWindow>
 #include <QWidget>
+#include "user.h"
+#include "httphandler.h"
+#include "urlmaker.h"
 
-class Client
+class Client:public user
 {
-    QString username;
-    QString password;
-    QString firstname;
-    QString lastname;
-    QString token;
 public:
     Client(QString, QString , QString , QString);
   
     void Signup();
     void Login(QString, QString);
     void Logout(QString, QString);
-
-    //getter Merhods
-    QString getToken();
-
-    //setter Methods
-    void setToken(QString);
 
 };
 

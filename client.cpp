@@ -1,32 +1,22 @@
 #include "client.h"
-#include "httphandler.h"
-#include "urlmaker.h"
 #include <QDebug>
 
 //constructor of client class
 Client::Client(QString username ,QString password ,QString firstname ,QString lastname)
 {
-    this->username = username;
-    this->password = password;
-    this->firstname = firstname;
-    this->lastname = lastname;
+    setusername(username);
+    setpassword(password);
+    setfirstname(firstname);
+    setlastname(lastname);
 }
 
-//getter Merhods
-QString Client::getToken(){
-    return token;
-}
 
-//setter Methods
-void Client::setToken(QString token){
-    this->token = token;
-}
 
 //lets the user signup in messenger
 void Client::Signup(){
     HttpHandler http;
     QString arguments;
-    arguments = "username="+username+"&"+"password="+password+"&"+"firstname="+firstname+"&"+"lastname="+lastname;
+    arguments = "username="+getusername()+"&"+"password="+getpassword()+"&"+"firstname="+getfirstname()+"&"+"lastname="+getlastname();
     urlmaker newurl("signup", "token" , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -50,7 +40,7 @@ void Client::Signup(){
 //lets the users login using their username and password
 void Client::Login(QString username, QString password) {
     //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
-    QString arguments = "username="+username+"&password="+password;
+    QString arguments = "username="+getusername()+"&password="+getpassword();
     urlmaker login_url("login" , arguments);
     const QString url = login_url.generate();
 
@@ -76,7 +66,7 @@ void Client::Login(QString username, QString password) {
 
 //lets the user logout of messenger client
 void Client::Logout(QString, QString){
-        QString arguments = "username="+this->username+"&password="+this->password;
+    QString arguments = "username="+this->getusername()+"&password="+this->getpassword();
         urlmaker login_url("logout" , arguments);
         const QString url = login_url.generate();
         HttpHandler http;

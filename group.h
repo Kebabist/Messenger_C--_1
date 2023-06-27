@@ -20,8 +20,8 @@ public:
     void create(Client &c);
     void getmessgae();
     void sendmessage();
-    void getlist(Client &c);
-    void join(Client &c , QString);
+//    void getlist(Client &c);
+//    void join(Client &c , QString);
     ~group();
 
 private:
