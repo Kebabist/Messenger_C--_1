@@ -18,15 +18,14 @@ int main(int argc, char *argv[])
 //    urlmaker newurl("signup" , arguments);
 //    const QString url = newurl.generate();
   
-    Client newuser("kebab4", "6kebab", "kebabist", "jooj");
-    newuser.Signup();
+    //Client newuser("kebab4", "6kebab", "kebabist", "jooj");
+    //newuser.Signup();
     Client cl("kebab","6kebab","kebab","kebab");
-    cl.Login("kebab4","6kebab");
+    cl.Logout("kebab","6kebab");
+    cl.Login("kebab","6kebab");
     group newgroup("newgroup", "mygroup");
-    newgroup.create(cl);
-        Client cl("kebab","6kebab","kebab","kebab");
-        cl.Logout("kebab","6kebab");
-
+    //newgroup.create(cl);
+    newgroup.join(cl);
 //    QString arguments = "username=kebab&password=6kebab";
 //    urlmaker login_url("logout" , arguments);
 //    const QString url = login_url.generate();

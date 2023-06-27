@@ -21,6 +21,7 @@ public:
     void getmessgae();
     void sendmessage();
     void getlist();
+    void join(Client &c);
     ~group();
 
 private:
