@@ -40,7 +40,7 @@ void Client::Signup(){
 //lets the users login using their username and password
 void Client::Login(QString username, QString password) {
     //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
-    QString arguments = "username="+getusername()+"&password="+getpassword();
+    QString arguments = "username="+username+"&password="+password;
     urlmaker login_url("login" , arguments);
     const QString url = login_url.generate();
 
