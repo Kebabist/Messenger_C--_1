@@ -23,9 +23,9 @@ int main(int argc, char *argv[])
     Client cl("kebab","6kebab","kebab","kebab");
     cl.Logout("kebab","6kebab");
     cl.Login("kebab","6kebab");
-    group newgroup("newgroup2", "mygroup2");
+    group newgroup("newgroup3", "mygroup2");
     newgroup.create(cl);
-    newgroup.join(cl);
+    newgroup.join(cl , "newgroup3");
     newgroup.getlist(cl);
 //    QString arguments = "username=kebab&password=6kebab";
 //    urlmaker login_url("logout" , arguments);

@@ -21,7 +21,7 @@ public:
     void getmessgae();
     void sendmessage();
     void getlist(Client &c);
-    void join(Client &c);
+    void join(Client &c , QString);
     ~group();
 
 private:

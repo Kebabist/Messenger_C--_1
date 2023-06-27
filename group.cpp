@@ -39,10 +39,10 @@ void group::create(Client &c){
 }
 
 //join group
-void group::join(Client &c){
+void group::join(Client &c , QString desiredgroup){
     HttpHandler http;
     QString token = c.getToken();
-    QString arguments = "group_name="+this->group_name;
+    QString arguments = "group_name="+desiredgroup;
     urlmaker newurl("joingroup", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -55,7 +55,7 @@ void group::join(Client &c){
                 qDebug() <<message;
             }else if (code == "204") {
                 QString message = jsonObj.value("message").toString();
-                qDebug() << "Making group was unsuccessful because : " <<message << "Error code : " << code;
+                qDebug() << "join group successfully : " <<message << "Error code : " << code;
             }
         }
     }
@@ -90,6 +90,8 @@ void group::getlist(Client &c){
         }
     }
 }
+
+
 group::~group()
 {
     delete ui;
