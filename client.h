@@ -15,7 +15,8 @@ public:
     Client(QString, QString , QString , QString);
   
     void Signup();
-    void Login(QString username, QString Password) ;
+    void Login(QString, QString);
+    void Logout(QString, QString);
 
     //getter Merhods
     QString getToken();
