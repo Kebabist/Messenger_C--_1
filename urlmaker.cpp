@@ -19,7 +19,7 @@ urlmaker::urlmaker(QString command , QString arguments )
 const QString urlmaker::generate(){
     QString url = "http://api.barafardayebehtar.ml:8080/";
     if (command != "signup" && command != "login" && command != "logout"){ // these three dont have token
-        url = url+command+"?"+token+arguments; //should pass the arguments as a QString with &
+        url = url+command+"?"+"token="+token+"&"+arguments; //should pass the arguments as a QString with &
     }else {
         url = url+command+"?"+arguments; //should pass the arguments as a QString with &
     }

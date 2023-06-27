@@ -6,6 +6,7 @@
 #include "httphandler.h"
 #include "urlmaker.h"
 #include "client.h"
+#include "group.h"
 //int main(int argc, char *argv[])
 //{
 //    QApplication a(argc, argv);
@@ -26,7 +27,7 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QApplication app(argc, argv);
 //    HttpHandler http;
 //    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
 //    urlmaker newurl("signup" , "token" , arguments);
@@ -35,9 +36,12 @@ int main(int argc, char *argv[])
 //    urlmaker newurl("signup" , arguments);
 //    const QString url = newurl.generate();
 
-        Client cl("kebab","6kebab","kebab","kebab");
-        cl.Login("kebab","6kebab");
-
+    Client newuser("kebab4", "6kebab", "kebabist", "jooj");
+    newuser.Signup();
+    Client cl("kebab","6kebab","kebab","kebab");
+    cl.Login("kebab4","6kebab");
+    group newgroup("newgroup", "mygroup");
+    newgroup.create(cl);
 //    QString arguments = "username=kebab&password=6kebab";
 //    urlmaker login_url("logout" , arguments);
 //    const QString url = login_url.generate();
@@ -68,8 +72,8 @@ int main(int argc, char *argv[])
 //    urlmaker newurl("signup" , "token" , arguments);
 //    const QString url = newurl.generate();
 //    http.makeRequest(url);
-    Client newuser("kebab", "6kebab", "kebabist", "jooj");
-    newuser.Signup();
+    //Client newuser("kebab", "6kebab", "kebabist", "jooj");
+    //newuser.Signup();
 
     return app.exec();
 }

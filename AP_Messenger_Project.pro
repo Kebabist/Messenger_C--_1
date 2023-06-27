@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     client.cpp \
+    group.cpp \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -18,11 +19,13 @@ SOURCES += \
 
 HEADERS += \
     client.h \
+    group.h \
     httphandler.h \
     mainwindow.h \
     urlmaker.h
 
 FORMS += \
+    group.ui \
     mainwindow.ui
 
 # Default rules for deployment.
