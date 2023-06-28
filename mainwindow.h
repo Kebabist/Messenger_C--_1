@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "signupui.h"
-#include "ui_signup.h"
+#include "loginui.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,11 +18,20 @@ public:
     ~MainWindow();
 
 private slots:
+    //buttons
     void on_signupbutton_clicked();
+    void on_loginbutton_clicked();
+
+    //handle the pages signals
     void handleSignupApproved();
+    void handleloginApproved();
+
 
 private:
     Ui::MainWindow *ui;
+    //create signup page object
     signupui *signup;
+    //create login page object
+    loginui *login;
 };
 #endif // MAINWINDOW_H

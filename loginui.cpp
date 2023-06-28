@@ -1,33 +1,31 @@
-#include "signupui.h"
-#include "ui_signupui.h"
+#include "loginui.h"
+#include "ui_loginui.h"
 #include "client.h"
 #include "exceptionhandler.h"
 #include <QMessageBox>
 
-signupui::signupui(QWidget *parent) :
+loginui::loginui(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::signupui)
+    ui(new Ui::loginui)
 {
     ui->setupUi(this);
 }
 
-signupui::~signupui()
+loginui::~loginui()
 {
     delete ui;
 }
 
 //handle the submit button
-void signupui::on_submitbutton_clicked()
+void loginui::on_submitbutton_clicked()
 {
     QString username = ui->usernameLE->text();
     QString password = ui->passwordLE->text();
-    QString firstname = ui->firstnameLE->text();
-    QString lastname = ui->lastnameLE->text();
-    Client cl(username , password , firstname , lastname);
+    Client client(username , password);
     try {
-        QPair<QString , QString> response = cl.Signup();
+        QPair<QString , QString> response = client.Login(username , password);
         QMessageBox::information(this, "Information", response.second);
-        emit signupApproved();
+        emit loginApproved();
     }catch (const HttpHandlerException &e) {
         QMessageBox::critical(this, "Error", e.message());
     }

@@ -12,6 +12,10 @@ Client::Client(QString username ,QString password ,QString firstname ,QString la
     this->lastname = lastname;
 }
 
+Client::Client(QString username, QString password){
+    this->username = username;
+    this->password = password;
+}
 //getter Merhods
 QString Client::getToken(){
     return token;
@@ -48,29 +52,32 @@ QPair<QString, QString> Client::Signup(){
 }
 
 //lets the users login using their username and password
-void Client::Login(QString username, QString password) {
+QPair<QString , QString> Client::Login(QString username, QString password) {
     //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
     QString arguments = "username="+username+"&password="+password;
     urlmaker login_url("login" , arguments);
     const QString url = login_url.generate();
-
+    QString code , message;
     HttpHandler http;
     QPair<QJsonObject, bool> response = http.makeRequest(url);
 
     if (response.second) {
         QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("message") && jsonObj.contains("code")) {
+        message = jsonObj.value("message").toString();
+        code = jsonObj.value("code").toString();
+//        if (jsonObj.contains("message") && jsonObj.contains("code")) {
             QString message = jsonObj.value("message").toString();
             QString code = jsonObj.value("code").toString();
-            if(message ==  "Logged in Successfully" && code == "200"){
-                QString token = jsonObj.value("token").toString();
-                setToken(token);
-                qDebug()<<"token assigned"<< token;
-            }
-        }
+//            if(message ==  "Logged in Successfully" && code == "200"){
+//                QString token = jsonObj.value("token").toString();
+//                setToken(token);
+//                qDebug()<<"token assigned"<< token;
+//            }
+//        }
     } else {
         qDebug() << "Error: Request was not successful";
     }
+    return qMakePair(code , message);
 
 }
 

@@ -13,9 +13,10 @@ class Client
     QString token;
 public:
     Client(QString, QString , QString , QString);
+    Client(QString, QString);//object for login
   
     QPair<QString, QString> Signup();
-    void Login(QString, QString);
+    QPair<QString , QString> Login(QString, QString);
     void Logout(QString, QString);
 
     //getter Merhods

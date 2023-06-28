@@ -18,6 +18,7 @@ public:
 private slots:
     void on_submitbutton_clicked();
 signals:
+    //correct credentials signal (sent to mainwindow)
     void signupApproved();
 private:
     Ui::signupui *ui;
