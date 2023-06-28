@@ -28,8 +28,10 @@ void MainWindow::handleSignupApproved()
 //handle login signal
 void MainWindow::handleloginApproved()
 {
-    login->close(); // Close the signup page
-    // Show or perform any actions related to the start page
+    login->close(); // Close the login page
+    loggedin = new loggedinpage(nullptr);
+    loggedin->show();
+
 }
 
 //open new page for signup

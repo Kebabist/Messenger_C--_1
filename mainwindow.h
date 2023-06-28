@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "signupui.h"
 #include "loginui.h"
+#include "loggedinpage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,5 +34,7 @@ private:
     signupui *signup;
     //create login page object
     loginui *login;
+    //create loggedinpage object
+    loggedinpage *loggedin;
 };
 #endif // MAINWINDOW_H

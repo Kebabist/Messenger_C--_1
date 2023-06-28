@@ -13,6 +13,7 @@ SOURCES += \
     client.cpp \
     exceptionhandler.cpp \
     httphandler.cpp \
+    loggedinpage.cpp \
     loginui.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     client.h \
     exceptionhandler.h \
     httphandler.h \
+    loggedinpage.h \
     loginui.h \
     mainwindow.h \
     signupui.h \
@@ -30,6 +32,7 @@ HEADERS += \
 
 FORMS += \
     exceptionhandler.ui \
+    loggedinpage.ui \
     loginui.ui \
     mainwindow.ui \
     signupui.ui
