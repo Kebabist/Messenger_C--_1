@@ -1,16 +1,10 @@
 #include "httphandler.h"
 #include "exceptionhandler.h"
 
-//constructor
-HttpHandler::HttpHandler(QObject *parent)
-     : QObject(parent), manager(this)
-{}
-
 //handles server Queries
 QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString)
 {
     QUrl url(urlString);
-    QNetworkRequest request(url);
     QNetworkReply *reply = manager.get(QNetworkRequest(url)); // Send GET request
 
     QJsonObject jsonObj;
@@ -45,13 +39,4 @@ QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString)
     // Cleanup the reply object
     reply->deleteLater();
     return qMakePair(jsonObj, success);
-}
-
-//Slot
-void HttpHandler::onReplyFinished(QNetworkReply* reply)
-{
-    QByteArray data = reply->readAll();
-    reply->deleteLater();
-
-    emit requestFinished(data);
 }

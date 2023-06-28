@@ -6,6 +6,7 @@
 #include"group.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
+#include "client.h"
 
 class GroupRepository : public QWidget
 {
@@ -16,7 +17,7 @@ public:
     GroupRepository();
     ~GroupRepository();
 
-    void create(const Group& group);
+    void create(Client &c);
     Group read(int id) const;
     void update(const Group& group);
     void remove(int id);
@@ -24,11 +25,6 @@ public:
 
     //getter function
      QList<Group> getAllGroups() const;
-signals:
-    void groupsChanged(const QList<Group>& groups);
-
-private slots:
-    void onGroupsReceived(const QByteArray& data);
 
 private:
     HttpHandler http;

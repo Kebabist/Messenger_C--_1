@@ -16,19 +16,18 @@ class Group : public QWidget
 
 public:
 //    explicit Group(QWidget *parent = nullptr);
-    Group(int id = 0, const QString& name = "", const QMap<QString, QString>& messages = {});
+    Group(QString title , const QString& name , const QMap<QString, QString>& messages = {});
     Group(const Group& other);
     Group& operator=(const Group& other);
     ~Group();
 
     //getter
-    int getGroupid() const;
+    QString getGrouptitle() const;
     QString getGroupname() const;
     QMap<QString, QString> getGroupmessages() const;
 
-
 private:
-    int Group_id;
+    QString Group_title;
     QString Group_name;
     QMap<QString, QString> Group_messages;
 //    Ui::Group *ui;
