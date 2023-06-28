@@ -14,14 +14,22 @@
 class HttpHandler : public QObject
 {
     Q_OBJECT
-private:
-    QNetworkAccessManager manager;
-
 public:
-    explicit HttpHandler(QObject *parent = nullptr) : QObject(parent), manager(this) {}
+    explicit HttpHandler(QObject *parent = nullptr);
+    void post(const QString& url, const QByteArray& data);
+    void put(const QString& url, const QByteArray& data);
+    void deleteResource(const QString& url);
+signals:
+    void requestFinished(const QByteArray& data);
+
+private slots:
+    void onReplyFinished(QNetworkReply* reply);
 
 public slots:
-    QPair<QJsonObject, bool> makeRequest(const QString &);
+    QPair<QJsonObject, bool> makeRequest(const QString &)
+        ;
+private:
+    QNetworkAccessManager manager;
 };
 
 #endif // HTTPHANDLER_H

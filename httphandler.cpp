@@ -1,42 +1,16 @@
 #include "httphandler.h"
-
-////handles the http requests
-//QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString)
-//    {
-//        QUrl url(urlString);
-//        QNetworkReply *reply = manager.get(QNetworkRequest(url)); // Send GET request
-
-//        QJsonObject jsonObj;
-//        bool success = false;
-
-//        QEventLoop loop;
-//        connect(reply, &QNetworkReply::finished, &loop, &QEventLoop::quit);
-//        loop.exec(); // Block until the request is finished
-//            if (reply->error() == QNetworkReply::NoError) {
-//                // If the request was successful, read the response
-//                QByteArray data = reply->readAll();
-
-//                QJsonDocument jsonDoc = QJsonDocument::fromJson(data);
-//                jsonObj = jsonDoc.object();
-//                // Check if the JSON object contains the expected keys
-//                if (jsonObj.contains("message") && jsonObj.contains("code")) {
-//                    success = true;
-//                }
-//            }
-//            else {
-//                // If there was an error, display the error message
-//                qDebug() << "Error:" << reply->errorString();
-//            }
-
-//            // Cleanup the reply object
-//            reply->deleteLater();
-//            return qMakePair(jsonObj, success);
-//    }
-
 #include "exceptionhandler.h"
+
+//constructor
+HttpHandler::HttpHandler(QObject *parent)
+     : QObject(parent), manager(this)
+{}
+
+//handles server Queries
 QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString)
 {
     QUrl url(urlString);
+    QNetworkRequest request(url);
     QNetworkReply *reply = manager.get(QNetworkRequest(url)); // Send GET request
 
     QJsonObject jsonObj;
@@ -71,4 +45,13 @@ QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString)
     // Cleanup the reply object
     reply->deleteLater();
     return qMakePair(jsonObj, success);
+}
+
+//Slot
+void HttpHandler::onReplyFinished(QNetworkReply* reply)
+{
+    QByteArray data = reply->readAll();
+    reply->deleteLater();
+
+    emit requestFinished(data);
 }
