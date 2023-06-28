@@ -15,6 +15,9 @@ public:
     explicit loggedinpage(QWidget *parent = nullptr);
     ~loggedinpage();
 
+private slots:
+    void on_toggleview_clicked(bool checked);
+
 private:
     Ui::loggedinpage *ui;
 };

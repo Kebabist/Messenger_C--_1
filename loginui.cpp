@@ -24,10 +24,16 @@ void loginui::on_submitbutton_clicked()
     Client client(username , password);
     try {
         QPair<QString , QString> response = client.Login(username , password);
+        if (response.second != "You are already logged in!"){
         QMessageBox::information(this, "Information", response.second);
+        }else {
+            throw response.second;
+        }
         emit loginApproved();
     }catch (const HttpHandlerException &e) {
         QMessageBox::critical(this, "Error", e.message());
+    }catch(QString f){
+        QMessageBox::critical(this, "Error", f);
     }
 }
 
