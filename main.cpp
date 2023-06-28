@@ -5,7 +5,6 @@
 #include "httphandler.h"
 #include "urlmaker.h"
 #include "client.h"
-#include "group.h"
 #include "exceptionhandler.h"
 
 int main(int argc, char *argv[])
@@ -73,7 +72,8 @@ int main(int argc, char *argv[])
     //newuser.Signup();
 //    Client newuser("kebab", "6kebab", "kebabist", "jooj");
 //    newuser.Signup();
-
+        MainWindow w;
+        w.show();
     return app.exec();
 }
 

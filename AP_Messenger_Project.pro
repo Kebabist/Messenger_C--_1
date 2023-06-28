@@ -12,24 +12,24 @@ CONFIG += c++17
 SOURCES += \
     client.cpp \
     exceptionhandler.cpp \
-    group.cpp \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
+    signupui.cpp \
     urlmaker.cpp
 
 HEADERS += \
     client.h \
     exceptionhandler.h \
-    group.h \
     httphandler.h \
     mainwindow.h \
+    signupui.h \
     urlmaker.h
 
 FORMS += \
     exceptionhandler.ui \
-    group.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    signupui.ui
 
 # Default rules for deployment.
 #qnx: target.path = /tmp/$${TARGET}/bin
