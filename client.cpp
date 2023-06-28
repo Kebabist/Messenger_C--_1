@@ -23,21 +23,20 @@ void Client::setToken(QString token){
 }
 
 //lets the user signup in messenger
-void Client::Signup(){
+QPair<QString, QString> Client::Signup(){
     HttpHandler http;
     QString arguments;
     arguments = "username="+username+"&"+"password="+password+"&"+"firstname="+firstname+"&"+"lastname="+lastname;
     urlmaker newurl("signup", "token" , arguments);
     const QString url = newurl.generate();
+    QString code , message;
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
+            code = jsonObj.value("code").toString();
             if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
-                //redirect to login page implement with gui
+                message = jsonObj.value("message").toString();
             }else if (code == "204") {
                 QString message = jsonObj.value("message").toString();
                 qDebug() <<message;
@@ -45,6 +44,7 @@ void Client::Signup(){
             }
         }
     }
+    return qMakePair(code , message);
 }
 
 //lets the users login using their username and password

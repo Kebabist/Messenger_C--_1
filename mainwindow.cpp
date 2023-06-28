@@ -17,9 +17,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::handleSignupApproved()
+{
+    signup->close(); // Close the signup page
+    // Show or perform any actions related to the start page
+}
+
 
 void MainWindow::on_signupbutton_clicked()
 {
-    signupui *signup = new signupui(nullptr); // Pass nullptr as parent widget parameter
+    signup = new signupui(nullptr);
     signup->show();
+    connect(signup, &signupui::signupApproved, this, &MainWindow::handleSignupApproved);
 }

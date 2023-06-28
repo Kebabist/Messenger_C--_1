@@ -17,7 +17,8 @@ public:
 
 private slots:
     void on_submitbutton_clicked();
-
+signals:
+    void signupApproved();
 private:
     Ui::signupui *ui;
 };

@@ -14,7 +14,7 @@ class Client
 public:
     Client(QString, QString , QString , QString);
   
-    void Signup();
+    QPair<QString, QString> Signup();
     void Login(QString, QString);
     void Logout(QString, QString);
 
