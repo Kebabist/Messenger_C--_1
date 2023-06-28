@@ -13,7 +13,6 @@ SOURCES += \
     client.cpp \
     exceptionhandler.cpp \
     group.cpp \
-    groupdto.cpp \
     grouprepository.cpp \
     httphandler.cpp \
     main.cpp \
@@ -24,7 +23,6 @@ HEADERS += \
     client.h \
     exceptionhandler.h \
     group.h \
-    groupdto.h \
     grouprepository.h \
     httphandler.h \
     mainwindow.h \
