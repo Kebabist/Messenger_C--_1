@@ -1,5 +1,10 @@
 #include "urlmaker.h"
 
+//default constructor
+urlmaker::urlmaker()
+    : command(""), token(""), arguments("")
+{}
+
 //urlmaker constructor
 urlmaker::urlmaker(QString command , QString token , QString arguments )
 {
