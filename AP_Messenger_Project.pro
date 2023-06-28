@@ -12,6 +12,8 @@ CONFIG += c++17
 SOURCES += \
     client.cpp \
     exceptionhandler.cpp \
+    group.cpp \
+    grouprepository.cpp \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -20,12 +22,16 @@ SOURCES += \
 HEADERS += \
     client.h \
     exceptionhandler.h \
+    group.h \
+    grouprepository.h \
     httphandler.h \
     mainwindow.h \
     urlmaker.h
 
 FORMS += \
     exceptionhandler.ui \
+    group.ui \
+    grouprepository.ui \
     mainwindow.ui
 
 # Default rules for deployment.
