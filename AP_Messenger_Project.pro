@@ -19,6 +19,8 @@ SOURCES += \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
+    pv.cpp \
+    pvrepository.cpp \
     urlmaker.cpp
 
 HEADERS += \
@@ -30,6 +32,8 @@ HEADERS += \
     grouprepository.h \
     httphandler.h \
     mainwindow.h \
+    pv.h \
+    pvrepository.h \
     urlmaker.h
 
 FORMS += \
