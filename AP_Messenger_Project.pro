@@ -10,6 +10,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    channel.cpp \
+    channelrepository.cpp \
     client.cpp \
     exceptionhandler.cpp \
     group.cpp \
@@ -22,6 +24,8 @@ SOURCES += \
     urlmaker.cpp
 
 HEADERS += \
+    channel.h \
+    channelrepository.h \
     client.h \
     exceptionhandler.h \
     group.h \
