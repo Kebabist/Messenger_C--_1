@@ -37,7 +37,7 @@ public:
     void setGroupsList(const Group& newgroup );
 
     //getter function
-    const QList<Group>& getGrouplist() const;
+    const QList<Group>& getGroup_list() const;
 
 
 private:

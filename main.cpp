@@ -9,11 +9,48 @@
 #include "group.h"
 #include "exceptionhandler.h"
 #include "grouprepository.h"
-
+#include "pvrepository.h"
+#include "pv.h"
 
 
 int main(int argc, char *argv[]){
 QApplication app(argc, argv);
+
+//test pv
+//the tester is kebab2
+//the other user is kebab3
+Client cl;
+Pv p("kebab3");
+PvRepository pr;
+pr.sendmessagePv("kebab3","salam da",cl);
+pr.getPvlist(cl);
+pr.getPvchats(cl,"kebab3","");
+QList<Pv> List = pr.getPv_list();
+pr.WritePvsmessages();
+pr.display();
+pr.ReadPvsmessages();
+for (const Pv& Pv : List) {
+    qDebug() << "Channel Name: " << Pv.getPvname();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = Pv.getPvmessages();
+    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+        qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
+    }
+}
+pr.RemovePvsDir();
+
+
+
+
+
+
+
+
+
+
+
+
+
 //GroupRepository gr;
 //gr.RemoveGroupsDir();
 //Client cl("kebab","6kebab","kebab","kebab");

@@ -43,7 +43,7 @@ void GroupRepository::setGroupsList(const Group& newgroup ){
 }
 
 //getter function
-const QList<Group>& GroupRepository::getGrouplist() const{
+const QList<Group>& GroupRepository::getGroup_list() const{
     return Groups_list;
 }
 

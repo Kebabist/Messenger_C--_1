@@ -6,13 +6,13 @@
 #include <QString>
 #include <qmap.h>
 
-//Group class that holds necessary Group data
+//Pv class that holds necessary Pv data
 class Pv : public QWidget
 {
     Q_OBJECT
 
 public:
-    //    explicit Group(QWidget *parent = nullptr);
+    //    explicit Pv(QWidget *parent = nullptr);
     Pv();
     Pv(const QString& name );
     Pv(const Pv& other);
