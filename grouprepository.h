@@ -17,14 +17,20 @@ public:
     GroupRepository();
     ~GroupRepository();
 
-    void create(Client &c);
-    Group read(int id) const;
-    void update(const Group& group);
-    void remove(int id);
-    void getGroupslist(QString token, QString dst, QString time);
+    void createGroup(Client &c , QString);
+    void joinGroup(Client &c ,QString);
+    void getGrouplist(Client &c);
+    void getGroupchats(Client &c , QString dst , QString date);
+    void sendmessageGroup(QString desiredgroup , QString text , Client &c);
+    void display();
+
+
+    //setter function
+    void setGroupsList(const Group& newgroup );
 
     //getter function
-     QList<Group> getAllGroups() const;
+    const QList<Group>& getGrouplist() const;
+
 
 private:
     HttpHandler http;
