@@ -9,12 +9,13 @@
 #include "group.h"
 #include "exceptionhandler.h"
 #include "grouprepository.h"
-
+#include "channel.h"
+#include "channelrepository.h"
 
 
 int main(int argc, char *argv[]){
 QApplication app(argc, argv);
-//GroupRepository gr;
+//ChannelRepository gr;
 //gr.RemoveGroupsDir();
 //Client cl("kebab","6kebab","kebab","kebab");
 //cl.Login();
@@ -24,17 +25,49 @@ QApplication app(argc, argv);
 //Client cl("kebab11dsf11","1111sdfkebab","kebab","kebab");
 //QPair<QJsonObject, bool> response = http.makeRequest("http://invalidurl.com");
 
-//cl.Signup();
+//cl.Login();
 //cl.RemoveClientDir();
 //cl.ReadClient();
 //QPair<QString , QString> response =cl.Login();
-
+//GroupRepository groupRepo;
+//groupRepo.getGrouplist(cl);
+//groupRepo.getGroupchats(cl,"lmao","");
+////groupRepo.getGroupchats(cl,"new","");
+//groupRepo.WriteGroupsmessages();
+////groupRepo.ReadGroupsmessages();
+//QList<Group> groupList = groupRepo.getGroup_list();
+//for (const Group& group : groupList) {
+//    qDebug() << "Group Name: " << group.getGroupname();
+//    qDebug() << "Messages: ";
+//    const QMultiMap<QString, QPair<QString, QString>>& messages = group.getGroupmessages();
+//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+//        qDebug() << "Sender: " << it.key() << ", Text: " << it.value().first << ", Date: " << it.value().second;
+//    }
+//}
 //cl.Logout();
-//gr.createGroup(cl , "nmdvaghean9");
+//gr.createChannel(cl , "nmdvaghean9");
 //QThread::msleep(20000);
-//gr.getGroupchats(cl,"nmdvaghean9","");
-//gr.display();
+//gr.joinChannel(cl,"nmdvaghean9");
+//gr.sendmessageChannel("nmdvaghean9","asdasd",cl);
+//gr.sendmessageChannel("nmdvaghean9","zcx",cl);
+//gr.sendmessageChannel("nmdvaghean9","vcb",cl);
+//gr.sendmessageChannel("nmdvaghean9","ZXtry",cl);
+//gr.getChannellist(cl);
+//gr.getChannelchats(cl,"nmdvaghean9","");
+//QList<Channel> List=gr.getChannel_list();
 
+//gr.WriteChannelsmessages();
+//gr.ReadChannelsmessages();
+//QList<Channel> groupList = gr.getChannel_list();
+//for (const Channel& group : groupList) {
+//    qDebug() << "Group Name: " << group.getChannelname();
+//    qDebug() << "Messages: ";
+//    const QMultiMap<QString, QPair<QString, QString>>& messages = group.getChannelmessages();
+//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+//        qDebug() << "Sender: " << it.key() << ", Text: " << it.value().first << ", Date: " << it.value().second;
+//    }
+//}
+//gr.RemoveChannelsDir();
 //GroupRepository gr;
 //Group g("Group1","lmao");
 

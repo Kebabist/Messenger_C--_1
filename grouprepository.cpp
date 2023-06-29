@@ -43,14 +43,14 @@ void GroupRepository::setGroupsList(const Group& newgroup ){
 }
 
 //getter function
-const QList<Group>& GroupRepository::getGrouplist() const{
+const QList<Group>& GroupRepository::getGroup_list() const{
     return Groups_list;
 }
 
 //create new group
 void GroupRepository::createGroup(Client &c, QString gname){
     HttpHandler http;
-    QString token = "d7928f6dae40dffdf4be67b24e242ee7";
+    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
     QString arguments = "group_name="+gname;//+"&"+"group_title="+g.getGrouptitle();
     urlmaker newurl("creategroup", token , arguments);
     const QString url = newurl.generate();
@@ -80,7 +80,7 @@ void GroupRepository::createGroup(Client &c, QString gname){
 ////join group
 void GroupRepository::joinGroup(Client &c , QString dstgroup){
     HttpHandler http;
-    QString token = "d7928f6dae40dffdf4be67b24e242ee7";
+    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
     QString arguments = "group_name="+dstgroup;
     urlmaker newurl("joingroup", token , arguments);
     const QString url = newurl.generate();
@@ -108,7 +108,7 @@ void GroupRepository::joinGroup(Client &c , QString dstgroup){
 //get list of joined groupes
 void GroupRepository::getGrouplist(Client &c){
     HttpHandler http;
-    QString token = "d7928f6dae40dffdf4be67b24e242ee7";
+    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
     QString arguments;
     urlmaker newurl("getgrouplist", token , arguments);
     const QString url = newurl.generate();
@@ -140,7 +140,7 @@ void GroupRepository::getGrouplist(Client &c){
 //send message in a group chat
 void GroupRepository::sendmessageGroup(QString desiredgroup , QString text , Client &c){
     HttpHandler http;
-    QString token = "d7928f6dae40dffdf4be67b24e242ee7";
+    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
     QString arguments = "dst="+desiredgroup+"&"+"body="+text;
     urlmaker newurl("sendmessagegroup", token , arguments);
     const QString url = newurl.generate();
@@ -164,7 +164,7 @@ void GroupRepository::sendmessageGroup(QString desiredgroup , QString text , Cli
 //get group messages
 void GroupRepository::getGroupchats(Client &c , QString dst , QString date){
     HttpHandler http;
-    QString token = "d7928f6dae40dffdf4be67b24e242ee7";
+    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
     QString arguments = "dst="+dst+"&"+"date="+date;
     urlmaker newurl("getgroupchats", token , arguments);
     const QString url = newurl.generate();

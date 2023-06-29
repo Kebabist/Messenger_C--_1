@@ -34,7 +34,7 @@ public:
     void setChannelsList(const Channel& newChannel );
 
     //getter function
-    const QList<Channel>& getChannellist() const;
+    const QList<Channel>& getChannel_list() const;
 
 
 private:
