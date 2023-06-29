@@ -51,6 +51,7 @@ Group::~Group()
 QString Group::getGroupname() const{
     return Group_name;
 }
+
 QString Group::getGrouptitle() const{
     return Group_title;
 }

@@ -12,40 +12,7 @@
 
 
 
-int main(int argc, char *argv[])
-{
-//    QApplication app(argc, argv);
-//    GroupRepository gr;
-//    Client cl("kebab","6kebab","kebab","kebab");
-////    gr.create(cl);
-//    HttpHandler http;
-////    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
-////    urlmaker newurl("signup" , "token" , arguments);
-////    const QString url = newurl.generate();
-//    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
-//    urlmaker newurl("login" , arguments);
-//    const QString url = newurl.generate();
-//    http.makeRequest(url);
-//    cl.Logout("kebab","6kebab");
-//    cl.Login("kebab","6kebab");
-//    //gr.createGroup(cl , "new");
-//    //gr.joinGroup(cl , "new");
-//    gr.getGroupchats(cl , "lmao" , "");
-//////    Client newuser("kebab4", "6kebab", "kebabist", "jooj");
-//////    newuser.Signup();
-//////    cl.Login("kebab4","6kebab");
-//////    group newgroup("newgroup", "mygroup");
-//////    newgroup.create(cl);
-//////        Client cl("kebab","6kebab","kebab","kebab");
-//////        cl.Logout("kebab","6kebab");
-
-//            QPair<QJsonObject, bool> response = http.makeRequest(url);
-//            QJsonObject jsonObj = response.first;
-//           QString message = jsonObj.value("message").toString();
-//            qDebug() << "Message:" << message;
-//           QString code = jsonObj.value("code").toString();
-//            qDebug() << "Code:" << code;
-
+int main(int argc, char *argv[]){
 QApplication app(argc, argv);
 //GroupRepository gr;
 //Client cl("kebab","6kebab","kebab","kebab");
@@ -84,26 +51,26 @@ QPair<QJsonObject, bool> response = http.makeRequest("http://invalidurl.com");
 //    const QString url = login_url.generate();
 
 //    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if (!response.second) {
-        QJsonObject jsonObj = response.first;
+//    if (!response.second) {
+//        QJsonObject jsonObj = response.first;
 
-        QString token = jsonObj.value("token").toString();
-        qDebug() << "token:" << token;
-        if (jsonObj.contains("message")) {
-            QString message = jsonObj.value("message").toString();
-            qDebug() << "Message:" << message;
-        } else {
-            qDebug() << "Message key not found in JSON object";
-        }
-        if (jsonObj.contains("code")) {
-            QString code = jsonObj.value("code").toString();
-            qDebug() << "Code:" << code;
-        } else {
-            qDebug() << "Code key not found in JSON object";
-        }
-    } else {
-        qDebug() << "Error: Request was not successful";
-    }
+//        QString token = jsonObj.value("token").toString();
+//        qDebug() << "token:" << token;
+//        if (jsonObj.contains("message")) {
+//            QString message = jsonObj.value("message").toString();
+//            qDebug() << "Message:" << message;
+//        } else {
+//            qDebug() << "Message key not found in JSON object";
+//        }
+//        if (jsonObj.contains("code")) {
+//            QString code = jsonObj.value("code").toString();
+//            qDebug() << "Code:" << code;
+//        } else {
+//            qDebug() << "Code key not found in JSON object";
+//        }
+//    } else {
+//        qDebug() << "Error: Request was not successful";
+//    }
 //    HttpHandler http;
 //    QString arguments = "username=sara&password=1234&firstname=sara&lastname=baradaran";
 //    urlmaker newurl("signup" , "token" , arguments);
@@ -113,7 +80,6 @@ QPair<QJsonObject, bool> response = http.makeRequest("http://invalidurl.com");
     //newuser.Signup();
 //    Client newuser("kebab", "6kebab", "kebabist", "jooj");
 //    newuser.Signup();
-
     return app.exec();
 }
 
