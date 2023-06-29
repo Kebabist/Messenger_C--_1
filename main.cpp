@@ -14,14 +14,15 @@
 
 int main(int argc, char *argv[]){
 QApplication app(argc, argv);
-//GroupRepository gr;
+GroupRepository gr;
+gr.RemoveGroupsDir();
 //Client cl("kebab","6kebab","kebab","kebab");
 //cl.Logout("kebab","6kebab");
 //cl.Login("kebab","6kebab");
 //cl.WriteClient();
-HttpHandler http;
-Client cl("kebab11dsf11","1111sdfkebab","kebab","kebab");
-QPair<QJsonObject, bool> response = http.makeRequest("http://invalidurl.com");
+//HttpHandler http;
+//Client cl("kebab11dsf11","1111sdfkebab","kebab","kebab");
+//QPair<QJsonObject, bool> response = http.makeRequest("http://invalidurl.com");
 
 //cl.Signup();
 //cl.RemoveClientDir();

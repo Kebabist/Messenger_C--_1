@@ -1,4 +1,5 @@
 #include "grouprepository.h"
+#include "exceptionhandler.h"
 #include <QDateTime>
 
 //#include "Ui_grouprepository.h"
@@ -203,5 +204,38 @@ void GroupRepository::display() {
                 }
             }
         }
+    }
+}
+
+//removes client directory & its files after logout
+void GroupRepository::RemoveGroupsDir(){
+    try {
+        QString homeDir = QDir::homePath();
+        QDir groupsDir(homeDir + QDir::separator() + "groups");
+
+        // Remove all the files in the directory
+        QFileInfoList fileList = groupsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
+        for (const QFileInfo& fileInfo : fileList) {
+            if (!fileInfo.dir().remove(fileInfo.fileName())) {
+                QString message = "Could not remove file " + fileInfo.absoluteFilePath();
+                QString code = "NO_GROUP_FILE";
+                throw ExceptionHandler(message, code);
+            }
+        }
+
+        // Remove the directory itself
+        if (!groupsDir.rmdir(".")) {
+            QString message = "Could not remove directory " + groupsDir.absolutePath();
+            QString code = "NO_GROUP_DIRECTORY";
+            throw ExceptionHandler(message, code);
+        }
+    } catch (const ExceptionHandler& e) {
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        // Re-throw Here if needed
+        // throw;
+    } catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }

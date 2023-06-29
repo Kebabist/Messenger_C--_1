@@ -3,6 +3,12 @@
 
 #include <QWidget>
 #include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QDir>
+#include <QFile>
+#include <QByteArray>
+#include <QStandardPaths>
 #include"group.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
@@ -23,7 +29,7 @@ public:
     void getGroupchats(Client &c , QString dst , QString date);
     void sendmessageGroup(QString desiredgroup , QString text , Client &c);
     void display();
-
+    void RemoveGroupsDir();
 
     //setter function
     void setGroupsList(const Group& newgroup );
