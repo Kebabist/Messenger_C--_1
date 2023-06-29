@@ -13,14 +13,19 @@
 //}
 
 //Group class Constructor
-Group::Group(QString title, const QString& name, const QMap<QString, QString>& messages)
-    : Group_title(title), Group_name(name), Group_messages(messages)
+Group::Group(QString title, const QString& name)
+    : Group_title(title), Group_name(name)
 {}
 
 //copy constructor
 Group::Group(const Group& other)
     : Group_title(other.Group_title), Group_name(other.Group_name), Group_messages(other.Group_messages)
 {}
+
+//setter
+void Group::setGroupmessages(QString date , QString  src , QString message){
+    Group_messages.insert(date, QPair<QString, QString>(src, message));
+}
 
 //copy assignment operator
 Group& Group::operator=(const Group& other)
@@ -43,6 +48,7 @@ QString Group::getGroupname() const{
 QString Group::getGrouptitle() const{
     return Group_title;
 }
-QMap<QString, QString> Group::getGroupmessages() const{
+
+const QMultiMap<QString, QPair<QString, QString>>& Group::getGroupmessages() const  {
     return Group_messages;
 }

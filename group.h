@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QString>
-#include <QList>
+#include <qmap.h>
 
 //namespace Ui {
 //class Group;
@@ -15,8 +15,8 @@ class Group : public QWidget
     Q_OBJECT
 
 public:
-//    explicit Group(QWidget *parent = nullptr);
-    Group(QString title , const QString& name , const QMap<QString, QString>& messages = {});
+    //    explicit Group(QWidget *parent = nullptr);
+    Group(QString title , const QString& name );
     Group(const Group& other);
     Group& operator=(const Group& other);
     ~Group();
@@ -24,13 +24,22 @@ public:
     //getter
     QString getGrouptitle() const;
     QString getGroupname() const;
-    QMap<QString, QString> getGroupmessages() const;
+    const QMultiMap<QString, QPair<QString, QString>> &getGroupmessages() const;
+
+    //overloading
+    bool operator==(const Group& other) const {
+        return Group_name == other.Group_name;
+    }
+
+
+    //setter
+    void setGroupmessages(QString  , QString   , QString );
 
 private:
     QString Group_title;
     QString Group_name;
-    QMap<QString, QString> Group_messages;
-//    Ui::Group *ui;
+    QMultiMap<QString, QPair<QString, QString>> Group_messages;
+    //    Ui::Group *ui;
 };
 
 
