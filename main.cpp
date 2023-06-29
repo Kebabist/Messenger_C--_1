@@ -47,24 +47,28 @@ int main(int argc, char *argv[])
 
 QApplication app(argc, argv);
 //GroupRepository gr;
-Client cl("kebab","6kebab","kebab","kebab");
+//Client cl("kebab","6kebab","kebab","kebab");
 //cl.Logout("kebab","6kebab");
 //cl.Login("kebab","6kebab");
+//cl.WriteClient();
+Client cl;
+cl.ReadClient();
+QPair<QString , QString> response =cl.Login();
 //gr.createGroup(cl , "nmdvaghean9");
 
 //QThread::msleep(20000);
 //gr.getGroupchats(cl,"nmdvaghean9","");
 //gr.display();
 
-GroupRepository gr;
-Group g("Group1","lmao");
+//GroupRepository gr;
+//Group g("Group1","lmao");
 
-gr.createGroup(cl , "nah123123");
-gr.joinGroup(cl , "nah123123");
-gr.sendmessageGroup("lmao", "just sent a message" , cl);
-gr.getGrouplist(cl);
-//gr.getGroupchats(cl,"lmao","20230628212852");
-gr.display();
+//gr.createGroup(cl , "nah123123");
+//gr.joinGroup(cl , "nah123123");
+//gr.sendmessageGroup("lmao", "just sent a message" , cl);
+//gr.getGrouplist(cl);
+////gr.getGroupchats(cl,"lmao","20230628212852");
+//gr.display();
 
 
 //gr.display();
