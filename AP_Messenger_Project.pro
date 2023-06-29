@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     channel.cpp \
+    channelrepository.cpp \
     client.cpp \
     exceptionhandler.cpp \
     group.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
 
 HEADERS += \
     channel.h \
+    channelrepository.h \
     client.h \
     exceptionhandler.h \
     group.h \
