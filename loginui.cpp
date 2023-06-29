@@ -23,7 +23,7 @@ void loginui::on_submitbutton_clicked()
     QString password = ui->passwordLE->text();
     Client client(username , password);
     try {
-        QPair<QString , QString> response = client.Login(username , password);
+        QPair<QString , QString> response = client.Login();
         if (response.second != "You are already logged in!"){
         QMessageBox::information(this, "Information", response.second);
         }else {

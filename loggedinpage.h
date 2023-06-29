@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "client.h"
+#include <qlistwidget.h>
 
 namespace Ui {
 class loggedinpage;
@@ -14,11 +15,12 @@ class loggedinpage : public QWidget
 
 public:
     explicit loggedinpage(Client &client , QWidget *parent = nullptr);
+    void addtopage(const QList<QString>&);
     ~loggedinpage();
 
 private slots:
     void on_toggleview_clicked(bool checked);
-
+    void handleListItemClicked(QListWidgetItem* item);
     void on_logoutbutton_clicked();
 
 signals:

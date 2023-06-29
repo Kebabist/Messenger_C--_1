@@ -16,8 +16,8 @@ public:
     Client(QString, QString);//object for login
   
     QPair<QString, QString> Signup();
-    QPair<QString , QString> Login(QString, QString);
-    QPair<QString , QString> Logout(QString, QString);
+    QPair<QString , QString> Login();
+    QPair<QString , QString> Logout();
 
     //getter Merhods
     QString getToken();
