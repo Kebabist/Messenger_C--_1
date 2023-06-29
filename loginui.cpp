@@ -29,11 +29,10 @@ void loginui::on_submitbutton_clicked()
         }else {
             throw response.second;
         }
-        emit loginApproved();
+        emit loginApproved(client);
     }catch (const HttpHandlerException &e) {
         QMessageBox::critical(this, "Error", e.message());
     }catch(QString f){
         QMessageBox::critical(this, "Error", f);
     }
 }
-

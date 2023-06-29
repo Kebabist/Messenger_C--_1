@@ -17,10 +17,12 @@ public:
   
     QPair<QString, QString> Signup();
     QPair<QString , QString> Login(QString, QString);
-    void Logout(QString, QString);
+    QPair<QString , QString> Logout(QString, QString);
 
     //getter Merhods
     QString getToken();
+    QString getUsername();
+    QString getPassword();
 
     //setter Methods
     void setToken(QString);

@@ -1,13 +1,16 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include <qmessagebox.h>
 
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+
 {
     ui->setupUi(this);
+
+    //connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 
     // show the main window
     show();
@@ -26,11 +29,18 @@ void MainWindow::handleSignupApproved()
 }
 
 //handle login signal
-void MainWindow::handleloginApproved()
+void MainWindow::handleloginApproved(Client& client)
 {
+
     login->close(); // Close the login page
-    loggedin = new loggedinpage(nullptr);
+    loggedin = new loggedinpage(client);
     loggedin->show();
+    connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
+}
+
+void MainWindow::handleLogoutClicked()
+{
+    loggedin->close(); // Close the loggedin page
 
 }
 

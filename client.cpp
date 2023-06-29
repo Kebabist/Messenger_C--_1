@@ -20,11 +20,18 @@ Client::Client(QString username, QString password){
 QString Client::getToken(){
     return token;
 }
+QString Client::getUsername(){
+    return username;
+}
+QString Client::getPassword(){
+    return password;
+}
 
 //setter Methods
 void Client::setToken(QString token){
     this->token = token;
 }
+
 
 //lets the user signup in messenger
 QPair<QString, QString> Client::Signup(){
@@ -82,25 +89,26 @@ QPair<QString , QString> Client::Login(QString username, QString password) {
 }
 
 //lets the user logout of messenger client
-void Client::Logout(QString, QString){
+QPair<QString , QString> Client::Logout(QString, QString){
         QString arguments = "username="+this->username+"&password="+this->password;
         urlmaker login_url("logout" , arguments);
         const QString url = login_url.generate();
         HttpHandler http;
         QPair<QJsonObject, bool> response = http.makeRequest(url);
-            if (response.second) {
+        QString message;
+        QString code;
+        if (response.second) {
                 QJsonObject jsonObj = response.first;
-
                 QString token = jsonObj.value("token").toString();
                 qDebug() << "token:" << token;
                 if (jsonObj.contains("message")) {
-                    QString message = jsonObj.value("message").toString();
+                    message = jsonObj.value("message").toString();
                     qDebug() << "Message:" << message;
                 } else {
                     qDebug() << "Message key not found in JSON object";
                 }
                 if (jsonObj.contains("code")) {
-                    QString code = jsonObj.value("code").toString();
+                    code = jsonObj.value("code").toString();
                     qDebug() << "Code:" << code;
                 } else {
                     qDebug() << "Code key not found in JSON object";
@@ -108,5 +116,6 @@ void Client::Logout(QString, QString){
             } else {
                 qDebug() << "Error: Request was not successful";
             }
+            return qMakePair(code , message);
 }
 

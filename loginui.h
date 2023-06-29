@@ -2,6 +2,7 @@
 #define LOGINUI_H
 
 #include <QWidget>
+#include "client.h"
 
 namespace Ui {
 class loginui;
@@ -19,8 +20,8 @@ private slots:
     //submit button clicl
     void on_submitbutton_clicked();
 signals:
-    //correct credentials signal (sent to mainwindow)
-    void loginApproved();
+//correct credentials signal (sent to mainwindow)
+    void loginApproved(Client &);
 private:
     Ui::loginui *ui;
 };

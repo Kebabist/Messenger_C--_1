@@ -5,6 +5,8 @@
 #include "signupui.h"
 #include "loginui.h"
 #include "loggedinpage.h"
+#include "Client.h"
+#include "exceptionhandler.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,7 +27,8 @@ private slots:
 
     //handle the pages signals
     void handleSignupApproved();
-    void handleloginApproved();
+    void handleloginApproved(Client& client);
+    void handleLogoutClicked();
 
 
 private:
