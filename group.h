@@ -16,6 +16,7 @@ class Group : public QWidget
 
 public:
     //    explicit Group(QWidget *parent = nullptr);
+    Group();
     Group(QString title , const QString& name );
     Group(const Group& other);
     Group& operator=(const Group& other);

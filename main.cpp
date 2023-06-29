@@ -14,11 +14,11 @@
 
 int main(int argc, char *argv[]){
 QApplication app(argc, argv);
-GroupRepository gr;
-gr.RemoveGroupsDir();
+//GroupRepository gr;
+//gr.RemoveGroupsDir();
 //Client cl("kebab","6kebab","kebab","kebab");
-//cl.Logout("kebab","6kebab");
-//cl.Login("kebab","6kebab");
+//cl.Login();
+//cl.Logout();
 //cl.WriteClient();
 //HttpHandler http;
 //Client cl("kebab11dsf11","1111sdfkebab","kebab","kebab");

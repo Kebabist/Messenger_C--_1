@@ -11,6 +11,9 @@
 //{
 //    delete ui;
 //}
+//default constructor
+Group::Group()
+{}
 
 //Group class Constructor
 Group::Group(QString title, const QString& name)
