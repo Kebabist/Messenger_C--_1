@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QThread>
 #include "mainwindow.h"
 #include "httphandler.h"
 #include "urlmaker.h"
@@ -51,11 +52,14 @@ QApplication app(argc, argv);
 //cl.Logout("kebab","6kebab");
 //cl.Login("kebab","6kebab");
 //cl.WriteClient();
-Client cl;
-cl.ReadClient();
-QPair<QString , QString> response =cl.Login();
-//gr.createGroup(cl , "nmdvaghean9");
+Client cl("kebab11dsf11","1111sdfkebab","kebab","kebab");
+//cl.Signup();
+cl.RemoveClientDir();
+//cl.ReadClient();
+//QPair<QString , QString> response =cl.Login();
 
+//cl.Logout();
+//gr.createGroup(cl , "nmdvaghean9");
 //QThread::msleep(20000);
 //gr.getGroupchats(cl,"nmdvaghean9","");
 //gr.display();

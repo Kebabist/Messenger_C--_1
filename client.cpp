@@ -51,11 +51,13 @@ QPair<QString, QString> Client::Signup(){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             code = jsonObj.value("code").toString();
-            if (code == "200"){
+            if (message ==  "Signed Up Successfully" && code == "200"){
                 message = jsonObj.value("message").toString();
+                qDebug() <<message;
                 //Write to Json file
-
-            }else if (code == "204") {
+                WriteClient();
+            }
+            else if (code == "204") {
                 QString message = jsonObj.value("message").toString();
                 qDebug() <<message;
                 //user already exists implement with gui
@@ -86,13 +88,13 @@ QPair<QString , QString> Client::Login() {
                         QString token = jsonObj.value("token").toString();
                         setToken(token);
                         qDebug()<<"token assigned"<< token;
+                        WriteClient();
                     }
                 }
     }
     else {
         qDebug() << "Error: Request was not successful";
     }
-    WriteClient();
     return qMakePair(code , message);
 }
 
@@ -108,7 +110,7 @@ void Client::Logout(){
                 QJsonObject jsonObj = response.first;
 
                 QString token = jsonObj.value("token").toString();
-                qDebug() << "token:" << token;
+                qDebug() << "token:" << this->token;
                 if (jsonObj.contains("message")) {
                     QString message = jsonObj.value("message").toString();
                     qDebug() << "Message:" << message;
@@ -121,9 +123,11 @@ void Client::Logout(){
                 } else {
                     qDebug() << "Code key not found in JSON object";
                 }
-            } else {
-                qDebug() << "Error: Request was not successful";
             }
+            else {
+                qDebug() << "Error: Request was not successful";
+        }
+    RemoveClientDir();
 }
 
 //Writes Client data to a file
@@ -177,11 +181,11 @@ void Client::WriteClient(){
                     // Throw an exception if the file could not be opened for writing
                     QString message = "Could not open file " + filename + " for writing";
                     QString code = "FILE_OPEN_ERROR";
-                    throw HttpHandlerException(message, code);
+                    throw ExceptionHandler(message, code);
                 }
             }
         }
-            catch (const HttpHandlerException& e) {
+            catch (const ExceptionHandler& e) {
                 // Handle the exception
                 qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
                 //re-throw here if it's needed to handle the exception further up the call stack
@@ -203,10 +207,11 @@ void Client::ReadClient() {
                 filters << "*.json";
                 QFileInfoList fileInfoList = clientDir.entryInfoList(filters, QDir::Files);
                 if (fileInfoList.isEmpty()) {
-                    // Throw an exception if no client files were found
+//                     Throw an exception if no client files were found
                     QString message = "No client files found in directory " + clientDir.absolutePath();
                     QString code = "NO_CLIENT_FILES";
-                    throw HttpHandlerException(message, code);
+                    throw ExceptionHandler(message, code);
+                return;
                 }
                 QString filename = fileInfoList.first().absoluteFilePath();
                 // Read the client data from the file
@@ -223,11 +228,54 @@ void Client::ReadClient() {
                     file.close();
                 }
                 qDebug() << "Read!";
-            } catch (const HttpHandlerException& e) {
+            } catch (const ExceptionHandler& e) {
                 // Handle the exception
                 qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
                 // Re-throw the exception to propagate it further up the call stack
-                throw;
+//                throw;
+            } catch (...) {
+                // Handle any other exceptions
+                qDebug() << "Unknown error occurred";
+            }
+}
+
+//removes client directory & its files after logout
+void Client::RemoveClientDir() {
+            try {
+                QString homeDir = QDir::homePath();
+                QDir clientDir(homeDir + QDir::separator() + "client");
+                QString filename = clientDir.filePath(username + ".json");
+
+                QFile file(filename);
+                if (file.exists()) {
+                    if (!file.remove()) {
+                    throw ExceptionHandler("Could not remove client file", filename);
+                    }
+                }
+                QDir dir = clientDir.absolutePath();
+                if (dir.exists()) {
+                    QFileInfoList fileList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
+                    for (const QFileInfo& fileInfo : fileList) {
+                    if (!fileInfo.dir().remove(fileInfo.fileName())) {
+                        QString message = "Could not remove file" + fileInfo.absoluteFilePath();
+                        QString code = "NO_CLIENT_FILE";
+                        throw ExceptionHandler(message, code);
+                    }
+                }
+                }
+                QString dirname = dir.dirName();
+                dir.cdUp();
+                if (!dir.rmdir(dirname)) {
+                    QString message = "Could not remove directory"+ dir.absolutePath() + QDir::separator() + dirname;
+                    QString code = "NO_CLIENT_DIRECTORY";
+                    throw ExceptionHandler(message, code);
+                }
+            }
+            catch (const ExceptionHandler& e) {
+                // Handle the exception
+                qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+                // Re-throw Here if needed
+                //                throw;
             } catch (...) {
                 // Handle any other exceptions
                 qDebug() << "Unknown error occurred";

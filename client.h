@@ -21,6 +21,7 @@ public:
     void Logout();
     void WriteClient();
     void ReadClient();
+    void RemoveClientDir();
 
     //getter Merhods
     QString getToken();
