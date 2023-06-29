@@ -27,6 +27,12 @@ void Group::setGroupmessages(QString date , QString  src , QString message){
     Group_messages.insert(date, QPair<QString, QString>(src, message));
 }
 
+
+//overloading
+bool Group::operator==(const Group& other) const {
+    return Group_name == other.Group_name;
+}
+
 //copy assignment operator
 Group& Group::operator=(const Group& other)
 {

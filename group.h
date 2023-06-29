@@ -27,9 +27,7 @@ public:
     const QMultiMap<QString, QPair<QString, QString>> &getGroupmessages() const;
 
     //overloading
-    bool operator==(const Group& other) const {
-        return Group_name == other.Group_name;
-    }
+    bool operator==(const Group& other) const;
 
 
     //setter
