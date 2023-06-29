@@ -12,18 +12,22 @@ class Client
     QString lastname;
     QString token;
 public:
+    Client();
     Client(QString, QString , QString , QString);
-  
-    void Signup();
-    void Login(QString, QString);
-    void Logout(QString, QString);
+    Client(QString, QString);//login constructor
+
+    QPair<QString, QString> Signup();
+    QPair<QString , QString> Login();
+    void Logout();
+    void WriteClient();
+    void ReadClient();
+    void RemoveClientDir();
 
     //getter Merhods
     QString getToken();
 
     //setter Methods
     void setToken(QString);
-
 };
 
 #endif // CLIENT_H

@@ -10,6 +10,7 @@ private:
     QString token;
     QString arguments;
 public:
+    urlmaker();
     urlmaker(QString , QString , QString);
     urlmaker(QString , QString);
     const QString generate();

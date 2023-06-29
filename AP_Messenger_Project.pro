@@ -1,6 +1,6 @@
 QT       += core gui
 QT       += network
-
+QT       += core
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -13,6 +13,7 @@ SOURCES += \
     client.cpp \
     exceptionhandler.cpp \
     group.cpp \
+    grouprepository.cpp \
     httphandler.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
     client.h \
     exceptionhandler.h \
     group.h \
+    grouprepository.h \
     httphandler.h \
     mainwindow.h \
     urlmaker.h
@@ -29,6 +31,7 @@ HEADERS += \
 FORMS += \
     exceptionhandler.ui \
     group.ui \
+    grouprepository.ui \
     mainwindow.ui
 
 # Default rules for deployment.
