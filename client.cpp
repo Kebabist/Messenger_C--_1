@@ -65,15 +65,15 @@ QPair<QString , QString> Client::Login(QString username, QString password) {
         QJsonObject jsonObj = response.first;
         message = jsonObj.value("message").toString();
         code = jsonObj.value("code").toString();
-//        if (jsonObj.contains("message") && jsonObj.contains("code")) {
+        if (jsonObj.contains("message") && jsonObj.contains("code")) {
             QString message = jsonObj.value("message").toString();
             QString code = jsonObj.value("code").toString();
-//            if(message ==  "Logged in Successfully" && code == "200"){
-//                QString token = jsonObj.value("token").toString();
-//                setToken(token);
-//                qDebug()<<"token assigned"<< token;
-//            }
-//        }
+            if(message ==  "Logged in Successfully" && code == "200"){
+                QString token = jsonObj.value("token").toString();
+                setToken(token);
+                qDebug()<<"token assigned"<< token;
+            }
+        }
     } else {
         qDebug() << "Error: Request was not successful";
     }
