@@ -30,6 +30,8 @@ public:
     void sendmessageGroup(QString desiredgroup , QString text , Client &c);
     void display();
     void RemoveGroupsDir();
+    void WriteGroupsmessages();
+    void ReadGroupsmessages();
 
     //setter function
     void setGroupsList(const Group& newgroup );

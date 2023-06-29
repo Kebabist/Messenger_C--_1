@@ -1,6 +1,22 @@
 #include "grouprepository.h"
 #include "exceptionhandler.h"
 #include <QDateTime>
+#include <QWidget>
+#include <QList>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QDir>
+#include <QFile>
+#include <QByteArray>
+#include <QStandardPaths>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include "exceptionhandler.h"
+#include"group.h"
+#include "httpHandler.h"
+#include "urlmaker.h"
+#include "client.h"
 
 //#include "Ui_grouprepository.h"
 
@@ -206,6 +222,91 @@ void GroupRepository::display() {
         }
     }
 }
+
+//Writes Client data to a file
+void GroupRepository::WriteGroupsmessages() {
+    // Create a file for each group and add their messages to them
+    QString filename;
+    QString homeDir = QDir::homePath();
+    QDir clientDir(homeDir + QDir::separator() + "groups");
+    if (!clientDir.exists()) {
+        clientDir.mkpath(".");
+    }
+    qDebug() << "made file";
+    for (const auto& g : Groups_list) {
+        filename = clientDir.filePath(g.getGroupname() + ".json");
+        QFile file(filename);
+        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+            QJsonArray messageArray;
+            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = g.getGroupmessages().constBegin(); it != g.getGroupmessages().constEnd(); ++it) {
+                QJsonObject messageObject;
+                messageObject["timestamp"] = it.key();
+                messageObject["src"] = it.value().first;
+                messageObject["message"] = it.value().second;
+                messageArray.append(messageObject);
+            }
+            QJsonDocument messageDoc(messageArray);
+            QByteArray messageData = messageDoc.toJson();
+            file.write(messageData);
+            file.close();
+        } else {
+            qDebug() << "Failed to open file " << filename << " for writing";
+        }
+    }
+}
+
+//reades Client data from a file
+void GroupRepository::ReadGroupsmessages() {
+    try {
+        // Create a directory for the group files, if it doesn't already exist
+        QString homeDir = QDir::homePath();
+        QDir groupsDir(homeDir + QDir::separator() + "groups");
+        if (!groupsDir.exists()) {
+            groupsDir.mkpath(".");
+        }
+
+        // Get a list of all the JSON files in the directory
+        QStringList filters;
+        filters << "*.json";
+        QStringList groupFiles = groupsDir.entryList(filters, QDir::Files);
+
+        // Read each group file and create a Group object from its data
+        for (const QString& groupFile : groupFiles) {
+            QString groupName = groupFile.left(groupFile.lastIndexOf(".json"));
+            Group group("", groupName);
+
+            QString filename = groupsDir.filePath(groupFile);
+            QFile file(filename);
+
+            if (file.open(QIODevice::ReadOnly)) {
+                QJsonDocument groupDoc = QJsonDocument::fromJson(file.readAll());
+                QJsonArray messageArray = groupDoc.array();
+
+                for (int i = 0; i < messageArray.size(); ++i) {
+                    QJsonObject messageObj = messageArray.at(i).toObject();
+                    QString timestamp = messageObj.value("timestamp").toString();
+                    QString message = messageObj.value("message").toString();
+                    QString src = messageObj.value("src").toString();
+                    group.setGroupmessages(src, message, timestamp);
+                }
+
+                Groups_list.append(group);
+                file.close();
+            }
+            else {
+                // Throw an exception if the file could not be opened for reading
+                QString message = "Could not open file " + filename + " for reading";
+                QString code = "FILE_OPEN_ERROR";
+                throw ExceptionHandler(message, code);
+            }
+        }
+    }
+    catch (const ExceptionHandler& e) {
+        // Handle any exceptions thrown during file reading
+        qDebug() << "Error reading group files: " << e.message() << " (" << e.code() << ")";
+    }
+}
+
 
 //removes client directory & its files after logout
 void GroupRepository::RemoveGroupsDir(){
