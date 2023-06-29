@@ -24,10 +24,10 @@
 //};
 
 //handles exception during program runtime
-class HttpHandlerException : public QException
+class ExceptionHandler : public QException
 {
 public:
-    HttpHandlerException(const QString &message, const QString &code);
+    ExceptionHandler(const QString &message, const QString &code);
     void raise() const override;
     QException *clone() const override;
 
