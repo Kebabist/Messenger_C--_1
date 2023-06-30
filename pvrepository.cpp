@@ -27,41 +27,49 @@ PvRepository::~PvRepository()
 {}
 
 //setter function
-void PvRepository::setPvList(const Pv& newPv ){
-    if (!Pvs_list.contains(newPv)) {
-        Pvs_list.append(newPv);
+void PvRepository::setPvsList(std::unique_ptr<Pv> newpv) {
+    bool found = false;
+    for (const auto& PvPtr : Pvs_list) {
+        if (PvPtr->getPvname() == newpv->getPvname()) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        Pvs_list.emplace_back(std::move(newpv));
     }
 }
 
 //getter function
-const QList<Pv>& PvRepository::getPv_list() const{
+const std::vector<std::unique_ptr<Pv>>& PvRepository::getPv_list() const {
     return Pvs_list;
 }
 
+
 //get list of joined Pvs
-void PvRepository::getPvlist(Client &c){
+void PvRepository::getPvlist(QString token){
     HttpHandler http;
-    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
-    QString arguments;
+    QString arguments="";
     urlmaker newurl("getuserlist", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
-            //QString code = jsonObj.value("code").toString();
             for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
                 // Check if the current key starts with "block"
                 QString key = it.key();
-                qDebug() << jsonObj;
                 if (key.startsWith("block")) {
                     QJsonObject blockObject = it.value().toObject();
                     if (blockObject.contains("src")) {
-                        QString PvName = blockObject.value("src").toString();  //check the api response
-                        // Process the PvName
-                        Pv p(PvName);
-                        setPvList(p);
-                        qDebug() << "Pv Name:" << PvName;
+                        QString pvName = blockObject.value("src").toString();
+
+                        // Create the Pv object using std::make_unique
+                        std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
+
+                        // Add the Pv object to the list using the unique_ptr
+                        setPvsList(std::move(pv));
+                        qDebug() << "Pv Name:" << pvName;
                     }
                 }
             }
@@ -72,10 +80,9 @@ void PvRepository::getPvlist(Client &c){
 }
 
 //send message in a Pv chat
-void PvRepository::sendmessagePv(QString desiredPv , QString text , Client &c){
+void PvRepository::sendmessagePv(QString token, QString pvName , QString message){
     HttpHandler http;
-    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
-    QString arguments = "dst="+desiredPv+"&"+"body="+text;
+    QString arguments = "dst="+pvName+"&"+"body="+message;
     urlmaker newurl("sendmessageuser", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -83,10 +90,10 @@ void PvRepository::sendmessagePv(QString desiredPv , QString text , Client &c){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
-            if (code == "200"){
+            if (code == "200"){ //handled by UI (every time we send a message we call getpvmessage method and get the rest of the messages from the saerver
                 QString message = jsonObj.value("message").toString();
                 qDebug() <<message;
-            }else if (code == "204") {
+            }else if (code != "200") { //handled by UI
                 QString message = jsonObj.value("message").toString();
                 qDebug()  <<message << "Error code : " << code;
             }
@@ -94,12 +101,36 @@ void PvRepository::sendmessagePv(QString desiredPv , QString text , Client &c){
     }
 }
 
+//function that checks the state of Messages multimap and returns the latest time stamp available in it
+const QString PvRepository::findLatestdate(QString pvName) const {
+    for (auto& pvPtr : Pvs_list) {
+        if (pvPtr->getPvname() == pvName) {
+            QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getPvmessages();
+            if (!temp.empty()) {
+                const QString lastdate = temp.lastKey();
+                return lastdate;
+            }
+        }
+    }
+    return "";
+}
+
 
 //get Pv messages
-void PvRepository::getPvchats(Client &c , QString dst , QString date){
+void PvRepository::getPvchats(QString token, QString pvName , QString date){
     HttpHandler http;
-    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
-    QString arguments = "dst="+dst;//+"&"+"date="+date;
+    QString arguments;
+    QPair<Pv*, QString> flag(nullptr, "");
+    if (date !=""){
+        arguments = "dst="+pvName+"&"+"date="+date;
+    }
+    else{
+        QString lastdate = findLatestdate(pvName);
+        if(flag.second != ""){
+            arguments = "dst="+pvName+"&"+"date="+lastdate;
+        }
+        else arguments = "dst="+pvName;
+    }
     urlmaker newurl("getuserchats", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -121,9 +152,9 @@ void PvRepository::getPvchats(Client &c , QString dst , QString date){
                             QString Date = blockObject.value("date").toString();
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& pv : Pvs_list) {
-                                if (pv.getPvname() == dst) {
-                                    pv.setPvmessages(src,body,strDate);
+                            for (auto& pvPtr : Pvs_list) {
+                                if (pvPtr->getPvname() == pvName) {
+                                    pvPtr->setPvmessages(src, body, strDate);
                                 }
                             }
                         }
@@ -134,41 +165,22 @@ void PvRepository::getPvchats(Client &c , QString dst , QString date){
     }
 }
 
-
-
-void PvRepository::display() {
-    qDebug() << "Display called";
-    for ( auto &pv : this->Pvs_list) {
-        if (pv.getPvname() == "kebab3") {
-            QMultiMap<QString, QPair<QString, QString>> map = pv.getPvmessages();
-            if (map.size() == 0) {
-                qDebug() << "No messages in Pv " << pv.getPvname();
-            } else {
-                QMultiMapIterator<QString, QPair<QString, QString>> i(map);
-                while (i.hasNext()) {
-                    i.next();
-                    qDebug() << "Key:" << i.key() << "Values:" << i.value().first << i.value().second;
-                }
-            }
-        }
-    }
-}
-
-//Writes Client data to a file
+//Writes Pv data to a file
 void PvRepository::WritePvsmessages() {
     // Create a file for each Pv and add their messages to them
     QString filename;
     QString homeDir = QDir::homePath();
-    QDir PvDir(homeDir + QDir::separator() + "Pv");
-    if (!PvDir.exists()) {
-        PvDir.mkpath(".");
+    QDir clientDir(homeDir + QDir::separator() + "pvs");
+    if (!clientDir.exists()) {
+        clientDir.mkpath(".");
     }
-    for (const auto& p : Pvs_list) {
-        filename = PvDir.filePath(p.getPvname() + ".json");
+    for (auto& pvPtr : Pvs_list){
+        filename = clientDir.filePath(pvPtr->getPvname() + ".json");
         QFile file(filename);
+        qDebug() << "madefile with name :" << filename;
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
             QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = p.getPvmessages().constBegin(); it != p.getPvmessages().constEnd(); ++it) {
+            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getPvmessages().constBegin(); it != pvPtr->getPvmessages().constEnd(); ++it) {
                 QJsonObject messageObject;
                 messageObject["timestamp"] = it.key();
                 messageObject["src"] = it.value().first;
@@ -185,40 +197,44 @@ void PvRepository::WritePvsmessages() {
     }
 }
 
-//reades Client data from a file
+//reades Pv data from a file
 void PvRepository::ReadPvsmessages() {
     try {
         // Create a directory for the Pv files, if it doesn't already exist
         QString homeDir = QDir::homePath();
-        QDir PvsDir(homeDir + QDir::separator() + "Pv");
-        if (!PvsDir.exists()) {
-            PvsDir.mkpath(".");
+        QDir pvsDir(homeDir + QDir::separator() + "pvs");
+        if (!pvsDir.exists()) {
+            pvsDir.mkpath(".");
         }
 
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
-        QStringList PvFiles = PvsDir.entryList(filters, QDir::Files);
+        QStringList pvFiles = pvsDir.entryList(filters, QDir::Files);
 
-        // Read each Pv file and create a Pv object from its data
-        for (const QString& PvFile : PvFiles) {
-            QString PvName = PvFile.left(PvFile.lastIndexOf(".json"));
-            Pv p(PvName);
-            QString filename = PvsDir.filePath(PvFile);
+        // Read each pv file and create a Pv object from its data
+        for (const QString& pvFile : pvFiles) {
+            QString pvName = pvFile.left(pvFile.lastIndexOf(".json"));
+            // Create the Pv object using std::make_unique
+            std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
+
+            QString filename = pvsDir.filePath(pvFile);
             QFile file(filename);
 
             if (file.open(QIODevice::ReadOnly)) {
-                QJsonDocument PvDoc = QJsonDocument::fromJson(file.readAll());
-                QJsonArray messageArray = PvDoc.array();
+                QJsonDocument pvDoc = QJsonDocument::fromJson(file.readAll());
+                QJsonArray messageArray = pvDoc.array();
 
                 for (int i = 0; i < messageArray.size(); ++i) {
                     QJsonObject messageObj = messageArray.at(i).toObject();
                     QString timestamp = messageObj.value("timestamp").toString();
                     QString message = messageObj.value("message").toString();
                     QString src = messageObj.value("src").toString();
-                    p.setPvmessages(src, message, timestamp);
+                    pv->setPvmessages(src, message, timestamp);
                 }
-                setPvList(p);
+
+                // Add the Pv object to the list using the unique_ptr
+                setPvsList(std::move(pv));
                 file.close();
             }
             else {
@@ -231,31 +247,31 @@ void PvRepository::ReadPvsmessages() {
     }
     catch (const ExceptionHandler& e) {
         // Handle any exceptions thrown during file reading
-        qDebug() << "Error reading Pv files: " << e.message() << " (" << e.code() << ")";
+        qDebug() << "Error reading pv files: " << e.message() << " (" << e.code() << ")";
     }
 }
 
 
-//removes client directory & its files after logout
+//removes Pv directory & its files after logout
 void PvRepository::RemovePvsDir(){
     try {
         QString homeDir = QDir::homePath();
-        QDir PvsDir(homeDir + QDir::separator() + "Pv");
+        QDir pvsDir(homeDir + QDir::separator() + "pvs");
 
         // Remove all the files in the directory
-        QFileInfoList fileList = PvsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
+        QFileInfoList fileList = pvsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
         for (const QFileInfo& fileInfo : fileList) {
             if (!fileInfo.dir().remove(fileInfo.fileName())) {
                 QString message = "Could not remove file " + fileInfo.absoluteFilePath();
-                QString code = "NO_Pv_FILE";
+                QString code = "NO_PV_FILE";
                 throw ExceptionHandler(message, code);
             }
         }
 
         // Remove the directory itself
-        if (!PvsDir.rmdir(".")) {
-            QString message = "Could not remove directory " + PvsDir.absolutePath();
-            QString code = "NO_Pv_DIRECTORY";
+        if (!pvsDir.rmdir(".")) {
+            QString message = "Could not remove directory " + pvsDir.absolutePath();
+            QString code = "NO_PV_DIRECTORY";
             throw ExceptionHandler(message, code);
         }
     } catch (const ExceptionHandler& e) {
@@ -266,5 +282,24 @@ void PvRepository::RemovePvsDir(){
     } catch (...) {
         // Handle any other exceptions
         qDebug() << "Unknown error occurred";
+    }
+}
+
+//Test Display function
+void PvRepository::display() {
+    qDebug() << "Display called";
+    for (auto& pvPtr : Pvs_list) {
+        if (pvPtr->getPvname() == "nah123123") {
+            QMultiMap<QString, QPair<QString, QString>> map = pvPtr->getPvmessages();
+            if (map.size() == 0) {
+                qDebug() << "No messages in pv " << pvPtr->getPvname();
+            } else {
+                QMultiMapIterator<QString, QPair<QString, QString>> i(map);
+                while (i.hasNext()) {
+                    i.next();
+                    qDebug() << "Key:" << i.key() << "Values:" << i.value().first << i.value().second;
+                }
+            }
+        }
     }
 }
