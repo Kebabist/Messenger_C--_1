@@ -5,7 +5,7 @@ Channel::Channel()
 {}
 
 //Channel class Constructor
-Channel::Channel(const QString& name)
+Channel::Channel(QString name)
     : Channel_name(name)
 {}
 
@@ -17,12 +17,6 @@ Channel::Channel(const Channel& other)
 //setter
 void Channel::setChannelmessages(QString src , QString  message , QString date){
     Channel_messages.insert(date, QPair<QString, QString>(src, message));
-}
-
-
-//overloading
-bool Channel::operator==(const Channel& other) const {
-    return Channel_name == other.Channel_name;
 }
 
 //copy assignment operator

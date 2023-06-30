@@ -5,25 +5,21 @@
 #include <qmap.h>
 
 class Channel
-{
+{    
 public:
+
     Channel();
-    Channel(const QString& name);
+    Channel(QString name);
     Channel(const Channel& other);
     Channel& operator=(const Channel& other);
     ~Channel();
 
     //getter
-    QString getChanneltitle() const;
     QString getChannelname() const;
     const QMultiMap<QString, QPair<QString, QString>> &getChannelmessages() const;
 
-    //overloading
-    bool operator==(const Channel& other) const;
-
-
     //setter
-    void setChannelmessages(QString  , QString   , QString );
+    void setChannelmessages(QString src , QString  message , QString date);
 
 private:
     QString Channel_name;
@@ -31,3 +27,4 @@ private:
 };
 
 #endif // CHANNEL_H
+

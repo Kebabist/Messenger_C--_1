@@ -39,18 +39,6 @@ void GroupRepository::setGroupsList(std::unique_ptr<Group> newgroup) {
         Groups_list.emplace_back(std::move(newgroup));
     }
 }
-//void GroupRepository::setGroupsList(std::unique_ptr<Group> newgroup) {
-//    QList<std::unique_ptr<Group>> tempGroupsList = Groups_list;
-//    try {
-//         if (!Groups_list.contains(*newgroup)) {
-//             Groups_list.append(std::move(newgroup));
-//         }
-//    }
-//    catch (...) {
-//         // Reset the state of Groups_list to its previous value
-//         Groups_list = std::move(tempGroupsList);
-//    }
-//}
 
 //getter function
 const std::vector<std::unique_ptr<Group>>& GroupRepository::getGroup_list() const {

@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
+#include <vector>
 #include"group.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
