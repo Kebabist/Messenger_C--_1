@@ -60,7 +60,7 @@ for (const auto& channelPtr : channelList) {
     qDebug() << "Group Name: " << channelPtr->getChannelname();
     qDebug() << "Messages: ";
     const QMultiMap<QString, QPair<QString, QString>>& messages = channelPtr->getChannelmessages();
-
+}
 //the other person is kebab4
 //the given toke is for kebab3
 PvRepository pvRepo;
@@ -79,7 +79,6 @@ for (const auto& pvPtr : pvList) {
         qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }
 }
-  
+pvRepo.RemovePvsDir();
 return app.exec();
 }
-
