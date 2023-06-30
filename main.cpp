@@ -6,7 +6,6 @@
 #include "httphandler.h"
 #include "urlmaker.h"
 #include "client.h"
-#include "group.h"
 #include "exceptionhandler.h"
 #include "grouprepository.h"
 #include "pvrepository.h"
@@ -118,6 +117,8 @@ pr.RemovePvsDir();
     //newuser.Signup();
 //    Client newuser("kebab", "6kebab", "kebabist", "jooj");
 //    newuser.Signup();
+    MainWindow w;
+    w.show();
     return app.exec();
 }
 
