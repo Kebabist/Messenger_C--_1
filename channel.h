@@ -8,7 +8,7 @@ class Channel
 {
 public:
     Channel();
-    Channel(const QString& name );
+    Channel(const QString& name);
     Channel(const Channel& other);
     Channel& operator=(const Channel& other);
     ~Channel();

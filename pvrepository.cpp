@@ -60,7 +60,7 @@ void PvRepository::getPvlist(Client &c){
                         QString PvName = blockObject.value("src").toString();  //check the api response
                         // Process the PvName
                         Pv p(PvName);
-                        Pvs_list.push_back(p);
+                        setPvList(p);
                         qDebug() << "Pv Name:" << PvName;
                     }
                 }
@@ -118,15 +118,12 @@ void PvRepository::getPvchats(Client &c , QString dst , QString date){
                             QString body = blockObject.value("body").toString();
                             QString src = blockObject.value("src").toString();
                             qDebug() << "message: " << body << " sent by : " << src;
-                            QString messageDate = blockObject.value("date").toString();
-                            QString dateStr = messageDate;
-                            QDateTime date = QDateTime::fromString(dateStr, "yyyy-MM-dd hh:mm:ss");
-                            QString newDateStr = date.toString("yyyyMMddhhmmss");
-                            QString messageSource = blockObject.value("src").toString();
-                            QString messageContent = blockObject.value("body").toString();
+                            QString Date = blockObject.value("date").toString();
+                            QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
+                            QString strDate = date.toString("yyyyMMddhhmmss");
                             for (auto& pv : Pvs_list) {
                                 if (pv.getPvname() == dst) {
-                                    pv.setPvmessages(newDateStr,messageSource,messageContent);
+                                    pv.setPvmessages(src,body,strDate);
                                 }
                             }
                         }
@@ -166,7 +163,6 @@ void PvRepository::WritePvsmessages() {
     if (!PvDir.exists()) {
         PvDir.mkpath(".");
     }
-    qDebug() << Pvs_list.size();
     for (const auto& p : Pvs_list) {
         filename = PvDir.filePath(p.getPvname() + ".json");
         QFile file(filename);
@@ -208,7 +204,6 @@ void PvRepository::ReadPvsmessages() {
         for (const QString& PvFile : PvFiles) {
             QString PvName = PvFile.left(PvFile.lastIndexOf(".json"));
             Pv p(PvName);
-
             QString filename = PvsDir.filePath(PvFile);
             QFile file(filename);
 
@@ -223,8 +218,7 @@ void PvRepository::ReadPvsmessages() {
                     QString src = messageObj.value("src").toString();
                     p.setPvmessages(src, message, timestamp);
                 }
-
-                Pvs_list.append(p);
+                setPvList(p);
                 file.close();
             }
             else {

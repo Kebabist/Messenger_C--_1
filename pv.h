@@ -1,7 +1,6 @@
 #ifndef PV_H
 #define PV_H
 
-
 #include <QWidget>
 #include <QString>
 #include <qmap.h>
@@ -12,7 +11,6 @@ class Pv : public QWidget
     Q_OBJECT
 
 public:
-    //    explicit Pv(QWidget *parent = nullptr);
     Pv();
     Pv(const QString& name );
     Pv(const Pv& other);

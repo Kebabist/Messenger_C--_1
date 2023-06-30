@@ -19,31 +19,30 @@ class GroupRepository : public QWidget
     Q_OBJECT
 
 public:
-//    explicit GroupRepository(QWidget *parent = nullptr);
     GroupRepository();
     ~GroupRepository();
 
-    void createGroup(Client &c , QString);
-    void joinGroup(Client &c ,QString);
-    void getGrouplist(Client &c);
-    void getGroupchats(Client &c , QString dst , QString date);
-    void sendmessageGroup(QString desiredgroup , QString text , Client &c);
-    void display();
+    void createGroup(QString token, QString groupName);
+    void joinGroup(QString token ,QString groupName);
+    void getGrouplist(QString token);
+    void sendmessageGroup(QString token, QString groupName , QString message);
+    const QString findLatestdate(QString groupName) const;
+    void getGroupchats(QString token , QString groupName , QString date);
     void RemoveGroupsDir();
     void WriteGroupsmessages();
     void ReadGroupsmessages();
+    void display();
 
     //setter function
-    void setGroupsList(const Group& newgroup );
+    void setGroupsList(const std::unique_ptr<Group> newgroup);
 
     //getter function
-    const QList<Group>& getGroup_list() const;
-
+    const std::vector<std::unique_ptr<Group>>& getGroup_list() const;
 
 private:
     HttpHandler http;
     urlmaker urlMaker;
-    QList<Group> Groups_list;
+    std::vector<std::unique_ptr<Group>> Groups_list;
 };
 
 #endif // GROUPREPOSITORY_H

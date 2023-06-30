@@ -19,7 +19,6 @@ class PvRepository : public QWidget
     Q_OBJECT
 
 public:
-    //    explicit PvRepository(QWidget *parent = nullptr);
     PvRepository();
     ~PvRepository();
 

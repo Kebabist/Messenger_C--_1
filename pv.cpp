@@ -14,7 +14,7 @@ Pv::Pv(const Pv& other)
 {}
 
 //setter
-void Pv::setPvmessages(QString date , QString  src , QString message){
+void Pv::setPvmessages(QString src , QString  message , QString date){
     Pv_messages.insert(date, QPair<QString, QString>(src, message));
 }
 

@@ -15,7 +15,7 @@ Channel::Channel(const Channel& other)
 {}
 
 //setter
-void Channel::setChannelmessages(QString date , QString  src , QString message){
+void Channel::setChannelmessages(QString src , QString  message , QString date){
     Channel_messages.insert(date, QPair<QString, QString>(src, message));
 }
 

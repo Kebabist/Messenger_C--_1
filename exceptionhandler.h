@@ -5,24 +5,6 @@
 #include <QException>
 #include <QString>
 
-//namespace Ui {
-//class Exceptionhandler;
-//}
-
-//class Exceptionhandler : public QException
-//{
-//    Q_OBJECT
-
-//public:
-//    explicit Exceptionhandler(QWidget *parent = nullptr);
-//    void raise() const override { throw *this; }
-//    MyException *clone() const override { return new MyException(*this); }
-//    ~Exceptionhandler();
-
-//private:
-//    Ui::Exceptionhandler *ui;
-//};
-
 //handles exception during program runtime
 class ExceptionHandler : public QException
 {
