@@ -59,7 +59,7 @@ void loggedinpage::on_logoutbutton_clicked()
         QPair<QString , QString> response = cl.Logout(); // Pass the correct password parameter
         QMessageBox::information(this, "Information", response.second);
         emit logoutbuttonclicked();
-    }catch (const HttpHandlerException &e) {
+    }catch (const ExceptionHandler &e) {
         QMessageBox::critical(this, "Error", e.message());
     }
 }

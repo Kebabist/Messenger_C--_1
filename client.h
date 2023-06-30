@@ -14,7 +14,7 @@ class Client
 public:
     Client();
     Client(QString, QString , QString , QString);
-    Client(QString, QString);//login constructor
+    Client(QString, QString);//object for login
 
     QPair<QString, QString> Signup();
     QPair<QString , QString> Login();
@@ -22,7 +22,6 @@ public:
     void WriteClient();
     void ReadClient();
     void RemoveClientDir();
-    Client(QString, QString);//object for login
   
 
 

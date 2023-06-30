@@ -58,14 +58,14 @@ QPair<QString, QString> Client::Signup(){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             code = jsonObj.value("code").toString();
-            if (message ==  "Signed Up Successfully" && code == "200"){
+            if (message ==  "Signed Up Successfully" || code == "200"){
                 message = jsonObj.value("message").toString();
                 qDebug() <<message;
                 //Write to Json file
                 WriteClient();
             }
             else if (code == "204") {
-                QString message = jsonObj.value("message").toString();
+                message = jsonObj.value("message").toString();
                 qDebug() <<message;
                 //user already exists implement with gui
             }
@@ -136,7 +136,9 @@ QPair<QString , QString> Client::Logout(){
                 qDebug() << "Error: Request was not successful";
         }
     RemoveClientDir();
+    return qMakePair(code , message);
 }
+
 
 //Writes Client data to a file
 void Client::WriteClient(){
@@ -144,22 +146,22 @@ void Client::WriteClient(){
                 Client flag;
                 flag.ReadClient();
                 if (flag.username == this->username && flag.password == this->password) {
-                    // Create the flag JSON data
-                    QJsonObject flagObj;
-                    flagObj.insert("username", flag.username);
-                    flagObj.insert("password", flag.password);
-                    flagObj.insert("firstname", flag.firstname);
-                    flagObj.insert("lastname", flag.lastname);
-                    flagObj.insert("token", this->token);
-                    QJsonDocument flagDoc(flagObj);
-                    QString homeDir = QDir::homePath();
-                    QDir clientDir(homeDir + QDir::separator() + "client");
-                    QString filename = clientDir.filePath(username + ".json");
-                    QFile file(filename);
-                    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-                        file.write(flagDoc.toJson());
-                        file.close();
-                    }
+                // Create the flag JSON data
+                QJsonObject flagObj;
+                flagObj.insert("username", flag.username);
+                flagObj.insert("password", flag.password);
+                flagObj.insert("firstname", flag.firstname);
+                flagObj.insert("lastname", flag.lastname);
+                flagObj.insert("token", this->token);
+                QJsonDocument flagDoc(flagObj);
+                QString homeDir = QDir::homePath();
+                QDir clientDir(homeDir + QDir::separator() + "client");
+                QString filename = clientDir.filePath(username + ".json");
+                QFile file(filename);
+                if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    file.write(flagDoc.toJson());
+                    file.close();
+                }
                 }
                 else {
                 // If the username and password do not match, create a new file
@@ -191,8 +193,8 @@ void Client::WriteClient(){
                     QString code = "FILE_OPEN_ERROR";
                     throw ExceptionHandler(message, code);
                 }
+                }
             }
-        }
             catch (const ExceptionHandler& e) {
                 // Handle the exception
                 qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
@@ -203,7 +205,6 @@ void Client::WriteClient(){
                 // Handle any other exceptions
                 qDebug() << "Unknown error occurred";
             }
-            return qMakePair(code , message);
 }
 
 //Reads Client data from a file

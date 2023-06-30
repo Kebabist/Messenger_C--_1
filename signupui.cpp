@@ -28,7 +28,7 @@ void signupui::on_submitbutton_clicked()
         QPair<QString , QString> response = cl.Signup();
         QMessageBox::information(this, "Information", response.second);
         emit signupApproved();
-    }catch (const HttpHandlerException &e) {
+    }catch (const ExceptionHandler &e) {
         QMessageBox::critical(this, "Error", e.message());
     }
 }

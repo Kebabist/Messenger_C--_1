@@ -42,7 +42,7 @@ FORMS += \
     exceptionhandler.ui \
     group.ui \
     grouprepository.ui \
-    mainwindow.ui
+    mainwindow.ui \
     loggedinpage.ui \
     loginui.ui \
     mainwindow.ui \

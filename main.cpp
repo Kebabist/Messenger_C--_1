@@ -36,7 +36,7 @@ for (const Pv& Pv : List) {
         qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
     }
 }
-pr.RemovePvsDir();
+//pr.RemovePvsDir();
 
 
 
