@@ -3,17 +3,29 @@
 #include <qmessagebox.h>
 
 
-MainWindow::MainWindow(Group &g , GroupRepository &gr , QWidget *parent)
+MainWindow::MainWindow(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr , QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow) , group(g) , grouprepo(gr)
-
+    , ui(new Ui::MainWindow) , group(g) , grouprepo(gr) , channel(c) , channelrepo(cr) , pv(p) , pvrepo(pr)
 {
+
     ui->setupUi(this);
-
-    //connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
-
-    // show the main window
-    show();
+    Client client;
+    client.ReadClient();
+    if (!client.getToken().isEmpty()) {
+        // The client data was successfully read and contains a token, redirect to the logged in page
+        //QWidget* loggedInPageParent = new QWidget();
+        loggedin = new loggedinpage(group , grouprepo ,channel , channelrepo , pv , pvrepo , client );
+        loggedin->show();
+        connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
+        //loggedin->setWindowFlags(Qt::Tool);
+        // Hide the main window after the logged in window is shown
+        loggedin->show();
+        loggedin->isActiveWindow();
+        return;
+    } else {
+        // The client data could not be read or does not contain a token, stay on the main window
+        show();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -33,7 +45,7 @@ void MainWindow::handleloginApproved(Client& client)
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(group , grouprepo , client);
+    loggedin = new loggedinpage(group , grouprepo , channel , channelrepo , pv , pvrepo , client);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }

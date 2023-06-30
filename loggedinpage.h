@@ -6,6 +6,10 @@
 #include <qlistwidget.h>
 #include "group.h"
 #include "grouprepository.h"
+#include "channel.h"
+#include "channelrepository.h"
+#include "pv.h"
+#include "pvrepository.h"
 
 namespace Ui {
 class loggedinpage;
@@ -16,8 +20,10 @@ class loggedinpage : public QWidget
     Q_OBJECT
 
 public:
-    explicit loggedinpage(Group & , GroupRepository & ,Client &client , QWidget *parent = nullptr);
-    void addtopage(const QList<Group>&);
+    explicit loggedinpage(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr,Client &client , QWidget *parent = nullptr);
+    void addtopage(const QList<Group> &groupList);
+    void addtopage(const QList<Channel> &channelList);
+    void addtopage(const QList<Pv> &pvList);
     ~loggedinpage();
 
 private slots:
@@ -34,7 +40,13 @@ private:
     Client cl;
     Group group;
     GroupRepository grouprepo;
+    Channel channel;
+    ChannelRepository channelrepo;
+    Pv pv;
+    PvRepository pvrepo;
     QMultiMap<QString, QPair<QString , QString>> group_messages;
+    QMultiMap<QString, QPair<QString , QString>> channel_messages;
+    QMultiMap<QString, QPair<QString , QString>> pv_messages;
 };
 
 #endif // LOGGEDINPAGE_H

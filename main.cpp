@@ -12,29 +12,32 @@
 #include "channelrepository.h"
 #include "pvrepository.h"
 #include "pv.h"
+#include "channel.h"
+#include "channelrepository.h"
 
 
 
 int main(int argc, char *argv[]){
 QApplication app(argc, argv);
-//ChannelRepository gr;
+Client cl;
+
+
 //test pv
 //the tester is kebab2
 //the other user is kebab3
-Client cl;
 Pv p("kebab3");
 PvRepository pr;
-pr.sendmessagePv("kebab3","salam da",cl);
+//pr.sendmessagePv("kebab3","salam da",cl);
 pr.getPvlist(cl);
 pr.getPvchats(cl,"kebab3","");
 QList<Pv> List = pr.getPv_list();
 pr.WritePvsmessages();
 pr.display();
-pr.ReadPvsmessages();
-for (const Pv& Pv : List) {
-    qDebug() << "Pv Name: " << Pv.getPvname();
+//pr.ReadPvsmessages();
+for (const Pv& p1 : List) {
+    qDebug() << "Pv Name: " << p1.getPvname();
     qDebug() << "Messages: ";
-    const QMultiMap<QString, QPair<QString, QString>>& messages = Pv.getPvmessages();
+    const QMultiMap<QString, QPair<QString, QString>>& messages = p1.getPvmessages();
     for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
         qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
     }
@@ -44,7 +47,7 @@ for (const Pv& Pv : List) {
 
 
 
-
+//test group
 Group g("","lmao");
 GroupRepository gr;
 gr.joinGroup(cl,"lmao");
@@ -59,15 +62,52 @@ QList<Group> ListG = gr.getGroup_list();
 gr.WriteGroupsmessages();
 gr.display();
 //gr.ReadGroupsmessages();
-//for (const Group& g1 : ListG) {
-//    qDebug() << "Channel Name: " << g1.getGroupname();
-//    qDebug() << "Messages: ";
-//    const QMultiMap<QString, QPair<QString, QString>>& messages = g1.getGroupmessages();
-//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
-//        qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
-//    }
-//}
+for (const Group& g1 : ListG) {
+    qDebug() << "group Name: " << g1.getGroupname();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = g1.getGroupmessages();
+    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+        qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
+    }
+}
 //gr.RemoveGroupsDir();
+
+
+
+//test channel
+Channel c("lmao");
+ChannelRepository cr;
+//cr.joinChannel(cl,"lmao");
+//cr.joinChannel(cl,"new");
+//cr.joinChannel(cl,"nmdvaghean");
+//cr.createChannel(cl,"lmaochannel");
+//cr.createChannel(cl,"newchannel");
+//cr.createChannel(cl,"nmdvagheanchannel");
+//cr.sendmessageChannel("lmaochannel","salam da1",cl);
+//cr.sendmessageChannel("lmaochannel","salam da2",cl);
+//cr.sendmessageChannel("lmaochannel","salam da3",cl);
+//cr.sendmessageChannel("newchannel","salam da1",cl);
+//cr.sendmessageChannel("newchannel","salam da2",cl);
+//cr.sendmessageChannel("lmaochannel","salam da3",cl);
+//cr.sendmessageChannel("nmdvagheanchannel","salam da4",cl);
+cr.getChannellist(cl);
+cr.getChannelchats(cl,"lmaochannel","");
+cr.getChannelchats(cl,"newchannel","");
+cr.getChannelchats(cl,"nmdvagheanchannel","");
+QList<Channel> ListC = cr.getChannel_list();
+cr.WriteChannelsmessages();
+cr.display();
+//cr.ReadChannelsmessages();
+for (const Channel& c1 : ListC) {
+    qDebug() << "Channel Name: " << c1.getChannelname();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = c1.getChannelmessages();
+    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+        qDebug() << "Date: " << it.key() << ", src: " << it.value().first << ", message: " << it.value().second;
+    }
+}
+//gr.RemoveGroupsDir();
+
 
 
 
@@ -170,7 +210,7 @@ gr.display();
     //newuser.Signup();
 //    Client newuser("kebab", "6kebab", "kebabist", "jooj");
 //    newuser.Signup();
-    MainWindow w(g , gr);
+    MainWindow w(g , gr , c , cr , p , pr);
     w.show();
     return app.exec();
 }

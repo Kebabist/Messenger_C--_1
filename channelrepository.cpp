@@ -21,6 +21,11 @@
 ChannelRepository::ChannelRepository()
 {}
 
+//copy constructor
+ChannelRepository::ChannelRepository(const ChannelRepository& other)
+    : Channels_list(other.Channels_list)
+{}
+
 //destructor
 ChannelRepository::~ChannelRepository()
 {}
@@ -41,7 +46,7 @@ const QList<Channel>& ChannelRepository::getChannel_list() const{
 void ChannelRepository::createChannel(Client &c, QString Channelname){
     //http://api.barafardayebehtar.ml:8080/createchannel?token=7a3c48f7c7939b7269d01443a431825f&channel_name=mychannel&channel_title=Channel1
     HttpHandler http;
-    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
+    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
     QString arguments = "channel_name="+Channelname;//+"&"+"Channel_title="+g.getChanneltitle();
     urlmaker newurl("createchannel", token , arguments);
     const QString url = newurl.generate();
@@ -71,7 +76,7 @@ void ChannelRepository::createChannel(Client &c, QString Channelname){
 ////join Channel
 void ChannelRepository::joinChannel(Client &c , QString dstChannel){
     HttpHandler http;
-    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
+    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
     //http://api.barafardayebehtar.ml:8080/joinchannel?token=7a3c48f7c7939b7269d01443a431825f&channel_name=aplab
     QString arguments = "channel_name="+dstChannel;
     urlmaker newurl("joinchannel", token , arguments);
@@ -100,7 +105,7 @@ void ChannelRepository::joinChannel(Client &c , QString dstChannel){
 //get list of joined Channeles
 void ChannelRepository::getChannellist(Client &c){
     HttpHandler http;
-    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
+    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
     QString arguments;
     //http://api.barafardayebehtar.ml:8080/getchannellist?token=7a3c48f7c7939b7269d01443a431825f
     urlmaker newurl("getchannellist", token , arguments);
@@ -133,7 +138,7 @@ void ChannelRepository::getChannellist(Client &c){
 //send message in a Channel chat
 void ChannelRepository::sendmessageChannel(QString desiredChannel , QString text , Client &c){
     HttpHandler http;
-    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
+    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
     //http://api.barafardayebehtar.ml:8080/sendmessagechannel?token=7a3c48f7c7939b7269d01443a431825f&dst=mychannel&body=hello%20all
     QString arguments = "dst="+desiredChannel+"&"+"body="+text;
     urlmaker newurl("sendmessagechannel", token , arguments);
@@ -158,7 +163,7 @@ void ChannelRepository::sendmessageChannel(QString desiredChannel , QString text
 //get Channel messages
 void ChannelRepository::getChannelchats(Client &c , QString dst , QString date){
     HttpHandler http;
-    QString token = "5eab6a7ec57eb020634f5998254aeeaa";
+    QString token = "3077fa34139c9cd1ef0edf8fe25b02d4";
     //http://api.barafardayebehtar.ml:8080/getchannelchats?token=7a3c48f7c7939b7269d01443a431825f&dst=aplab&date=20001121081415
     QString arguments = "dst="+dst;/*+"&"+"date="+date;*/
     urlmaker newurl("getchannelchats", token , arguments);

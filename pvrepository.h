@@ -21,6 +21,7 @@ class PvRepository : public QWidget
 public:
     //    explicit PvRepository(QWidget *parent = nullptr);
     PvRepository();
+    PvRepository(const PvRepository& other);
     ~PvRepository();
 
     void getPvlist(Client &c);

@@ -9,6 +9,10 @@
 #include "exceptionhandler.h"
 #include "group.h"
 #include "grouprepository.h"
+#include "channel.h"
+#include "channelrepository.h"
+#include "pv.h"
+#include "pvrepository.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,7 +23,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(Group & , GroupRepository & , QWidget *parent = nullptr);
+    MainWindow(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr, QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -43,6 +47,10 @@ private:
     //group and grouprepo object
     Group group;
     GroupRepository grouprepo;
+    Channel channel;
+    ChannelRepository channelrepo;
+    Pv pv;
+    PvRepository pvrepo;
 
 };
 #endif // MAINWINDOW_H

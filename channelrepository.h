@@ -18,6 +18,7 @@ class ChannelRepository
 {
 public:
     ChannelRepository();
+    ChannelRepository(const ChannelRepository& other);
     ~ChannelRepository();
 
     void createChannel(Client &c , QString);
