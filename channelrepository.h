@@ -1,6 +1,7 @@
 #ifndef CHANNELREPOSITORY_H
 #define CHANNELREPOSITORY_H
 
+
 #include <QWidget>
 #include <QList>
 #include <QJsonObject>
@@ -9,6 +10,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
+#include <vector>
 #include "channel.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
@@ -20,27 +22,27 @@ public:
     ChannelRepository();
     ~ChannelRepository();
 
-    void createChannel(Client &c , QString);
-    void joinChannel(Client &c ,QString);
-    void getChannellist(Client &c);
-    void getChannelchats(Client &c , QString dst , QString date);
-    void sendmessageChannel(QString desiredChannel , QString text , Client &c);
-    void display();
+    void createChannel(QString token, QString ChannelName);
+    void joinChannel(QString token ,QString ChannelName);
+    void getChannellist(QString token);
+    void sendmessageChannel(QString token, QString ChannelName , QString message);
+    const QString findLatestdate(QString ChannelName) const;
+    void getChannelchats(QString token , QString ChannelName , QString date);
     void RemoveChannelsDir();
     void WriteChannelsmessages();
     void ReadChannelsmessages();
+    void display();
 
     //setter function
-    void setChannelsList(const Channel& newChannel );
+    void setChannelsList(const std::unique_ptr<Channel> newChannel);
 
     //getter function
-    const QList<Channel>& getChannel_list() const;
-
+    const std::vector<std::unique_ptr<Channel>>& getChannel_list() const;
 
 private:
     HttpHandler http;
     urlmaker urlMaker;
-    QList<Channel> Channels_list;
+    std::vector<std::unique_ptr<Channel>> Channels_list;
 };
 
 #endif // CHANNELREPOSITORY_H
