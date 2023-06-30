@@ -27,7 +27,19 @@ loggedinpage::~loggedinpage()
 
 void loggedinpage::on_toggleview_clicked(bool checked)
 {
-    ui->dockWidget->setVisible(checked);
+    // Get the current size of the button
+    QSize currentSize = ui->toggleview->size();
+
+    // Set the new size of the button
+    if (!checked){
+        QSize newSize(currentSize.width() * 0.1, currentSize.height() * 0.1);
+        ui->toggleview->resize(newSize);
+    } else {
+        QSize newSize(currentSize.width() / 0.1, currentSize.height() / 0.1);
+        ui->toggleview->resize(newSize);
+    }
+
+    ui->dockWidget->setVisible(!checked);
 }
 
 
