@@ -60,10 +60,26 @@ for (const auto& channelPtr : channelList) {
     qDebug() << "Group Name: " << channelPtr->getChannelname();
     qDebug() << "Messages: ";
     const QMultiMap<QString, QPair<QString, QString>>& messages = channelPtr->getChannelmessages();
+
+//the other person is kebab4
+//the given toke is for kebab3
+PvRepository pvRepo;
+pvRepo.getPvlist("11d02f67196f529abc0e227d11d14fa3");
+pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab4","");
+pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab2","");
+pvRepo.WritePvsmessages();
+pvRepo.sendmessagePv("11d02f67196f529abc0e227d11d14fa3","kebab4","eyyyyyyy baba");
+pvRepo.ReadPvsmessages();
+const std::vector<std::unique_ptr<Pv>>& pvList = pvRepo.getPv_list();
+for (const auto& pvPtr : pvList) {
+    qDebug() << "Group Name: " << pvPtr->getPvname();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getPvmessages();
     for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
         qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }
 }
-    return app.exec();
+  
+return app.exec();
 }
 

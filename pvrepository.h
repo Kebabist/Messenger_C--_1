@@ -9,7 +9,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
-#include "pv.h"
+#include "PV.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
 #include "client.h"
@@ -22,25 +22,24 @@ public:
     PvRepository();
     ~PvRepository();
 
-    void getPvlist(Client &c);
-    void getPvchats(Client &c , QString dst , QString date);
-    void sendmessagePv(QString desiredpv , QString text , Client &c);
-    void display();
+    void getPvlist(QString token);
+    void sendmessagePv(QString token, QString pvName , QString message);
+    const QString findLatestdate(QString pvName) const;
+    void getPvchats(QString token , QString pvName , QString date);
     void RemovePvsDir();
     void WritePvsmessages();
     void ReadPvsmessages();
+    void display();
 
     //setter function
-    void setPvList(const Pv& newPv);
+    void setPvsList(const std::unique_ptr<Pv> newpv);
 
     //getter function
-    const QList<Pv>& getPv_list() const;
-
+    const std::vector<std::unique_ptr<Pv>>& getPv_list() const;
 
 private:
     HttpHandler http;
     urlmaker urlMaker;
-    QList<Pv> Pvs_list;
+    std::vector<std::unique_ptr<Pv>> Pvs_list;
 };
-
 #endif // PvREPOSITORY_H

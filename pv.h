@@ -11,8 +11,9 @@ class Pv : public QWidget
     Q_OBJECT
 
 public:
+
     Pv();
-    Pv(const QString& name );
+    Pv(QString name);
     Pv(const Pv& other);
     Pv& operator=(const Pv& other);
     ~Pv();
@@ -21,17 +22,14 @@ public:
     QString getPvname() const;
     const QMultiMap<QString, QPair<QString, QString>> &getPvmessages() const;
 
-    //overloading
-    bool operator==(const Pv& other) const;
-
-
     //setter
-    void setPvmessages(QString  , QString   , QString );
+    void setPvmessages(QString src , QString  message , QString date);
 
 private:
     QString Pv_name;
     QMultiMap<QString, QPair<QString, QString>> Pv_messages;
 };
+
 
 
 
