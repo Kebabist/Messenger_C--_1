@@ -69,22 +69,48 @@ groupRepo.sendmessageGroup("852e7892429df7577d95a410ca9d38ff","ahhhhhhhhhhhert",
 //        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
 //    }
 //}
-ChannelRepository cr;
 
-cr.getChannellist(cl1);
-//cr.getChannelchats(cl1,"nmdvaghean9","");
-//cr.WriteChannelsmessages();
 
-cr.ReadChannelsmessages();
-QList<Channel> cList = cr.getChannel_list();
-for (const Channel& chan : cList) {
-    qDebug() << "channel Name: " << chan.getChannelname();
+//the other person is kebab4
+//the given toke is for kebab3
+PvRepository pvRepo;
+pvRepo.getPvlist("11d02f67196f529abc0e227d11d14fa3");
+pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab4","");
+pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab2","");
+pvRepo.WritePvsmessages();
+pvRepo.sendmessagePv("11d02f67196f529abc0e227d11d14fa3","kebab4","eyyyyyyy baba");
+pvRepo.ReadPvsmessages();
+const std::vector<std::unique_ptr<Pv>>& pvList = pvRepo.getPv_list();
+for (const auto& pvPtr : pvList) {
+    qDebug() << "Group Name: " << pvPtr->getPvname();
     qDebug() << "Messages: ";
-    const QMultiMap<QString, QPair<QString, QString>>& messages = chan.getChannelmessages();
+    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getPvmessages();
     for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
-      qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
+        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }
 }
-    return app.exec();
+
+
+//ChannelRepository cr;
+
+//cr.getChannellist(cl1);
+////cr.getChannelchats(cl1,"nmdvaghean9","");
+////cr.WriteChannelsmessages();
+
+//cr.ReadChannelsmessages();
+//QList<Channel> cList = cr.getChannel_list();
+//for (const Channel& chan : cList) {
+//    qDebug() << "channel Name: " << chan.getChannelname();
+//    qDebug() << "Messages: ";
+//    const QMultiMap<QString, QPair<QString, QString>>& messages = chan.getChannelmessages();
+//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+//      qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
+//    }
+//}
+
+
+
+
+return app.exec();
 }
 
