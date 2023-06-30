@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "client.h"
 #include <qlistwidget.h>
+#include "group.h"
+#include "grouprepository.h"
 
 namespace Ui {
 class loggedinpage;
@@ -14,8 +16,8 @@ class loggedinpage : public QWidget
     Q_OBJECT
 
 public:
-    explicit loggedinpage(Client &client , QWidget *parent = nullptr);
-    void addtopage(const QList<QString>&);
+    explicit loggedinpage(Group & , GroupRepository & ,Client &client , QWidget *parent = nullptr);
+    void addtopage(const QList<Group>&);
     ~loggedinpage();
 
 private slots:
@@ -30,6 +32,9 @@ signals:
 private:
     Ui::loggedinpage *ui;
     Client cl;
+    Group group;
+    GroupRepository grouprepo;
+    QMultiMap<QString, QPair<QString , QString>> group_messages;
 };
 
 #endif // LOGGEDINPAGE_H

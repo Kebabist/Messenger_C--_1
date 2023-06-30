@@ -21,6 +21,7 @@ class GroupRepository : public QWidget
 public:
 //    explicit GroupRepository(QWidget *parent = nullptr);
     GroupRepository();
+    GroupRepository(const GroupRepository& other);
     ~GroupRepository();
 
     void createGroup(Client &c , QString);

@@ -7,6 +7,8 @@
 #include "loggedinpage.h"
 #include "Client.h"
 #include "exceptionhandler.h"
+#include "group.h"
+#include "grouprepository.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(Group & , GroupRepository & , QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -30,7 +32,6 @@ private slots:
     void handleloginApproved(Client& client);
     void handleLogoutClicked();
 
-
 private:
     Ui::MainWindow *ui;
     //create signup page object
@@ -39,5 +40,9 @@ private:
     loginui *login;
     //create loggedinpage object
     loggedinpage *loggedin;
+    //group and grouprepo object
+    Group group;
+    GroupRepository grouprepo;
+
 };
 #endif // MAINWINDOW_H

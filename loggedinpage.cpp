@@ -1,20 +1,23 @@
 #include "loggedinpage.h"
+#include "mainwindow.h"
 #include "exceptionhandler.h"
 #include "ui_loggedinpage.h"
 #include <qmessagebox.h>
 
 
-loggedinpage::loggedinpage(Client &client, QWidget *parent) :
+loggedinpage::loggedinpage(Group& g, GroupRepository& gr, Client& client, QWidget* parent) :
     QWidget(parent),
-    ui(new Ui::loggedinpage) , cl(client)
+    ui(new Ui::loggedinpage),
+    cl(client),
+    group(g),
+    grouprepo(gr)
 {
     ui->setupUi(this);
     connect(ui->toggleview, SIGNAL(clicked(bool)), this, SLOT(onToggleviewClicked(bool)));
-    connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked); //for the  text widget
+    connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
-    QList<QString> groups = {"Group 1", "Group 2", "Group 3"};
-    addtopage(groups);
-
+    QList<Group> groups = grouprepo.getGroup_list();
+    addtopage(groups); // Add groups to the list widget
 }
 
 loggedinpage::~loggedinpage()
@@ -27,29 +30,31 @@ void loggedinpage::on_toggleview_clicked(bool checked)
     ui->dockWidget->setVisible(checked);
 }
 
-QMultiMap<QString, QString> group_messages = {
-    {"Group 1", "adlfkakjfdl src : kebab"},
-    {"Group 1", "afdsafdsafds src : kebab"},
-    {"Group 1", "adlfkadsfafdafdsakjfdl src : kebab"},
-    {"Group 1", "adlafdfkadsfafdsakjfdl src : kebab"},
-    {"Group 1", "adlfafdsafdsfadskakjfdl src : kebab"},
-    {"Group 1", "adlfadsfkaadsfafdskjfdl src : kebab"},
-    {"Group 2", "aldkfafdsafdsfasdfalkdjs src : nima"},
-    {"Group 3", "aflkdkafdsafdafdsalfdskald src : kebab"}
-};
+
 
 
 void loggedinpage::handleListItemClicked(QListWidgetItem* item)
 {
     QString groupName = item->text();
 
-    // Get the group messages from the group_messages map
-    QList<QString> groupMessages = group_messages.values(groupName);
+    // Find the group object from the group_list that matches the clicked group name
+    Group group;
+    for (auto& g : grouprepo.getGroup_list()) {
+        if (g.getGroupname() == groupName) {
+            group = g;
+            break;
+        }
+    }
+
+    // Get the group messages from the found group object
+    QMultiMap<QString, QPair<QString , QString>> groupMessages = group.getGroupmessages();
 
     // Show the group messages in a text widget
     ui->messages->clear();
-    for (const auto& message : groupMessages){
-        ui->messages->appendPlainText(message);
+    for (QMultiMap<QString, QPair<QString , QString>>::Iterator it =groupMessages.begin() ; it != groupMessages.end(); ++it) {
+        QString sender = it.value().first;
+        QString text = it.value().second;
+        ui->messages->appendPlainText(sender + ": " + text);
     }
 }
 
@@ -64,12 +69,9 @@ void loggedinpage::on_logoutbutton_clicked()
     }
 }
 
-
-void loggedinpage::addtopage(const QList<QString>& groupList){
+void loggedinpage::addtopage(const QList<Group>& groupList){
     for (const auto& groupName : groupList){
-        QListWidgetItem* item = new QListWidgetItem(groupName);
+        QListWidgetItem* item = new QListWidgetItem(groupName.getGroupname());
         ui->allchats->addItem(item);
     }
 }
-
-

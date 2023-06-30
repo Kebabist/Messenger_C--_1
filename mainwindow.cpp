@@ -3,9 +3,9 @@
 #include <qmessagebox.h>
 
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(Group &g , GroupRepository &gr , QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow) , group(g) , grouprepo(gr)
 
 {
     ui->setupUi(this);
@@ -33,7 +33,7 @@ void MainWindow::handleloginApproved(Client& client)
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(client);
+    loggedin = new loggedinpage(group , grouprepo , client);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }
