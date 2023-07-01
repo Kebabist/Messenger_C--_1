@@ -3,6 +3,7 @@
 #include "exceptionhandler.h"
 #include <QVector>
 #include "ui_loggedinpage.h"
+#include <QInputDialog>
 #include <qmessagebox.h>
 
 
@@ -70,23 +71,25 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
     if (index != -1) {
         text.remove(index, substrgr.length());
         groupName = text;
+        selected = qMakePair("group" , groupName);
     }else{
         index = text.indexOf(substrch);
         if (index != -1) {
             text.remove(index, substrch.length());
             channelName = text;
+            selected = qMakePair("channel" , channelName);
         }else {
             index = text.indexOf(substrpv);
             if (index != -1) {
                 text.remove(index, substrpv.length());
                 pvName = text;
+                selected = qMakePair("pv" , pvName);
             }
         }
     }
 
     if (groupName != ""){
         // Find the group object from the group_list that matches the clicked group name
-        Group group;
         for (auto& g : groupList) {
             if (g->getName() == groupName) {
                 // Get the group messages from the found group object
@@ -161,7 +164,62 @@ void loggedinpage::addtopage(const std::vector<std::unique_ptr<DTO>>& List){
 }
 
 
+void loggedinpage::on_joingroupbtton_clicked()
+{
+    GroupRepository grouprepo;
+    bool ok;
+    QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
+    if (ok && !inputText.isEmpty()) {
+        grouprepo.join("41c0089068b863e6a14ccc5d6dcda514" , inputText);
+        //handle if join was successfull
+        QMessageBox::information(this , "Information" , "joined the group successfully " + inputText);
+    }
+    //make an updater function then call it here to update the list and then call the addtopage() function on the new list;
+}
+
+
+void loggedinpage::on_creategroupbutton_clicked()
+{
+    GroupRepository grouprepo;
+    bool ok;
+    QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
+    if (ok && !inputText.isEmpty()) {
+        grouprepo.create("41c0089068b863e6a14ccc5d6dcda514" , inputText);
+        //handle if join was successfull
+        QMessageBox::information(this , "Information" , "group successfully made with name : " + inputText);
+    }
+    //make an updater function then call it here to update the list and then call the addtopage() function on the new list;
+}
 
 
 
+void loggedinpage::on_sendmessagebutton_clicked()
+{
+    if (selected.first == "group"){
+        GroupRepository grouprepo;
+        bool ok;
+        QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
+        if (ok && !inputText.isEmpty()) {
+            grouprepo.create("41c0089068b863e6a14ccc5d6dcda514" , inputText);
+            //handle if join was successfull
+            QMessageBox::information(this , "Information" , "message successfully sent ");
+        }
+        //update the chatlist with the new message
+        for (auto& g : groupList) {
+            if (g->getName() == selected.second) {
+                // Get the group messages from the found group object
+                QMultiMap<QString, QPair<QString , QString>> groupMessages = g->getMessages();
+                // Show the group messages in a text widget
+                ui->messages->clear();
+                for (QMultiMap<QString, QPair<QString , QString>>::Iterator it =groupMessages.begin() ; it != groupMessages.end(); ++it) {
+                    QString sender = it.value().first;
+                    QString text = it.value().second;
+                    ui->messages->appendPlainText(sender + ": " + text);
+                }
+                break;
+            }
+        }
+    }
+    //goes the same for pv and channel
+}
 

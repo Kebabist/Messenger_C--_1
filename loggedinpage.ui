@@ -107,6 +107,20 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="creategroupbutton">
+               <property name="text">
+                <string>Create Group</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="createchannelbutton">
+               <property name="text">
+                <string>Create Channel</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="logoutbutton">
                <property name="text">
                 <string>LogOut</string>

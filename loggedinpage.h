@@ -27,6 +27,11 @@ private slots:
     void on_toggleview_clicked(bool checked);
     void handleListItemClicked(QListWidgetItem* item);
     void on_logoutbutton_clicked();
+    void on_joingroupbtton_clicked();
+
+    void on_creategroupbutton_clicked();
+
+    void on_sendmessagebutton_clicked();
 
 signals:
     //emit when the button is clicked
@@ -35,6 +40,7 @@ signals:
 private:
     Ui::loggedinpage *ui;
     Client cl;
+    QPair<QString , QString> selected; //first one is the type //second one is the name //Like : <group , groupName>
     const std::vector<std::unique_ptr<DTO>>& pvList;
     const std::vector<std::unique_ptr<DTO>>& groupList;
     const std::vector<std::unique_ptr<DTO>>& channelList;

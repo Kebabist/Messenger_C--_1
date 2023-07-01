@@ -107,7 +107,7 @@ QPair<QString , QString> Client::Login() {
 
 
 //lets the user logout of messenger client
-void Client::Logout(){
+QPair<QString , QString> Client::Logout(){
     QString arguments = "username="+this->username+"&password="+this->password;
     urlmaker login_url("logout" , arguments);
     const QString url = login_url.generate();
