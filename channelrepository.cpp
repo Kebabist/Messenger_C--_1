@@ -18,11 +18,6 @@
 ChannelRepository::ChannelRepository()
 {}
 
-//copy constructor
-//ChannelRepository::ChannelRepository(const ChannelRepository& other)
-//    : list(other.list)
-//{}
-
 //destructor
 ChannelRepository::~ChannelRepository()
 {}

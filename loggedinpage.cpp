@@ -195,15 +195,12 @@ void loggedinpage::on_creategroupbutton_clicked()
 
 void loggedinpage::on_sendmessagebutton_clicked()
 {
+    GroupRepository grouprepo;
     if (selected.first == "group"){
-        GroupRepository grouprepo;
-        bool ok;
-        QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
-        if (ok && !inputText.isEmpty()) {
-            grouprepo.create("41c0089068b863e6a14ccc5d6dcda514" , inputText);
-            //handle if join was successfull
-            QMessageBox::information(this , "Information" , "message successfully sent ");
-        }
+        QString inputText = ui->sendmessageLE->text();
+        grouprepo.sendMessage("41c0089068b863e6a14ccc5d6dcda514" , selected.second ,inputText);
+        //handle if join was successfull
+        QMessageBox::information(this , "Information" , "message successfully sent ");
         //update the chatlist with the new message
         for (auto& g : groupList) {
             if (g->getName() == selected.second) {

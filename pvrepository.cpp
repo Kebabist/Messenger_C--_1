@@ -20,11 +20,6 @@
 PvRepository::PvRepository()
 {}
 
-//copy constructor
-//PvRepository::PvRepository(const PvRepository& other)
-//    : Pvs_list(other.Pvs_list)
-//{}
-
 //destructor
 PvRepository::~PvRepository()
 {}

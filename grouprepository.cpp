@@ -18,11 +18,6 @@
 GroupRepository::GroupRepository()
 {}
 
-//copy constructor
-//GroupRepository::GroupRepository(const GroupRepository& other)
-//    : Groups_list(other.Groups_list)
-//{}
-
 //destructor
 GroupRepository::~GroupRepository()
 {}
