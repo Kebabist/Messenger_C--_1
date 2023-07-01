@@ -49,17 +49,16 @@ QPair<QString, QString> Client::Signup(){
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     if(response.second){
         QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            code = jsonObj.value("code").toString();
+        message = jsonObj.value("message").toString();
+        code = jsonObj.value("code").toString();
+        if (jsonObj.contains("message") && jsonObj.contains("code")){
             if (message ==  "Signed Up Successfully" && code == "200"){
                 message = jsonObj.value("message").toString();
-                qDebug() <<message;
-                //Write to Json file
+                qDebug() <<message << "code : " << code;
                 WriteClient();
             }
-            else if (code == "204") {
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+            else if (code != "200") {
+                qDebug() <<message << "Error code : " << code;
                 //user already exists implement with gui
             }
         }
@@ -82,18 +81,17 @@ QPair<QString , QString> Client::Login() {
         message = jsonObj.value("message").toString();
         code = jsonObj.value("code").toString();
                 if (jsonObj.contains("message") && jsonObj.contains("code")) {
-                 QString message = jsonObj.value("message").toString();
-                 QString code = jsonObj.value("code").toString();
                     if(message ==  "Logged in Successfully" && code == "200"){
                         QString token = jsonObj.value("token").toString();
                         setToken(token);
-                        qDebug()<<"token assigned"<< token;
+                        qDebug() <<message << "code : " << code;
+                        qDebug()<<"token assigned :"<< token;
                         WriteClient();
                     }
+                    else if (code != "200") { //handled by UI
+                        qDebug() <<message << "Error code : " << code;
+                    }
                 }
-    }
-    else {
-        qDebug() << "Error: Request was not successful";
     }
     return qMakePair(code , message);
 }
@@ -105,28 +103,22 @@ void Client::Logout(){
     urlmaker login_url("logout" , arguments);
     const QString url = login_url.generate();
     HttpHandler http;
+    QString code , message;
     QPair<QJsonObject, bool> response = http.makeRequest(url);
         if (response.second) {
             QJsonObject jsonObj = response.first;
-
-            QString token = jsonObj.value("token").toString();
-            qDebug() << "token:" << this->token;
-            if (jsonObj.contains("message")) {
-                QString message = jsonObj.value("message").toString();
-                qDebug() << "Message:" << message;
-            } else {
-                qDebug() << "Message key not found in JSON object";
-            }
-            if (jsonObj.contains("code")) {
+            message = jsonObj.value("message").toString();
+            code = jsonObj.value("code").toString();
+            if (jsonObj.contains("message") && jsonObj.contains("code")) {
+                if(message ==  "Logged Out Successfully" && code == "200"){
+                qDebug() <<message << "code : " << code;
+                }
+                else if (code != "200") {
                 QString code = jsonObj.value("code").toString();
                 qDebug() << "Code:" << code;
-            } else {
-                qDebug() << "Code key not found in JSON object";
+                }
             }
         }
-        else {
-            qDebug() << "Error: Request was not successful";
-    }
 RemoveClientDir();
 }
 
@@ -135,6 +127,7 @@ void Client::WriteClient(){
         try{
             Client flag;
             flag.ReadClient();
+            //handles the state where client has just signed up and wants to try to log in
             if (flag.username == this->username && flag.password == this->password) {
                 // Create the flag JSON data
                 QJsonObject flagObj;
@@ -143,14 +136,21 @@ void Client::WriteClient(){
                 flagObj.insert("firstname", flag.firstname);
                 flagObj.insert("lastname", flag.lastname);
                 flagObj.insert("token", this->token);
+                // Convert the JSON object to a document
                 QJsonDocument flagDoc(flagObj);
                 QString homeDir = QDir::homePath();
-                QDir clientDir(homeDir + QDir::separator() + "client");
+                QDir clientDir(homeDir + QDir::separator() + "Clients");
                 QString filename = clientDir.filePath(username + ".json");
                 QFile file(filename);
                 if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                     file.write(flagDoc.toJson());
                     file.close();
+                }
+                else {
+                    // Throw an exception if the file could not be opened for writing
+                    QString message = "Could not open file " + filename + " for writing";
+                    QString code = "FILE_OPEN_ERROR";
+                    throw ExceptionHandler(message, code);
                 }
             }
             else {
@@ -166,10 +166,11 @@ void Client::WriteClient(){
             QJsonDocument clientDoc(clientObj);
             // Create a directory for the client files, if it doesn't already exist
             QString homeDir = QDir::homePath();
-            QDir clientDir(homeDir + QDir::separator() + "client");
+            QDir clientDir(homeDir + QDir::separator() + "Clients");
             if (!clientDir.exists()) {
-                clientDir.mkpath(".");
+                    clientDir.mkpath(".");
             }
+
             // Write the client data to a file
             QString filename = clientDir.filePath(username + ".json");
             QFile file(filename);
@@ -202,7 +203,14 @@ void Client::ReadClient() {
         try {
             // Get the path to the client file
             QString homeDir = QDir::homePath();
-            QDir clientDir(homeDir + QDir::separator() + "client");
+            QDir clientDir(homeDir + QDir::separator() + "Clients");
+            if (!clientDir.exists()) {
+                // Throw an exception if the Directory was not found or made
+                QString message = "Could not Make/Find Directory: " + clientDir.absolutePath() + " for writing";
+                QString code = "NO_CLIENT_DIRECTORY";
+                throw ExceptionHandler(message, code);
+            }
+            // Get a list of all the JSON files in the directory
             QStringList filters;
             filters << "*.json";
             QFileInfoList fileInfoList = clientDir.entryInfoList(filters, QDir::Files);
@@ -212,7 +220,7 @@ void Client::ReadClient() {
                 QString message = "No client files found in directory " + clientDir.absolutePath();
                 QString code = "NO_CLIENT_FILES";
                 throw ExceptionHandler(message, code);
-            return;
+                return;
             }
             QString filename = fileInfoList.first().absoluteFilePath();
             // Read the client data from the file
@@ -235,7 +243,8 @@ void Client::ReadClient() {
                 QString code = "FILE_OPEN_ERROR";
                 throw ExceptionHandler(message, code);
             }
-        } catch (const ExceptionHandler& e) {
+        }
+         catch (const ExceptionHandler& e) {
             // Handle the exception
             qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
             // Re-throw the exception to propagate it further up the call stack
@@ -250,7 +259,7 @@ void Client::ReadClient() {
 void Client::RemoveClientDir() {
         try {
             QString homeDir = QDir::homePath();
-            QDir clientDir(homeDir + QDir::separator() + "client");
+            QDir clientDir(homeDir + QDir::separator() + "Clients");
             QString filename = clientDir.filePath(username + ".json");
 
             QFile file(filename);
@@ -258,24 +267,6 @@ void Client::RemoveClientDir() {
                 if (!file.remove()) {
                 throw ExceptionHandler("Could not remove client file", filename);
                 }
-            }
-            QDir dir = clientDir.absolutePath();
-            if (dir.exists()) {
-                QFileInfoList fileList = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
-                for (const QFileInfo& fileInfo : fileList) {
-                if (!fileInfo.dir().remove(fileInfo.fileName())) {
-                    QString message = "Could not remove file" + fileInfo.absoluteFilePath();
-                    QString code = "NO_CLIENT_FILE";
-                    throw ExceptionHandler(message, code);
-                }
-            }
-            }
-            QString dirname = dir.dirName();
-            dir.cdUp();
-            if (!dir.rmdir(dirname)) {
-                QString message = "Could not remove directory"+ dir.absolutePath() + QDir::separator() + dirname;
-                QString code = "NO_CLIENT_DIRECTORY";
-                throw ExceptionHandler(message, code);
             }
         }
         catch (const ExceptionHandler& e) {
