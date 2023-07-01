@@ -63,7 +63,7 @@ void GroupRepository::createGroup(QString token, QString groupName){
                 qDebug() <<message;
 
                 // Create the Group object using std::make_unique
-                std::unique_ptr<Group> group = std::make_unique<Group>(groupName, "G");
+                std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                 // Add the Group object to the list using the unique_ptr
                 setGroupsList(std::move(group));
@@ -92,7 +92,7 @@ void GroupRepository::joinGroup(QString token , QString groupName){
                 qDebug() <<message;
 
                 // Create the Group object using std::make_unique
-                std::unique_ptr<Group> group = std::make_unique<Group>(groupName, "G");
+                std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                 // Add the Group object to the list using the unique_ptr
                 setGroupsList(std::move(group));
@@ -124,7 +124,7 @@ void GroupRepository::getGrouplist(QString token){
                         QString groupName = blockObject.value("group_name").toString();
 
                         // Create the Group object using std::make_unique
-                        std::unique_ptr<Group> group = std::make_unique<Group>(groupName, "G");
+                        std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                         // Add the Group object to the list using the unique_ptr
                         setGroupsList(std::move(group));
@@ -274,7 +274,7 @@ void GroupRepository::ReadGroupsmessages() {
         for (const QString& groupFile : groupFiles) {
             QString groupName = groupFile.left(groupFile.lastIndexOf(".json"));
             // Create the Group object using std::make_unique
-            std::unique_ptr<Group> group = std::make_unique<Group>(groupName, "G");
+            std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
             QString filename = groupsDir.filePath(groupFile);
             QFile file(filename);

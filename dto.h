@@ -4,6 +4,7 @@
 #include <QString>
 #include <QMultiMap>
 
+//Data Transfer Object Holds Data for Groups, Channels and Private chats
 class DTO
 {
 public:

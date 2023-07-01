@@ -3,12 +3,11 @@
 
 #include "dto.h"
 
-//Group class that holds necessary Group data
 class Group : public DTO
 {
 public:
     Group();
-    Group(QString name , QString title);
+    Group(QString name , QString title="G");
     ~Group();
 };
 
