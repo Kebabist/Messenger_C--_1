@@ -1,5 +1,3 @@
-#include "grouprepository.h"
-#include "exceptionhandler.h"
 #include <QDateTime>
 #include <QWidget>
 #include <QList>
@@ -12,8 +10,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "exceptionhandler.h"
+#include "grouprepository.h"
 #include"group.h"
+#include "exceptionhandler.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
 
@@ -25,27 +24,8 @@ GroupRepository::GroupRepository()
 GroupRepository::~GroupRepository()
 {}
 
-//setter function
-void GroupRepository::setGroupsList(std::unique_ptr<Group> newgroup) {
-    bool found = false;
-    for (const auto& groupPtr : Groups_list) {
-        if (groupPtr->getName() == newgroup->getName()) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        Groups_list.emplace_back(std::move(newgroup));
-    }
-}
-
-//getter function
-const std::vector<std::unique_ptr<Group>>& GroupRepository::getGroup_list() const {
-    return Groups_list;
-}
-
 //create new group
-void GroupRepository::createGroup(QString token, QString groupName){
+void GroupRepository::create(QString token, QString groupName){
     HttpHandler http;
     QString arguments = "group_name="+groupName;
     urlmaker newurl("creategroup", token , arguments);
@@ -66,7 +46,7 @@ void GroupRepository::createGroup(QString token, QString groupName){
                 std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                 // Add the Group object to the list using the unique_ptr
-                setGroupsList(std::move(group));
+                setList(std::move(group));
             }
             else if (code != "200") {  //handled by UI
                 QString message = jsonObj.value("message").toString();
@@ -77,7 +57,7 @@ void GroupRepository::createGroup(QString token, QString groupName){
 }
 
 ////join group
-void GroupRepository::joinGroup(QString token , QString groupName){
+void GroupRepository::join(QString token , QString groupName){
     HttpHandler http;
     QString arguments = "group_name="+groupName;
     urlmaker newurl("joingroup", token , arguments);
@@ -95,7 +75,7 @@ void GroupRepository::joinGroup(QString token , QString groupName){
                 std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                 // Add the Group object to the list using the unique_ptr
-                setGroupsList(std::move(group));
+                setList(std::move(group));
             }
             else if (code != "200") { //handled by UI
                 QString message = jsonObj.value("message").toString();
@@ -106,7 +86,7 @@ void GroupRepository::joinGroup(QString token , QString groupName){
 }
 
 //get list of joined groupes
-void GroupRepository::getGrouplist(QString token){
+void GroupRepository::getList(QString token){
     HttpHandler http;
     QString arguments="";
     urlmaker newurl("getgrouplist", token , arguments);
@@ -127,7 +107,7 @@ void GroupRepository::getGrouplist(QString token){
                         std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
                         // Add the Group object to the list using the unique_ptr
-                        setGroupsList(std::move(group));
+                        setList(std::move(group));
                         qDebug() << "Group Name:" << groupName;
                     }
                 }
@@ -139,7 +119,7 @@ void GroupRepository::getGrouplist(QString token){
 }
 
 //send message in a group chat
-void GroupRepository::sendmessageGroup(QString token, QString groupName , QString message){
+void GroupRepository::sendMessage(QString token, QString groupName , QString message){
     HttpHandler http;
     QString arguments = "dst="+groupName+"&"+"body="+message;
     urlmaker newurl("sendmessagegroup", token , arguments);
@@ -161,8 +141,8 @@ void GroupRepository::sendmessageGroup(QString token, QString groupName , QStrin
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString GroupRepository::findLatestdate(QString groupName) const {
-    for (auto& groupPtr : Groups_list) {
+const QString GroupRepository::findLatestDate(QString groupName) const {
+    for (auto& groupPtr : list) {
         if (groupPtr->getName() == groupName) {
             QMultiMap<QString, QPair<QString, QString>> temp = groupPtr->getMessages();
             if (!temp.empty()) {
@@ -175,7 +155,7 @@ const QString GroupRepository::findLatestdate(QString groupName) const {
 }
 
 //get group messages
-void GroupRepository::getGroupchats(QString token, QString groupName , QString date){
+void GroupRepository::getChats(QString token, QString groupName , QString date){
     HttpHandler http;
     QString arguments;
     QPair<Group*, QString> flag(nullptr, "");
@@ -183,7 +163,7 @@ void GroupRepository::getGroupchats(QString token, QString groupName , QString d
         arguments = "dst="+groupName+"&"+"date="+date;
     }
     else{
-       QString lastdate = findLatestdate(groupName);
+        QString lastdate = findLatestDate(groupName);
         if(flag.second != ""){
            arguments = "dst="+groupName+"&"+"date="+lastdate;
         }
@@ -210,7 +190,7 @@ void GroupRepository::getGroupchats(QString token, QString groupName , QString d
                             QString Date = blockObject.value("date").toString();
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& groupPtr : Groups_list) {
+                            for (auto& groupPtr : list) {
                                 if (groupPtr->getName() == groupName) {
                                     groupPtr->setMessage(src, body, strDate);
                                 }
@@ -224,7 +204,7 @@ void GroupRepository::getGroupchats(QString token, QString groupName , QString d
 }
 
 //Writes Group data to a file
-void GroupRepository::WriteGroupsmessages() {
+void GroupRepository::writeMessages() {
     // Create a file for each group and add their messages to them
     QString filename;
     QString homeDir = QDir::homePath();
@@ -233,7 +213,7 @@ void GroupRepository::WriteGroupsmessages() {
         clientDir.mkpath(".");
     }
     qDebug() << "made file";
-    for (auto& groupPtr : Groups_list){
+    for (auto& groupPtr : list){
         filename = clientDir.filePath(groupPtr->getName() + ".json");
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
@@ -256,7 +236,7 @@ void GroupRepository::WriteGroupsmessages() {
 }
 
 //reades Group data from a file
-void GroupRepository::ReadGroupsmessages() {
+void GroupRepository::readMessages() {
     try {
         // Create a directory for the group files, if it doesn't already exist
         QString homeDir = QDir::homePath();
@@ -292,7 +272,7 @@ void GroupRepository::ReadGroupsmessages() {
                 }
 
                 // Add the Group object to the list using the unique_ptr
-                setGroupsList(std::move(group));
+                setList(std::move(group));
                 file.close();
             }
             else {
@@ -311,7 +291,7 @@ void GroupRepository::ReadGroupsmessages() {
 
 
 //removes Group directory & its files after logout
-void GroupRepository::RemoveGroupsDir(){
+void GroupRepository::removeDir(){
     try {
         QString homeDir = QDir::homePath();
         QDir groupsDir(homeDir + QDir::separator() + "groups");
@@ -346,7 +326,7 @@ void GroupRepository::RemoveGroupsDir(){
 //Test Display function
 void GroupRepository::display() {
     qDebug() << "Display called";
-    for (auto& groupPtr : Groups_list) {
+    for (auto& groupPtr : list) {
         if (groupPtr->getName() == "nah123123") {
             QMultiMap<QString, QPair<QString, QString>> map = groupPtr->getMessages();
             if (map.size() == 0) {
