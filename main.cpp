@@ -13,6 +13,7 @@
 #include "channelrepository.h"
 #include "pvrepository.h"
 #include "pv.h"
+#include "repository.h"
 
 
 
@@ -21,6 +22,7 @@ QApplication app(argc, argv);
 Client cl1("kebab","6kebab","kebab","kebab");
 
 GroupRepository groupRepo;
+
 //groupRepo.getList("41c0089068b863e6a14ccc5d6dcda514");
 //groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","lmao","");
 //groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","new","");
@@ -45,8 +47,10 @@ GroupRepository groupRepo;
 //        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
 //    }
 //}
-
 groupRepo.removeDir();
+
+
+
 ChannelRepository cr;
 //cr.joinChannel("41c0089068b863e6a14ccc5d6dcda514","lmaochannel");
 //cr.joinChannel("41c0089068b863e6a14ccc5d6dcda514","new");
@@ -70,24 +74,26 @@ ChannelRepository cr;
 //        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
 //    }
 //}
+
 //the other person is kebab4
-//the given toke is for kebab3
-//PvRepository pvRepo;
-//pvRepo.getPvlist("11d02f67196f529abc0e227d11d14fa3");
-//pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab4","");
-//pvRepo.getPvchats("11d02f67196f529abc0e227d11d14fa3","kebab2","");
-//pvRepo.WritePvsmessages();
-//pvRepo.sendmessagePv("11d02f67196f529abc0e227d11d14fa3","kebab4","eyyyyyyy baba");
-//pvRepo.ReadPvsmessages();
-//const std::vector<std::unique_ptr<Pv>>& pvList = pvRepo.getPv_list();
-//for (const auto& pvPtr : pvList) {
-//    qDebug() << "Pv Name: " << pvPtr->getName();
-//    qDebug() << "Messages: ";
-//    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getMessages();
-//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
-//        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
-//    }
-//}
-//pvRepo.RemovePvsDir();
+//the given token is for kebab3
+PvRepository pvRepo;
+Pv pv;
+pvRepo.getList("11d02f67196f529abc0e227d11d14fa3");
+pvRepo.getChats("11d02f67196f529abc0e227d11d14fa3","kebab4","20230701121345");
+pvRepo.getChats("11d02f67196f529abc0e227d11d14fa3","kebab2","20230630170702");
+pvRepo.writeMessages();
+pvRepo.sendMessage("11d02f67196f529abc0e227d11d14fa3","kebab4","alan ferestadam");
+pvRepo.readMessages();
+const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
+for (const auto& pvPtr : pvList) {
+    qDebug() << "Pv Name: " << pvPtr->getName();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getMessages();
+    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
+    }
+}
+pvRepo.removeDir();
 return app.exec();
 }
