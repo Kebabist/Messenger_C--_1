@@ -1,8 +1,4 @@
-#include "channelrepository.h"
-#include "exceptionhandler.h"
 #include <QDateTime>
-#include <QWidget>
-#include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDir>
@@ -12,11 +8,11 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "exceptionhandler.h"
+#include "channelrepository.h"
 #include "channel.h"
+#include "exceptionhandler.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
-#include "client.h"
 
 //ChannelRepository default constructor
 ChannelRepository::ChannelRepository()
@@ -26,29 +22,10 @@ ChannelRepository::ChannelRepository()
 ChannelRepository::~ChannelRepository()
 {}
 
-//setter function
-void ChannelRepository::setChannelsList(std::unique_ptr<Channel> newChannel) {
-    bool found = false;
-    for (const auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == newChannel->getChannelname()) {
-            found = true;
-            break;
-        }
-    }
-    if (!found) {
-        Channels_list.emplace_back(std::move(newChannel));
-    }
-}
-
-//getter function
-const std::vector<std::unique_ptr<Channel>>& ChannelRepository::getChannel_list() const {
-    return Channels_list;
-}
-
 //create new Channel
-void ChannelRepository::createChannel(QString token, QString ChannelName){
+void ChannelRepository::create(QString token, QString channelName){
     HttpHandler http;
-    QString arguments = "channel_name="+ChannelName;
+    QString arguments = "channel_name="+channelName;
     urlmaker newurl("createchannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -64,10 +41,10 @@ void ChannelRepository::createChannel(QString token, QString ChannelName){
                 qDebug() <<message;
 
                 // Create the Channel object using std::make_unique
-                std::unique_ptr<Channel> channel = std::make_unique<Channel>(ChannelName);
+                std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
                 // Add the Channel object to the list using the unique_ptr
-                setChannelsList(std::move(channel));
+                setList(std::move(channel));
             }
             else if (code != "200") {  //handled by UI
                 QString message = jsonObj.value("message").toString();
@@ -78,9 +55,9 @@ void ChannelRepository::createChannel(QString token, QString ChannelName){
 }
 
 ////join Channel
-void ChannelRepository::joinChannel(QString token , QString ChannelName){
+void ChannelRepository::join(QString token , QString channelName){
     HttpHandler http;
-    QString arguments = "channel_name="+ChannelName;
+    QString arguments = "channel_name="+channelName;
     urlmaker newurl("joinchannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -93,10 +70,10 @@ void ChannelRepository::joinChannel(QString token , QString ChannelName){
                 qDebug() <<message;
 
                 // Create the Channel object using std::make_unique
-                std::unique_ptr<Channel> channel = std::make_unique<Channel>(ChannelName);
+                std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
                 // Add the Channel object to the list using the unique_ptr
-                setChannelsList(std::move(channel));
+                setList(std::move(channel));
             }
             else if (code != "200") { //handled by UI
                 QString message = jsonObj.value("message").toString();
@@ -106,8 +83,8 @@ void ChannelRepository::joinChannel(QString token , QString ChannelName){
     }
 }
 
-//get list of joined Channeles
-void ChannelRepository::getChannellist(QString token){
+//get list of joined Channels
+void ChannelRepository::getList(QString token){
     HttpHandler http;
     QString arguments="";
     urlmaker newurl("getchannellist", token , arguments);
@@ -122,14 +99,14 @@ void ChannelRepository::getChannellist(QString token){
                 if (key.startsWith("block")) {
                     QJsonObject blockObject = it.value().toObject();
                     if (blockObject.contains("channel_name")) {
-                        QString ChannelName = blockObject.value("channel_name").toString();
+                        QString channelName = blockObject.value("channel_name").toString();
 
                         // Create the Channel object using std::make_unique
-                        std::unique_ptr<Channel> channel = std::make_unique<Channel>(ChannelName);
+                        std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
                         // Add the Channel object to the list using the unique_ptr
-                        setChannelsList(std::move(channel));
-                        qDebug() << "Channel Name:" << ChannelName;
+                        setList(std::move(channel));
+                        qDebug() << "Channel Name:" << channelName;
                     }
                 }
             }
@@ -140,9 +117,9 @@ void ChannelRepository::getChannellist(QString token){
 }
 
 //send message in a Channel chat
-void ChannelRepository::sendmessageChannel(QString token, QString ChannelName , QString message){
+void ChannelRepository::sendMessage(QString token, QString channelName , QString message){
     HttpHandler http;
-    QString arguments = "dst="+ChannelName+"&"+"body="+message;
+    QString arguments = "dst="+channelName+"&"+"body="+message;
     urlmaker newurl("sendmessagechannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
@@ -150,7 +127,7 @@ void ChannelRepository::sendmessageChannel(QString token, QString ChannelName , 
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
-            if (code == "200"){ //handled by UI (every time we send a message we call getChannelmessage method and get the rest of the messages from the saerver
+            if (code == "200"){ //handled by UI (every time we send a message we call getmessage method and get the rest of the messages from the saerver
                 QString message = jsonObj.value("message").toString();
                 qDebug() <<message;
             }else if (code != "200") { //handled by UI
@@ -162,10 +139,11 @@ void ChannelRepository::sendmessageChannel(QString token, QString ChannelName , 
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString ChannelRepository::findLatestdate(QString ChannelName) const {
-    for (auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == ChannelName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = ChannelPtr->getChannelmessages();
+const QString ChannelRepository::findLatestDate(QString channelName) {
+    readMessages();
+    for (auto& channelPtr : list) {
+        if (channelPtr->getName() == channelName) {
+            QMultiMap<QString, QPair<QString, QString>> temp = channelPtr->getMessages();
             if (!temp.empty()) {
                 const QString lastdate = temp.lastKey();
                 return lastdate;
@@ -175,21 +153,19 @@ const QString ChannelRepository::findLatestdate(QString ChannelName) const {
     return "";
 }
 
-
 //get Channel messages
-void ChannelRepository::getChannelchats(QString token, QString ChannelName , QString date){
+void ChannelRepository::getChats(QString token, QString channelName , QString date){
     HttpHandler http;
     QString arguments;
-    QPair<Channel*, QString> flag(nullptr, "");
     if (date !=""){
-        arguments = "dst="+ChannelName+"&"+"date="+date;
+        arguments = "dst="+channelName+"&"+"date="+date;
     }
     else{
-        QString lastdate = findLatestdate(ChannelName);
-        if(flag.second != ""){
-            arguments = "dst="+ChannelName+"&"+"date="+lastdate;
+        QString lastdate = findLatestDate(channelName);
+        if(lastdate != ""){
+            arguments = "dst="+channelName+"&"+"date="+lastdate;
         }
-        else arguments = "dst="+ChannelName;
+        else arguments = "dst="+channelName;
     }
     urlmaker newurl("getchannelchats", token , arguments);
     const QString url = newurl.generate();
@@ -212,9 +188,9 @@ void ChannelRepository::getChannelchats(QString token, QString ChannelName , QSt
                             QString Date = blockObject.value("date").toString();
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& ChannelPtr : Channels_list) {
-                                if (ChannelPtr->getChannelname() == ChannelName) {
-                                    ChannelPtr->setChannelmessages(src, body, strDate);
+                            for (auto& channelPtr : list) {
+                                if (channelPtr->getName() == channelName) {
+                                    channelPtr->setMessage(src, body, strDate);
                                 }
                             }
                         }
@@ -226,7 +202,7 @@ void ChannelRepository::getChannelchats(QString token, QString ChannelName , QSt
 }
 
 //Writes Channel data to a file
-void ChannelRepository::WriteChannelsmessages() {
+void ChannelRepository::writeMessages() {
     // Create a file for each Channel and add their messages to them
     QString filename;
     QString homeDir = QDir::homePath();
@@ -235,12 +211,12 @@ void ChannelRepository::WriteChannelsmessages() {
         clientDir.mkpath(".");
     }
     qDebug() << "made file";
-    for (auto& ChannelPtr : Channels_list){
-        filename = clientDir.filePath(ChannelPtr->getChannelname() + ".json");
+    for (auto& channelPtr : list){
+        filename = clientDir.filePath(channelPtr->getName() + ".json");
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
             QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = ChannelPtr->getChannelmessages().constBegin(); it != ChannelPtr->getChannelmessages().constEnd(); ++it) {
+            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = channelPtr->getMessages().constBegin(); it != channelPtr->getMessages().constEnd(); ++it) {
                 QJsonObject messageObject;
                 messageObject["timestamp"] = it.key();
                 messageObject["src"] = it.value().first;
@@ -258,43 +234,43 @@ void ChannelRepository::WriteChannelsmessages() {
 }
 
 //reades Channel data from a file
-void ChannelRepository::ReadChannelsmessages() {
+void ChannelRepository::readMessages() {
     try {
         // Create a directory for the Channel files, if it doesn't already exist
         QString homeDir = QDir::homePath();
-        QDir ChannelsDir(homeDir + QDir::separator() + "Channels");
-        if (!ChannelsDir.exists()) {
-            ChannelsDir.mkpath(".");
+        QDir channelsDir(homeDir + QDir::separator() + "Channels");
+        if (!channelsDir.exists()) {
+            channelsDir.mkpath(".");
         }
 
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
-        QStringList ChannelFiles = ChannelsDir.entryList(filters, QDir::Files);
+        QStringList channelFiles = channelsDir.entryList(filters, QDir::Files);
 
         // Read each Channel file and create a Channel object from its data
-        for (const QString& ChannelFile : ChannelFiles) {
-            QString ChannelName = ChannelFile.left(ChannelFile.lastIndexOf(".json"));
+        for (const QString& channelFile : channelFiles) {
+            QString channelName = channelFile.left(channelFile.lastIndexOf(".json"));
             // Create the Channel object using std::make_unique
-            std::unique_ptr<Channel> channel = std::make_unique<Channel>(ChannelName);
+            std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
-            QString filename = ChannelsDir.filePath(ChannelFile);
+            QString filename = channelsDir.filePath(channelFile);
             QFile file(filename);
 
             if (file.open(QIODevice::ReadOnly)) {
-                QJsonDocument ChannelDoc = QJsonDocument::fromJson(file.readAll());
-                QJsonArray messageArray = ChannelDoc.array();
+                QJsonDocument channelDoc = QJsonDocument::fromJson(file.readAll());
+                QJsonArray messageArray = channelDoc.array();
 
                 for (int i = 0; i < messageArray.size(); ++i) {
                     QJsonObject messageObj = messageArray.at(i).toObject();
                     QString timestamp = messageObj.value("timestamp").toString();
                     QString message = messageObj.value("message").toString();
                     QString src = messageObj.value("src").toString();
-                    channel->setChannelmessages(src, message, timestamp);
+                    channel->setMessage(src, message, timestamp);
                 }
 
                 // Add the Channel object to the list using the unique_ptr
-                setChannelsList(std::move(channel));
+                setList(std::move(channel));
                 file.close();
             }
             else {
@@ -313,13 +289,13 @@ void ChannelRepository::ReadChannelsmessages() {
 
 
 //removes Channel directory & its files after logout
-void ChannelRepository::RemoveChannelsDir(){
+void ChannelRepository::removeDir(){
     try {
         QString homeDir = QDir::homePath();
-        QDir ChannelsDir(homeDir + QDir::separator() + "Channels");
+        QDir channelsDir(homeDir + QDir::separator() + "Channels");
 
         // Remove all the files in the directory
-        QFileInfoList fileList = ChannelsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
+        QFileInfoList fileList = channelsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
         for (const QFileInfo& fileInfo : fileList) {
             if (!fileInfo.dir().remove(fileInfo.fileName())) {
                 QString message = "Could not remove file " + fileInfo.absoluteFilePath();
@@ -329,8 +305,8 @@ void ChannelRepository::RemoveChannelsDir(){
         }
 
         // Remove the directory itself
-        if (!ChannelsDir.rmdir(".")) {
-            QString message = "Could not remove directory " + ChannelsDir.absolutePath();
+        if (!channelsDir.rmdir(".")) {
+            QString message = "Could not remove directory " + channelsDir.absolutePath();
             QString code = "NO_Channel_DIRECTORY";
             throw ExceptionHandler(message, code);
         }
@@ -348,11 +324,11 @@ void ChannelRepository::RemoveChannelsDir(){
 //Test Display function
 void ChannelRepository::display() {
     qDebug() << "Display called";
-    for (auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == "nah123123") {
-            QMultiMap<QString, QPair<QString, QString>> map = ChannelPtr->getChannelmessages();
+    for (auto& channelPtr : list) {
+        if (channelPtr->getName() == "nah123123") {
+            QMultiMap<QString, QPair<QString, QString>> map = channelPtr->getMessages();
             if (map.size() == 0) {
-                qDebug() << "No messages in Channel " << ChannelPtr->getChannelname();
+                qDebug() << "No messages in Channel " << channelPtr->getName();
             } else {
                 QMultiMapIterator<QString, QPair<QString, QString>> i(map);
                 while (i.hasNext()) {

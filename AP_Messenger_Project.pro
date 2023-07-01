@@ -13,6 +13,7 @@ SOURCES += \
     channel.cpp \
     channelrepository.cpp \
     client.cpp \
+    dto.cpp \
     exceptionhandler.cpp \
     group.cpp \
     grouprepository.cpp \
@@ -21,12 +22,14 @@ SOURCES += \
     mainwindow.cpp \
     pv.cpp \
     pvrepository.cpp \
+    repository.cpp \
     urlmaker.cpp
 
 HEADERS += \
     channel.h \
     channelrepository.h \
     client.h \
+    dto.h \
     exceptionhandler.h \
     group.h \
     grouprepository.h \
@@ -34,6 +37,7 @@ HEADERS += \
     mainwindow.h \
     pv.h \
     pvrepository.h \
+    repository.h \
     urlmaker.h
 
 FORMS += \

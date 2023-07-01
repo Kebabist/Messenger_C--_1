@@ -9,37 +9,29 @@
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
-#include "PV.h"
-#include "httpHandler.h"
-#include "urlmaker.h"
-#include "client.h"
+#include <vector>
+#include "pv.h"
+#include "repository.h"
 
-class PvRepository : public QWidget
+class PvRepository : public Repository
 {
-    Q_OBJECT
 
 public:
     PvRepository();
     ~PvRepository();
 
-    void getPvlist(QString token);
-    void sendmessagePv(QString token, QString pvName , QString message);
-    const QString findLatestdate(QString pvName) const;
-    void getPvchats(QString token , QString pvName , QString date);
-    void RemovePvsDir();
-    void WritePvsmessages();
-    void ReadPvsmessages();
-    void display();
+    void create(QString token, QString name) override;
+    void join(QString token, QString name) override;
+    void getList(QString token) override;
+    void sendMessage(QString token, QString name, QString message) override;
+    const QString findLatestDate(QString name) override;
+    void getChats(QString token, QString name, QString date= "") override;
+    void removeDir() override;
+    void writeMessages() override;
+    void readMessages() override;
+    void display() override;
 
-    //setter function
-    void setPvsList(const std::unique_ptr<Pv> newpv);
-
-    //getter function
-    const std::vector<std::unique_ptr<Pv>>& getPv_list() const;
-
-private:
-    HttpHandler http;
-    urlmaker urlMaker;
-    std::vector<std::unique_ptr<Pv>> Pvs_list;
 };
+
+
 #endif // PvREPOSITORY_H
