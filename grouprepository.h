@@ -1,8 +1,6 @@
 #ifndef GROUPREPOSITORY_H
 #define GROUPREPOSITORY_H
 
-#include <QWidget>
-#include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDir>
