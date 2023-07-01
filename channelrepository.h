@@ -22,7 +22,7 @@ public:
     void join(QString token, QString name) override;
     void getList(QString token) override;
     void sendMessage(QString token, QString name, QString message) override;
-    const QString findLatestDate(QString name) const override;
+    const QString findLatestDate(QString name) override;
     void getChats(QString token, QString name, QString date) override;
     void removeDir() override;
     void writeMessages() override;

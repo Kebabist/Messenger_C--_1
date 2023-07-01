@@ -25,7 +25,7 @@ public:
     virtual void join(QString token, QString name) = 0;
     virtual void getList(QString token) = 0;
     virtual void sendMessage(QString token, QString name, QString message) = 0;
-    virtual const QString findLatestDate(QString name) const = 0;
+    virtual const QString findLatestDate(QString name) = 0;
     virtual void getChats(QString token, QString name, QString date) = 0;
     virtual void removeDir() = 0;
     virtual void writeMessages() = 0;

@@ -1,7 +1,6 @@
 #ifndef EXCEPTIONHANDLER_H
 #define EXCEPTIONHANDLER_H
 
-#include <QWidget>
 #include <QException>
 #include <QString>
 

@@ -9,7 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include "grouprepository.h"
-#include"group.h"
+#include "group.h"
 #include "exceptionhandler.h"
 #include "httpHandler.h"
 #include "urlmaker.h"
@@ -144,7 +144,8 @@ void GroupRepository::sendMessage(QString token, QString groupName , QString mes
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString GroupRepository::findLatestDate(QString groupName) const {
+const QString GroupRepository::findLatestDate(QString groupName){
+    readMessages();
     for (auto& groupPtr : list) {
         if (groupPtr->getName() == groupName) {
             QMultiMap<QString, QPair<QString, QString>> temp = groupPtr->getMessages();
