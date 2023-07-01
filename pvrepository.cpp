@@ -86,7 +86,8 @@ void PvRepository::sendMessage(QString token, QString pvName , QString message){
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString PvRepository::findLatestDate(QString pvName) const {
+const QString PvRepository::findLatestDate(QString pvName) {
+    readMessages();
     for (auto& pvPtr : list) {
         if (pvPtr->getName() == pvName) {
             QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getMessages();
@@ -152,7 +153,7 @@ void PvRepository::writeMessages() {
     // Create a file for each pv and add their messages to them
     QString filename;
     QString homeDir = QDir::homePath();
-    QDir clientDir(homeDir + QDir::separator() + "pvs");
+    QDir clientDir(homeDir + QDir::separator() + "Pvs");
     if (!clientDir.exists()) {
         clientDir.mkpath(".");
     }
@@ -184,7 +185,7 @@ void PvRepository::readMessages() {
     try {
         // Create a directory for the pv files, if it doesn't already exist
         QString homeDir = QDir::homePath();
-        QDir pvsDir(homeDir + QDir::separator() + "pvs");
+        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
         if (!pvsDir.exists()) {
             pvsDir.mkpath(".");
         }
@@ -238,7 +239,7 @@ void PvRepository::readMessages() {
 void PvRepository::removeDir(){
     try {
         QString homeDir = QDir::homePath();
-        QDir pvsDir(homeDir + QDir::separator() + "pvs");
+        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
 
         // Remove all the files in the directory
         QFileInfoList fileList = pvsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);

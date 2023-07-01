@@ -11,6 +11,4 @@ public:
     ~Group();
 };
 
-
-
 #endif // GROUP_H

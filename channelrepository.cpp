@@ -139,7 +139,8 @@ void ChannelRepository::sendMessage(QString token, QString channelName , QString
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString ChannelRepository::findLatestDate(QString channelName) const {
+const QString ChannelRepository::findLatestDate(QString channelName) {
+    readMessages();
     for (auto& channelPtr : list) {
         if (channelPtr->getName() == channelName) {
             QMultiMap<QString, QPair<QString, QString>> temp = channelPtr->getMessages();

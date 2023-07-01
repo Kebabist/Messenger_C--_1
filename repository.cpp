@@ -1,7 +1,5 @@
 #include "repository.h"
 
-#include "Repository.h"
-
 //Constructor
 Repository::Repository() {}
 

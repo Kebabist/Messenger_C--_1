@@ -2,7 +2,6 @@
 #define CLIENT_H
 
 #include <QMainWindow>
-#include <QWidget>
 
 class Client
 {
@@ -17,7 +16,7 @@ public:
     void WriteClient();
     void ReadClient();
     void RemoveClientDir();
-
+    void ClientState();
     //getter Merhods
     QString getToken();
 
