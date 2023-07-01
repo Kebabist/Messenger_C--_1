@@ -90,6 +90,9 @@ for (const auto& pvPtr : pvList) {
     qDebug() << "Pv Name: " << pvPtr->getName();
     qDebug() << "Messages: ";
     const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getMessages();
+}
+pvRepo.removeDir();
+
 //cr.join("41c0089068b863e6a14ccc5d6dcda514","lmao");
 //cr.join("41c0089068b863e6a14ccc5d6dcda514","newchannel");
 //cr.create("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha");
@@ -103,7 +106,6 @@ cr.readMessages();
 cr.getChats("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","");
 cr.writeMessages();
 //cr.removeDir();
-
 const std::vector<std::unique_ptr<DTO>>& channelList = cr.Repository::getList();
 qDebug()<<"====================================";
 for (const auto& channelPtr : channelList) {
@@ -114,6 +116,7 @@ for (const auto& channelPtr : channelList) {
         qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }
 }
-pvRepo.removeDir();
+
+
 return app.exec();
 }
