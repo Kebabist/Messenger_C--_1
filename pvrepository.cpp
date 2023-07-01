@@ -150,33 +150,47 @@ void PvRepository::getChats(QString token, QString pvName , QString date){
 
 //Writes pv data to a file
 void PvRepository::writeMessages() {
-    // Create a file for each pv and add their messages to them
-    QString filename;
-    QString homeDir = QDir::homePath();
-    QDir clientDir(homeDir + QDir::separator() + "Pvs");
-    if (!clientDir.exists()) {
-        clientDir.mkpath(".");
-    }
-    qDebug() << "made file";
-    for (auto& pvPtr : list){
-        filename = clientDir.filePath(pvPtr->getName() + ".json");
-        QFile file(filename);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-            QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getMessages().constBegin(); it != pvPtr->getMessages().constEnd(); ++it) {
-                QJsonObject messageObject;
-                messageObject["timestamp"] = it.key();
-                messageObject["src"] = it.value().first;
-                messageObject["message"] = it.value().second;
-                messageArray.append(messageObject);
-            }
-            QJsonDocument messageDoc(messageArray);
-            QByteArray messageData = messageDoc.toJson();
-            file.write(messageData);
-            file.close();
-        } else {
-            qDebug() << "Failed to open file " << filename << " for writing";
+    try{
+        // Create a file for each pv and add their messages to them
+        QString filename;
+        QString homeDir = QDir::homePath();
+        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
+        if (!pvsDir.exists()) {
+            pvsDir.mkpath(".");
         }
+        for (auto& pvPtr : list){
+            filename = pvsDir.filePath(pvPtr->getName() + ".json");
+            QFile file(filename);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+                QJsonArray messageArray;
+                for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getMessages().constBegin(); it != pvPtr->getMessages().constEnd(); ++it) {
+                    QJsonObject messageObject;
+                    messageObject["timestamp"] = it.key();
+                    messageObject["src"] = it.value().first;
+                    messageObject["message"] = it.value().second;
+                    messageArray.append(messageObject);
+                }
+                QJsonDocument messageDoc(messageArray);
+                QByteArray messageData = messageDoc.toJson();
+                file.write(messageData);
+                file.close();
+            } else {
+                // Throw an exception if the file could not be opened for writing
+                QString message = "Could not open file " + filename + " for writing";
+                QString code = "FILE_OPEN_ERROR";
+                throw ExceptionHandler(message, code);
+            }
+        }
+    }
+    catch (const ExceptionHandler& e) {
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 
@@ -189,7 +203,6 @@ void PvRepository::readMessages() {
         if (!pvsDir.exists()) {
             pvsDir.mkpath(".");
         }
-
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
@@ -229,8 +242,14 @@ void PvRepository::readMessages() {
         }
     }
     catch (const ExceptionHandler& e) {
-        // Handle any exceptions thrown during file reading
-        qDebug() << "Error reading pv files: " << e.message() << " (" << e.code() << ")";
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 

@@ -203,33 +203,47 @@ void ChannelRepository::getChats(QString token, QString channelName , QString da
 
 //Writes Channel data to a file
 void ChannelRepository::writeMessages() {
-    // Create a file for each Channel and add their messages to them
-    QString filename;
-    QString homeDir = QDir::homePath();
-    QDir clientDir(homeDir + QDir::separator() + "Channels");
-    if (!clientDir.exists()) {
-        clientDir.mkpath(".");
-    }
-    qDebug() << "made file";
-    for (auto& channelPtr : list){
-        filename = clientDir.filePath(channelPtr->getName() + ".json");
-        QFile file(filename);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-            QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = channelPtr->getMessages().constBegin(); it != channelPtr->getMessages().constEnd(); ++it) {
-                QJsonObject messageObject;
-                messageObject["timestamp"] = it.key();
-                messageObject["src"] = it.value().first;
-                messageObject["message"] = it.value().second;
-                messageArray.append(messageObject);
-            }
-            QJsonDocument messageDoc(messageArray);
-            QByteArray messageData = messageDoc.toJson();
-            file.write(messageData);
-            file.close();
-        } else {
-            qDebug() << "Failed to open file " << filename << " for writing";
+    try{
+        // Create a file for each Channel and add their messages to them
+        QString filename;
+        QString homeDir = QDir::homePath();
+        QDir channelsDir(homeDir + QDir::separator() + "Channels");
+        if (!channelsDir.exists()) {
+            channelsDir.mkpath(".");
         }
+        for (auto& channelPtr : list){
+            filename = channelsDir.filePath(channelPtr->getName() + ".json");
+            QFile file(filename);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+                QJsonArray messageArray;
+                for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = channelPtr->getMessages().constBegin(); it != channelPtr->getMessages().constEnd(); ++it) {
+                    QJsonObject messageObject;
+                    messageObject["timestamp"] = it.key();
+                    messageObject["src"] = it.value().first;
+                    messageObject["message"] = it.value().second;
+                    messageArray.append(messageObject);
+                }
+                QJsonDocument messageDoc(messageArray);
+                QByteArray messageData = messageDoc.toJson();
+                file.write(messageData);
+                file.close();
+            } else {
+                // Throw an exception if the file could not be opened for writing
+                QString message = "Could not open file " + filename + " for writing";
+                QString code = "FILE_OPEN_ERROR";
+                throw ExceptionHandler(message, code);
+            }
+        }
+    }
+    catch (const ExceptionHandler& e) {
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 
@@ -242,7 +256,6 @@ void ChannelRepository::readMessages() {
         if (!channelsDir.exists()) {
             channelsDir.mkpath(".");
         }
-
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
@@ -282,8 +295,14 @@ void ChannelRepository::readMessages() {
         }
     }
     catch (const ExceptionHandler& e) {
-        // Handle any exceptions thrown during file reading
-        qDebug() << "Error reading Channel files: " << e.message() << " (" << e.code() << ")";
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 

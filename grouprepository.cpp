@@ -203,33 +203,47 @@ void GroupRepository::getChats(QString token, QString groupName , QString date){
 
 //Writes Group data to a file
 void GroupRepository::writeMessages() {
-    // Create a file for each group and add their messages to them
-    QString filename;
-    QString homeDir = QDir::homePath();
-    QDir clientDir(homeDir + QDir::separator() + "Groups");
-    if (!clientDir.exists()) {
-        clientDir.mkpath(".");
-    }
-    qDebug() << "made file";
-    for (auto& groupPtr : list){
-        filename = clientDir.filePath(groupPtr->getName() + ".json");
-        QFile file(filename);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
-            QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = groupPtr->getMessages().constBegin(); it != groupPtr->getMessages().constEnd(); ++it) {
-                QJsonObject messageObject;
-                messageObject["timestamp"] = it.key();
-                messageObject["src"] = it.value().first;
-                messageObject["message"] = it.value().second;
-                messageArray.append(messageObject);
-            }
-            QJsonDocument messageDoc(messageArray);
-            QByteArray messageData = messageDoc.toJson();
-            file.write(messageData);
-            file.close();
-        } else {
-            qDebug() << "Failed to open file " << filename << " for writing";
+    try{
+        // Create a file for each group and add their messages to them
+        QString filename;
+        QString homeDir = QDir::homePath();
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
+        if (!groupsDir.exists()) {
+            groupsDir.mkpath(".");
         }
+        for (auto& groupPtr : list){
+            filename = groupsDir.filePath(groupPtr->getName() + ".json");
+            QFile file(filename);
+            if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+                QJsonArray messageArray;
+                for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = groupPtr->getMessages().constBegin(); it != groupPtr->getMessages().constEnd(); ++it) {
+                    QJsonObject messageObject;
+                    messageObject["timestamp"] = it.key();
+                    messageObject["src"] = it.value().first;
+                    messageObject["message"] = it.value().second;
+                    messageArray.append(messageObject);
+                }
+                QJsonDocument messageDoc(messageArray);
+                QByteArray messageData = messageDoc.toJson();
+                file.write(messageData);
+                file.close();
+            } else {
+                // Throw an exception if the file could not be opened for writing
+                QString message = "Could not open file " + filename + " for writing";
+                QString code = "FILE_OPEN_ERROR";
+                throw ExceptionHandler(message, code);
+            }
+        }
+    }
+    catch (const ExceptionHandler& e) {
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 
@@ -242,7 +256,6 @@ void GroupRepository::readMessages() {
         if (!groupsDir.exists()) {
             groupsDir.mkpath(".");
         }
-
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
@@ -282,8 +295,14 @@ void GroupRepository::readMessages() {
         }
     }
     catch (const ExceptionHandler& e) {
-        // Handle any exceptions thrown during file reading
-        qDebug() << "Error reading group files: " << e.message() << " (" << e.code() << ")";
+        // Handle the exception
+        qDebug() << "Error: " << e.message() << " (" << e.code() << ")";
+        //re-throw here if it's needed to handle the exception further up the call stack
+        // throw;
+    }
+    catch (...) {
+        // Handle any other exceptions
+        qDebug() << "Unknown error occurred";
     }
 }
 
