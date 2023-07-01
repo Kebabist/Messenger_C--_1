@@ -13,6 +13,7 @@ SOURCES += \
     channel.cpp \
     channelrepository.cpp \
     client.cpp \
+    dto.cpp \
     exceptionhandler.cpp \
     group.cpp \
     grouprepository.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     channel.h \
     channelrepository.h \
     client.h \
+    dto.h \
     exceptionhandler.h \
     group.h \
     grouprepository.h \
