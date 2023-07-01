@@ -26,7 +26,6 @@ SOURCES += \
     pvrepository.cpp \
     signupui.cpp \
     repository.cpp \
-    updaterclass.cpp \
     urlmaker.cpp
 
 HEADERS += \
@@ -45,7 +44,6 @@ HEADERS += \
     pvrepository.h \
     signupui.h \
     repository.h \
-    updaterclass.h \
     urlmaker.h
 
 FORMS += \

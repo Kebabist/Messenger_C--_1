@@ -5,12 +5,19 @@
 
 MainWindow::MainWindow( const std::vector<std::unique_ptr<DTO>>& passedgroupList,
                        const std::vector<std::unique_ptr<DTO>>& passedchannelList,
-                       const std::vector<std::unique_ptr<DTO>>& passedpvList , QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-    , pvList(passedpvList)
-    , groupList(passedgroupList)
-    , channelList(passedchannelList)
+                       const std::vector<std::unique_ptr<DTO>>& passedpvList,
+                       GroupRepository& groupRepo,
+                       ChannelRepository& channelRepo,
+                       PvRepository& pvRepo,
+                       QWidget *parent)
+    : QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    pvList(passedpvList),
+    groupList(passedgroupList),
+    channelList(passedchannelList),
+    groupRepo(groupRepo),
+    channelRepo(channelRepo),
+    pvRepo(pvRepo)
 {
 
     ui->setupUi(this);
@@ -19,7 +26,7 @@ MainWindow::MainWindow( const std::vector<std::unique_ptr<DTO>>& passedgroupList
     if (!client.getToken().isEmpty()) {
         // The client data was successfully read and contains a token, redirect to the logged in page
         //QWidget* loggedInPageParent = new QWidget();
-        loggedin = new loggedinpage( groupList, channelList , pvList , client );
+        loggedin = new loggedinpage( groupList, channelList , pvList ,groupRepo, channelRepo,pvRepo, client );
         loggedin->show();
         connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
         //loggedin->setWindowFlags(Qt::Tool);
@@ -50,7 +57,7 @@ void MainWindow::handleloginApproved(Client& client)
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(groupList, channelList , pvList , client);
+    loggedin = new loggedinpage(groupList, channelList , pvList , groupRepo, channelRepo,pvRepo, client);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }
