@@ -3,9 +3,14 @@
 #include <qmessagebox.h>
 
 
-MainWindow::MainWindow(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr , QWidget *parent)
+MainWindow::MainWindow( const std::vector<std::unique_ptr<DTO>>& passedgroupList,
+                       const std::vector<std::unique_ptr<DTO>>& passedchannelList,
+                       const std::vector<std::unique_ptr<DTO>>& passedpvList , QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow) , group(g) , grouprepo(gr) , channel(c) , channelrepo(cr) , pv(p) , pvrepo(pr)
+    , ui(new Ui::MainWindow)
+    , pvList(passedpvList)
+    , groupList(passedgroupList)
+    , channelList(passedchannelList)
 {
 
     ui->setupUi(this);
@@ -14,7 +19,7 @@ MainWindow::MainWindow(Group &g , GroupRepository &gr , Channel &c , ChannelRepo
     if (!client.getToken().isEmpty()) {
         // The client data was successfully read and contains a token, redirect to the logged in page
         //QWidget* loggedInPageParent = new QWidget();
-        loggedin = new loggedinpage(group , grouprepo ,channel , channelrepo , pv , pvrepo , client );
+        loggedin = new loggedinpage( groupList, channelList , pvList , client );
         loggedin->show();
         connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
         //loggedin->setWindowFlags(Qt::Tool);
@@ -45,7 +50,7 @@ void MainWindow::handleloginApproved(Client& client)
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(group , grouprepo , channel , channelrepo , pv , pvrepo , client);
+    loggedin = new loggedinpage(groupList, channelList , pvList , client);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }

@@ -4,11 +4,8 @@
 #include <QWidget>
 #include "client.h"
 #include <qlistwidget.h>
-#include "group.h"
 #include "grouprepository.h"
-#include "channel.h"
 #include "channelrepository.h"
-#include "pv.h"
 #include "pvrepository.h"
 
 namespace Ui {
@@ -20,10 +17,10 @@ class loggedinpage : public QWidget
     Q_OBJECT
 
 public:
-    explicit loggedinpage(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr,Client &client , QWidget *parent = nullptr);
-    void addtopage(const QList<Group> &groupList);
-    void addtopage(const QList<Channel> &channelList);
-    void addtopage(const QList<Pv> &pvList);
+    explicit loggedinpage(const std::vector<std::unique_ptr<DTO>>& groupList,
+                          const std::vector<std::unique_ptr<DTO>>& pvList,
+                          const std::vector<std::unique_ptr<DTO>>& channelList,Client &client , QWidget *parent = nullptr);
+    void addtopage(const std::vector<std::unique_ptr<DTO>>& groupList);
     ~loggedinpage();
 
 private slots:
@@ -38,12 +35,9 @@ signals:
 private:
     Ui::loggedinpage *ui;
     Client cl;
-    Group group;
-    GroupRepository grouprepo;
-    Channel channel;
-    ChannelRepository channelrepo;
-    Pv pv;
-    PvRepository pvrepo;
+    const std::vector<std::unique_ptr<DTO>>& pvList;
+    const std::vector<std::unique_ptr<DTO>>& groupList;
+    const std::vector<std::unique_ptr<DTO>>& channelList;
     QMultiMap<QString, QPair<QString , QString>> group_messages;
     QMultiMap<QString, QPair<QString , QString>> channel_messages;
     QMultiMap<QString, QPair<QString , QString>> pv_messages;

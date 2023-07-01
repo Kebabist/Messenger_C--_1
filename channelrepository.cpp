@@ -19,9 +19,9 @@ ChannelRepository::ChannelRepository()
 {}
 
 //copy constructor
-ChannelRepository::ChannelRepository(const ChannelRepository& other)
-    : Channels_list(other.Channels_list)
-{}
+//ChannelRepository::ChannelRepository(const ChannelRepository& other)
+//    : list(other.list)
+//{}
 
 //destructor
 ChannelRepository::~ChannelRepository()

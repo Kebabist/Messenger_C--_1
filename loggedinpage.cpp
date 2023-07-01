@@ -1,32 +1,29 @@
 #include "loggedinpage.h"
 #include "mainwindow.h"
 #include "exceptionhandler.h"
+#include <QVector>
 #include "ui_loggedinpage.h"
 #include <qmessagebox.h>
 
 
-loggedinpage::loggedinpage(Group &g , GroupRepository &gr , Channel &c , ChannelRepository &cr , Pv &p , PvRepository &pr, Client& client, QWidget* parent) :
+loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupList,
+                           const std::vector<std::unique_ptr<DTO>>& passedpvList,
+                           const std::vector<std::unique_ptr<DTO>>& passedchannelList, Client& client, QWidget* parent) :
     QWidget(parent),
     ui(new Ui::loggedinpage),
     cl(client),
-    group(g),
-    grouprepo(gr),
-    channel(c),
-    channelrepo(cr),
-    pv(p),
-    pvrepo(pr)
+    pvList(passedpvList),
+    groupList(passedgroupList),
+    channelList(passedchannelList)
 {
     //parent->hide();
     ui->setupUi(this);
     //connect(ui->toggleview, SIGNAL(clicked(bool)), this, SLOT(onToggleviewClicked(bool)));
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
-    QList<Group> groups = grouprepo.getGroup_list();
-    addtopage(groups); // Add groups to the list widget
-    QList<Channel> channels = channelrepo.getChannel_list();
-    addtopage(channels); // Add channels to the list widget
-    QList<Pv> pvs = pvrepo.getPv_list();
-    addtopage(pvs); // Add pvs to the list widget
+    addtopage(groupList); // Add group chats to the list widget
+    addtopage(channelList); // Add channel chats to the list widget
+    addtopage(pvList); // Add pv chats to the list widget
 }
 
 loggedinpage::~loggedinpage()
@@ -60,9 +57,9 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
 
 
 
-    QString substrgr = "group: ";
-    QString substrch = "channel: ";
-    QString substrpv = "pv: ";
+    QString substrgr = "G: ";
+    QString substrch = "C: ";
+    QString substrpv = "P: ";
     QString groupName = "";
     QString channelName = "";
     QString pvName = "";
@@ -90,10 +87,10 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
     if (groupName != ""){
         // Find the group object from the group_list that matches the clicked group name
         Group group;
-        for (auto& g : grouprepo.getGroup_list()) {
-            if (g.getGroupname() == groupName) {
+        for (auto& g : groupList) {
+            if (g->getName() == groupName) {
                 // Get the group messages from the found group object
-                QMultiMap<QString, QPair<QString , QString>> groupMessages = g.getGroupmessages();
+                QMultiMap<QString, QPair<QString , QString>> groupMessages = g->getMessages();
                 // Show the group messages in a text widget
                 ui->messages->clear();
                 for (QMultiMap<QString, QPair<QString , QString>>::Iterator it =groupMessages.begin() ; it != groupMessages.end(); ++it) {
@@ -106,10 +103,10 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
         }
     }else if (channelName != ""){
         // Find the channel object from the channel_list that matches the clicked channel name
-        for (auto& c : channelrepo.getChannel_list()) {
-            if (c.getChannelname() == channelName) {
+        for (auto& c : channelList) {
+            if (c->getName() == channelName) {
                 // Get the channel messages from the found channel object
-                QMultiMap<QString, QPair<QString , QString>> channelMessages = c.getChannelmessages();
+                QMultiMap<QString, QPair<QString , QString>> channelMessages = c->getMessages();
 
                 // Show the channel messages in a text widget
                 ui->messages->clear();
@@ -123,10 +120,10 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
         }
     }else if (pvName != ""){
         // Find the PV object from the PV_list that matches the clicked PV name
-        for (auto& p : pvrepo.getPv_list()) {
-            if (p.getPvname() == pvName) {
+        for (auto& p : pvList) {
+            if (p->getName() == pvName) {
                 // Get the pv messages from the found pv object
-                QMultiMap<QString, QPair<QString , QString>> pvMessages = p.getPvmessages();
+                QMultiMap<QString, QPair<QString , QString>> pvMessages = p->getMessages();
 
                 // Show the pv messages in a text widget
                 ui->messages->clear();
@@ -154,26 +151,15 @@ void loggedinpage::on_logoutbutton_clicked()
 }
 
 //add to page
-void loggedinpage::addtopage(const QList<Group>& groupList){
-    for (const auto& groupName : groupList){
-        QListWidgetItem* item = new QListWidgetItem("group: " +groupName.getGroupname());
-        ui->allchats->addItem(item);
+void loggedinpage::addtopage(const std::vector<std::unique_ptr<DTO>>& List){
+    for (const auto& item : List) {
+        const auto& Name = item->getName();
+        const auto& Title = item->getTitle();
+        QListWidgetItem* newItem = new QListWidgetItem(Title + ": " + Name);
+        ui->allchats->addItem(newItem);
     }
 }
 
-//add to page overloading
-void loggedinpage::addtopage(const QList<Channel>& channelList){
-    for (const auto& channelName : channelList){
-        QListWidgetItem* item = new QListWidgetItem("channel: "+channelName.getChannelname());
-        ui->allchats->addItem(item);
-    }
-}
-void loggedinpage::addtopage(const QList<Pv>& pvList){
-    for (const auto& pvName : pvList){
-        QListWidgetItem* item = new QListWidgetItem("pv: " + pvName.getPvname());
-        ui->allchats->addItem(item);
-    }
-}
 
 
 
