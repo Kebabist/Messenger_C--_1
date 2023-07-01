@@ -9,40 +9,30 @@
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
+#include <vector>
 #include "pv.h"
-#include "httpHandler.h"
-#include "urlmaker.h"
-#include "client.h"
+#include "repository.h"
 
-class PvRepository : public QWidget
+class PvRepository : public Repository
 {
-    Q_OBJECT
 
 public:
-    //    explicit PvRepository(QWidget *parent = nullptr);
     PvRepository();
     PvRepository(const PvRepository& other);
     ~PvRepository();
 
-    void getPvlist(Client &c);
-    void getPvchats(Client &c , QString dst , QString date);
-    void sendmessagePv(QString desiredpv , QString text , Client &c);
-    void display();
-    void RemovePvsDir();
-    void WritePvsmessages();
-    void ReadPvsmessages();
+    void create(QString token, QString name) override;
+    void join(QString token, QString name) override;
+    void getList(QString token) override;
+    void sendMessage(QString token, QString name, QString message) override;
+    const QString findLatestDate(QString name) const override;
+    void getChats(QString token, QString name, QString date) override;
+    void removeDir() override;
+    void writeMessages() override;
+    void readMessages() override;
+    void display() override;
 
-    //setter function
-    void setPvList(const Pv& newPv);
-
-    //getter function
-    const QList<Pv>& getPv_list() const;
-
-
-private:
-    HttpHandler http;
-    urlmaker urlMaker;
-    QList<Pv> Pvs_list;
 };
+
 
 #endif // PvREPOSITORY_H

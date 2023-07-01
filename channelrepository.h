@@ -1,47 +1,33 @@
 #ifndef CHANNELREPOSITORY_H
 #define CHANNELREPOSITORY_H
 
-#include <QWidget>
-#include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDir>
 #include <QFile>
 #include <QByteArray>
 #include <QStandardPaths>
+#include <vector>
 #include "channel.h"
-#include "httpHandler.h"
-#include "urlmaker.h"
-#include "client.h"
+#include "repository.h"
 
-class ChannelRepository
+class ChannelRepository : public Repository
 {
 public:
     ChannelRepository();
     ChannelRepository(const ChannelRepository& other);
     ~ChannelRepository();
 
-    void createChannel(Client &c , QString);
-    void joinChannel(Client &c ,QString);
-    void getChannellist(Client &c);
-    void getChannelchats(Client &c , QString dst , QString date);
-    void sendmessageChannel(QString desiredChannel , QString text , Client &c);
-    void display();
-    void RemoveChannelsDir();
-    void WriteChannelsmessages();
-    void ReadChannelsmessages();
-
-    //setter function
-    void setChannelsList(const Channel& newChannel );
-
-    //getter function
-    const QList<Channel>& getChannel_list() const;
-
-
-private:
-    HttpHandler http;
-    urlmaker urlMaker;
-    QList<Channel> Channels_list;
+    void create(QString token, QString name) override;
+    void join(QString token, QString name) override;
+    void getList(QString token) override;
+    void sendMessage(QString token, QString name, QString message) override;
+    const QString findLatestDate(QString name) const override;
+    void getChats(QString token, QString name, QString date) override;
+    void removeDir() override;
+    void writeMessages() override;
+    void readMessages() override;
+    void display() override;
 };
 
 #endif // CHANNELREPOSITORY_H

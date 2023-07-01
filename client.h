@@ -6,11 +6,6 @@
 
 class Client
 {
-    QString username;
-    QString password;
-    QString firstname;
-    QString lastname;
-    QString token;
 public:
     Client();
     Client(QString, QString , QString , QString);
@@ -32,6 +27,13 @@ public:
 
     //setter Methods
     void setToken(QString);
+
+private:
+    QString username;
+    QString password;
+    QString firstname;
+    QString lastname;
+    QString token;
 };
 
 #endif // CLIENT_H

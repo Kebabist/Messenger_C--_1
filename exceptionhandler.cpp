@@ -1,26 +1,9 @@
-//#include "exceptionhandler.h"
-//#include "ui_exceptionhandler.h"
-
-//Exceptionhandler::Exceptionhandler(QWidget *parent) :
-//    QWidget(parent),
-//    ui(new Ui::Exceptionhandler)
-//{
-//    ui->setupUi(this);
-//}
-
-//Exceptionhandler::~Exceptionhandler()
-//{
-//    delete ui;
-//}
-
 #include "exceptionhandler.h"
 
 // Constructor that takes an error message and an error code
 ExceptionHandler::ExceptionHandler(const QString &message, const QString &code)
     : m_message(message), m_code(code)
-{
-
-}
+{}
 
 // Function that throws the exception
 void ExceptionHandler::raise() const
