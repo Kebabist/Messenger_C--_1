@@ -158,13 +158,12 @@ const QString GroupRepository::findLatestDate(QString groupName) const {
 void GroupRepository::getChats(QString token, QString groupName , QString date){
     HttpHandler http;
     QString arguments;
-    QPair<Group*, QString> flag(nullptr, "");
     if (date !=""){
         arguments = "dst="+groupName+"&"+"date="+date;
     }
     else{
         QString lastdate = findLatestDate(groupName);
-        if(flag.second != ""){
+        if(lastdate != ""){
            arguments = "dst="+groupName+"&"+"date="+lastdate;
         }
         else arguments = "dst="+groupName;
