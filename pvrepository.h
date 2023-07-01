@@ -18,6 +18,7 @@ class PvRepository : public Repository
 
 public:
     PvRepository();
+    PvRepository(const PvRepository& other);
     ~PvRepository();
 
     void create(QString token, QString name) override;

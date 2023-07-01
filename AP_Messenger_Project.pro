@@ -18,11 +18,15 @@ SOURCES += \
     group.cpp \
     grouprepository.cpp \
     httphandler.cpp \
+    loggedinpage.cpp \
+    loginui.cpp \
     main.cpp \
     mainwindow.cpp \
     pv.cpp \
     pvrepository.cpp \
+    signupui.cpp \
     repository.cpp \
+    updaterclass.cpp \
     urlmaker.cpp
 
 HEADERS += \
@@ -34,17 +38,25 @@ HEADERS += \
     group.h \
     grouprepository.h \
     httphandler.h \
+    loggedinpage.h \
+    loginui.h \
     mainwindow.h \
     pv.h \
     pvrepository.h \
+    signupui.h \
     repository.h \
+    updaterclass.h \
     urlmaker.h
 
 FORMS += \
     exceptionhandler.ui \
     group.ui \
     grouprepository.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    loggedinpage.ui \
+    loginui.ui \
+    mainwindow.ui \
+    signupui.ui
 
 # Default rules for deployment.
 #qnx: target.path = /tmp/$${TARGET}/bin

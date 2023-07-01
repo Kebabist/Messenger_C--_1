@@ -15,6 +15,7 @@ class ChannelRepository : public Repository
 {
 public:
     ChannelRepository();
+    ChannelRepository(const ChannelRepository& other);
     ~ChannelRepository();
 
     void create(QString token, QString name) override;

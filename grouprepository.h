@@ -15,6 +15,7 @@ class GroupRepository : public Repository
 {
 public:
     GroupRepository();
+    GroupRepository(const GroupRepository& other);
     ~GroupRepository();
 
     void create(QString token, QString name) override;

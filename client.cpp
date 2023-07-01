@@ -32,11 +32,18 @@ Client::Client(QString username, QString password){
 QString Client::getToken(){
     return token;
 }
+QString Client::getUsername(){
+    return username;
+}
+QString Client::getPassword(){
+    return password;
+}
 
 //setter Methods
 void Client::setToken(QString token){
     this->token = token;
 }
+
 
 //lets the user signup in messenger
 QPair<QString, QString> Client::Signup(){
@@ -69,7 +76,7 @@ QPair<QString, QString> Client::Signup(){
 //lets the users login using their username and password
 QPair<QString , QString> Client::Login() {
     //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
-    QString arguments = "username="+username+"&password="+password;
+    QString arguments = "username="+this->username+"&password="+this->password;
     urlmaker login_url("login" , arguments);
     const QString url = login_url.generate();
     QString code , message;
@@ -98,7 +105,7 @@ QPair<QString , QString> Client::Login() {
 
 
 //lets the user logout of messenger client
-void Client::Logout(){
+QPair<QString , QString> Client::Logout(){
     QString arguments = "username="+this->username+"&password="+this->password;
     urlmaker login_url("logout" , arguments);
     const QString url = login_url.generate();
@@ -121,6 +128,7 @@ void Client::Logout(){
         }
 RemoveClientDir();
 }
+
 
 //Writes Client data to a file
 void Client::WriteClient(){
