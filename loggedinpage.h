@@ -19,7 +19,8 @@ class loggedinpage : public QWidget
 public:
     explicit loggedinpage(const std::vector<std::unique_ptr<DTO>>& groupList,
                           const std::vector<std::unique_ptr<DTO>>& pvList,
-                          const std::vector<std::unique_ptr<DTO>>& channelList,Client &client , QWidget *parent = nullptr);
+                          const std::vector<std::unique_ptr<DTO>>& channelList, GroupRepository& groupRepo,
+                          ChannelRepository& channelRepo,PvRepository& pvRepo, Client &client , QWidget *parent = nullptr);
     void addtopage(const std::vector<std::unique_ptr<DTO>>& groupList);
     ~loggedinpage();
 
@@ -38,12 +39,16 @@ signals:
     void logoutbuttonclicked();
 
 private:
+    void updatorfunc();
     Ui::loggedinpage *ui;
     Client cl;
     QPair<QString , QString> selected; //first one is the type //second one is the name //Like : <group , groupName>
     const std::vector<std::unique_ptr<DTO>>& pvList;
     const std::vector<std::unique_ptr<DTO>>& groupList;
     const std::vector<std::unique_ptr<DTO>>& channelList;
+    GroupRepository& groupRepo;
+    ChannelRepository& channelRepo;
+    PvRepository& pvRepo;
     QMultiMap<QString, QPair<QString , QString>> group_messages;
     QMultiMap<QString, QPair<QString , QString>> channel_messages;
     QMultiMap<QString, QPair<QString , QString>> pv_messages;

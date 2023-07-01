@@ -5,23 +5,48 @@
 #include "ui_loggedinpage.h"
 #include <QInputDialog>
 #include <qmessagebox.h>
-
+#include <QTimer>
 
 loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupList,
                            const std::vector<std::unique_ptr<DTO>>& passedpvList,
-                           const std::vector<std::unique_ptr<DTO>>& passedchannelList, Client& client, QWidget* parent) :
+                           const std::vector<std::unique_ptr<DTO>>& passedchannelList,
+                           GroupRepository& groupRepo,
+                           ChannelRepository& channelRepo,
+                           PvRepository& pvRepo,
+                           Client& client, QWidget* parent) :
     QWidget(parent),
     ui(new Ui::loggedinpage),
     cl(client),
     pvList(passedpvList),
     groupList(passedgroupList),
-    channelList(passedchannelList)
+    channelList(passedchannelList),
+    groupRepo(groupRepo),
+    channelRepo(channelRepo),
+    pvRepo(pvRepo)
 {
     //parent->hide();
     ui->setupUi(this);
     //connect(ui->toggleview, SIGNAL(clicked(bool)), this, SLOT(onToggleviewClicked(bool)));
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
+    addtopage(groupList); // Add group chats to the list widget
+    addtopage(channelList); // Add channel chats to the list widget
+    addtopage(pvList); // Add pv chats to the list widget
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=]() {
+        updatorfunc();
+
+        });
+    timer->start(5000);
+}
+
+void loggedinpage::updatorfunc(){
+    groupRepo.getList("6f72830134afcffe5fefba61c3216931");;
+    channelRepo.getList("6f72830134afcffe5fefba61c3216931");
+    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
+    const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
     addtopage(groupList); // Add group chats to the list widget
     addtopage(channelList); // Add channel chats to the list widget
     addtopage(pvList); // Add pv chats to the list widget
@@ -158,11 +183,22 @@ void loggedinpage::addtopage(const std::vector<std::unique_ptr<DTO>>& List){
     for (const auto& item : List) {
         const auto& Name = item->getName();
         const auto& Title = item->getTitle();
-        QListWidgetItem* newItem = new QListWidgetItem(Title + ": " + Name);
-        ui->allchats->addItem(newItem);
+        // Check if an item with the same name already exists in the list widget
+        bool found = false;
+        for (int i = 0; i < ui->allchats->count(); i++) {
+            QListWidgetItem* existingItem = ui->allchats->item(i);
+            if (existingItem->text().startsWith(Title + ": " + Name)) {
+                found = true;
+                break;
+            }
+        }
+        // If a match is not found, add the new item to the list widget
+        if (!found) {
+            QListWidgetItem* newItem = new QListWidgetItem(Title + ": " + Name);
+            ui->allchats->addItem(newItem);
+        }
     }
 }
-
 
 void loggedinpage::on_joingroupbtton_clicked()
 {

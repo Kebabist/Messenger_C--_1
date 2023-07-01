@@ -15,26 +15,31 @@
 #include "pv.h"
 #include "repository.h"
 
-
+void updator(GroupRepository groupRepo , ChannelRepository channelRepo , PvRepository pvRepo ){
+    const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
+    emit (groupList , channelList , pvList);
+}
 
 int main(int argc, char *argv[]){
     QApplication app(argc, argv);
     Client cl1("kebab","6kebab","kebab","kebab");
 
     GroupRepository groupRepo;
-    groupRepo.getList("41c0089068b863e6a14ccc5d6dcda514");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","lmao","");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","new","");
-    groupRepo.create("852e7892429df7577d95a410ca9d38ff","testingnewimp");
-    groupRepo.join("41c0089068b863e6a14ccc5d6dcda514","testingnewimp");
-    groupRepo.sendMessage("41c0089068b863e6a14ccc5d6dcda514","testingnewimp","eyyyyyyy baba");
-    groupRepo.sendMessage("41c0089068b863e6a14ccc5d6dcda514","testingnewimp","eyyyyyyy baba2");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","testingnewimp","");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","ahhhhhhsfsdhhh546456hhert","");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","ahhhhhhhhhhhert","");
-    groupRepo.getChats("41c0089068b863e6a14ccc5d6dcda514","ahhhhhhhhhhhert","");
+    groupRepo.getList("6f72830134afcffe5fefba61c3216931");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","lmao","");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","new","");
+    groupRepo.create("6f72830134afcffe5fefba61c3216931","testingnewimp");
+    groupRepo.join("6f72830134afcffe5fefba61c3216931","testingnewimp");
+    groupRepo.sendMessage("6f72830134afcffe5fefba61c3216931","testingnewimp","eyyyyyyy baba");
+    groupRepo.sendMessage("6f72830134afcffe5fefba61c3216931","testingnewimp","eyyyyyyy baba2");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","testingnewimp","");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","ahhhhhhsfsdhhh546456hhert","");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","ahhhhhhhhhhhert","");
+    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","ahhhhhhhhhhhert","");
     groupRepo.writeMessages();
-    groupRepo.join("852e7892429df7577d95a410ca9d38ff","ahhhhhhsfsdhhh546456hhert");
+    groupRepo.join("6f72830134afcffe5fefba61c3216931","ahhhhhhsfsdhhh546456hhert");
     qDebug()<<"=======================================";
     groupRepo.readMessages();
     const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.Repository::getList();
@@ -50,20 +55,20 @@ int main(int argc, char *argv[]){
 
 
 
-    ChannelRepository cr;
-    cr.join("41c0089068b863e6a14ccc5d6dcda514","lmao");
-    cr.join("41c0089068b863e6a14ccc5d6dcda514","newchannel");
-    cr.create("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha");
-    cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","123salam Alekom");
-    cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","321alakom salam");
-    cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","231oh yeaaaah");
-    cr.readMessages();
-    cr.getList("41c0089068b863e6a14ccc5d6dcda514");
-    cr.getChats("41c0089068b863e6a14ccc5d6dcda514","lmaochannel","");
-    cr.getChats("41c0089068b863e6a14ccc5d6dcda514","newchannel","");
-    cr.getChats("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","");
-    cr.writeMessages();
-    const std::vector<std::unique_ptr<DTO>>& channelList = cr.Repository::getList();
+    ChannelRepository channelRepo;
+    channelRepo.join("6f72830134afcffe5fefba61c3216931","lmao");
+    channelRepo.join("6f72830134afcffe5fefba61c3216931","newchannel");
+    channelRepo.create("6f72830134afcffe5fefba61c3216931","yuhahahahaha");
+    channelRepo.sendMessage("6f72830134afcffe5fefba61c3216931","yuhahahahaha","123salam Alekom");
+    channelRepo.sendMessage("6f72830134afcffe5fefba61c3216931","yuhahahahaha","321alakom salam");
+    channelRepo.sendMessage("6f72830134afcffe5fefba61c3216931","yuhahahahaha","231oh yeaaaah");
+    channelRepo.readMessages();
+    channelRepo.getList("6f72830134afcffe5fefba61c3216931");
+    channelRepo.getChats("6f72830134afcffe5fefba61c3216931","lmaochannel","");
+    channelRepo.getChats("6f72830134afcffe5fefba61c3216931","newchannel","");
+    channelRepo.getChats("6f72830134afcffe5fefba61c3216931","yuhahahahaha","");
+    channelRepo.writeMessages();
+    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.Repository::getList();
     qDebug()<<"====================================";
     for (const auto& channelPtr : channelList) {
         qDebug() << "Channel Name: " << channelPtr->getName();
@@ -79,11 +84,11 @@ int main(int argc, char *argv[]){
     //the other person is kebab4
     //the given token is for kebab3
     PvRepository pvRepo;
-    pvRepo.getList("11d02f67196f529abc0e227d11d14fa3");
-    pvRepo.getChats("11d02f67196f529abc0e227d11d14fa3","kebab4","20230701121345");
-    pvRepo.getChats("11d02f67196f529abc0e227d11d14fa3","kebab2","20230630170702");
+    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
+    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab4","20230701121345");
+    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab2","20230630170702");
     pvRepo.writeMessages();
-    pvRepo.sendMessage("11d02f67196f529abc0e227d11d14fa3","kebab4","alan ferestadam");
+    pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931","kebab4","alan ferestadam");
     pvRepo.readMessages();
     const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
     for (const auto& pvPtr : pvList) {
@@ -95,7 +100,7 @@ int main(int argc, char *argv[]){
 
 
 
-    MainWindow w(groupList , pvList , channelList );
+    MainWindow w(groupList , pvList , channelList , groupRepo , channelRepo , pvRepo );
     w.show();
     return app.exec();
 

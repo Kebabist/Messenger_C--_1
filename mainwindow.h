@@ -25,7 +25,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(const std::vector<std::unique_ptr<DTO>>& groupList,
                const std::vector<std::unique_ptr<DTO>>& pvList,
-               const std::vector<std::unique_ptr<DTO>>& channelList, QWidget *parent = nullptr);
+               const std::vector<std::unique_ptr<DTO>>& channelList,
+               GroupRepository& groupRepo,
+               ChannelRepository& channelRepo,
+               PvRepository& pvRepo ,
+               QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -47,6 +51,9 @@ private:
     //create loggedinpage object
     loggedinpage *loggedin;
     //group and grouprepo object
+    GroupRepository& groupRepo;
+    ChannelRepository& channelRepo;
+    PvRepository& pvRepo;
     const std::vector<std::unique_ptr<DTO>>& pvList;
     const std::vector<std::unique_ptr<DTO>>& groupList;
     const std::vector<std::unique_ptr<DTO>>& channelList;
