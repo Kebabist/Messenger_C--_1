@@ -21,28 +21,28 @@ QApplication app(argc, argv);
 Client cl1("kebab","6kebab","kebab","kebab");
 
 //PvRepository pr;
-Group g("aa","aaa");
-Group h = g;
-qDebug()<< h.getName();
-GroupRepository groupRepo;
-groupRepo.getGrouplist("41c0089068b863e6a14ccc5d6dcda514");
-groupRepo.getGroupchats("41c0089068b863e6a14ccc5d6dcda514","lmao","");
-groupRepo.getGroupchats("41c0089068b863e6a14ccc5d6dcda514","new","");
-groupRepo.WriteGroupsmessages();
-groupRepo.createGroup("41c0089068b863e6a14ccc5d6dcda514","ahhhhhhhhh546456hhert");
-groupRepo.joinGroup("852e7892429df7577d95a410ca9d38ff","ahhhhhhhh45645645hhhert");
+//Group g("aa","aaa");
+//Group h = g;
+//qDebug()<< h.getName();
+//GroupRepository groupRepo;
+//groupRepo.getGrouplist("41c0089068b863e6a14ccc5d6dcda514");
+//groupRepo.getGroupchats("41c0089068b863e6a14ccc5d6dcda514","lmao","");
+//groupRepo.getGroupchats("41c0089068b863e6a14ccc5d6dcda514","new","");
+//groupRepo.WriteGroupsmessages();
+//groupRepo.createGroup("41c0089068b863e6a14ccc5d6dcda514","ahhhhhhhhh546456hhert");
+//groupRepo.joinGroup("852e7892429df7577d95a410ca9d38ff","ahhhhhhhh45645645hhhert");
 //groupRepo.sendmessageGroup("852e7892429df7577d95a410ca9d38ff","ahhhhhhhhhhhert","eyyyyyyy baba");
 
-groupRepo.ReadGroupsmessages();
-const std::vector<std::unique_ptr<Group>>& groupList = groupRepo.getGroup_list();
-for (const auto& groupPtr : groupList) {
-    qDebug() << "Group Name: " << groupPtr->getName();
-    qDebug() << "Messages: ";
-    const QMultiMap<QString, QPair<QString, QString>>& messages = groupPtr->getMessages();
-    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
-        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
-    }
-}
+//groupRepo.ReadGroupsmessages();
+//const std::vector<std::unique_ptr<Group>>& groupList = groupRepo.getGroup_list();
+//for (const auto& groupPtr : groupList) {
+//    qDebug() << "Group Name: " << groupPtr->getName();
+//    qDebug() << "Messages: ";
+//    const QMultiMap<QString, QPair<QString, QString>>& messages = groupPtr->getMessages();
+//    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+//        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
+//    }
+//}
 
 ChannelRepository cr;
 //cr.joinChannel("41c0089068b863e6a14ccc5d6dcda514","lmaochannel");
@@ -60,9 +60,12 @@ cr.WriteChannelsmessages();
 cr.ReadChannelsmessages();
 const std::vector<std::unique_ptr<Channel>>& channelList = cr.getChannel_list();
 for (const auto& channelPtr : channelList) {
-    qDebug() << "Group Name: " << channelPtr->getChannelname();
+    qDebug() << "Channel Name: " << channelPtr->getName();
     qDebug() << "Messages: ";
-    const QMultiMap<QString, QPair<QString, QString>>& messages = channelPtr->getChannelmessages();
+    const QMultiMap<QString, QPair<QString, QString>>& messages = channelPtr->getMessages();
+    for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
+        qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
+    }
 }
 //the other person is kebab4
 //the given toke is for kebab3
@@ -75,9 +78,9 @@ pvRepo.sendmessagePv("11d02f67196f529abc0e227d11d14fa3","kebab4","eyyyyyyy baba"
 pvRepo.ReadPvsmessages();
 const std::vector<std::unique_ptr<Pv>>& pvList = pvRepo.getPv_list();
 for (const auto& pvPtr : pvList) {
-    qDebug() << "Group Name: " << pvPtr->getPvname();
+    qDebug() << "Pv Name: " << pvPtr->getName();
     qDebug() << "Messages: ";
-    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getPvmessages();
+    const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getMessages();
     for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
         qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }

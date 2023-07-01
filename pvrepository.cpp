@@ -30,7 +30,7 @@ PvRepository::~PvRepository()
 void PvRepository::setPvsList(std::unique_ptr<Pv> newpv) {
     bool found = false;
     for (const auto& PvPtr : Pvs_list) {
-        if (PvPtr->getPvname() == newpv->getPvname()) {
+        if (PvPtr->getName() == newpv->getName()) {
             found = true;
             break;
         }
@@ -104,8 +104,8 @@ void PvRepository::sendmessagePv(QString token, QString pvName , QString message
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
 const QString PvRepository::findLatestdate(QString pvName) const {
     for (auto& pvPtr : Pvs_list) {
-        if (pvPtr->getPvname() == pvName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getPvmessages();
+        if (pvPtr->getName() == pvName) {
+            QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getMessages();
             if (!temp.empty()) {
                 const QString lastdate = temp.lastKey();
                 return lastdate;
@@ -153,8 +153,8 @@ void PvRepository::getPvchats(QString token, QString pvName , QString date){
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
                             for (auto& pvPtr : Pvs_list) {
-                                if (pvPtr->getPvname() == pvName) {
-                                    pvPtr->setPvmessages(src, body, strDate);
+                                if (pvPtr->getName() == pvName) {
+                                    pvPtr->setMessage(src, body, strDate);
                                 }
                             }
                         }
@@ -175,12 +175,12 @@ void PvRepository::WritePvsmessages() {
         clientDir.mkpath(".");
     }
     for (auto& pvPtr : Pvs_list){
-        filename = clientDir.filePath(pvPtr->getPvname() + ".json");
+        filename = clientDir.filePath(pvPtr->getName() + ".json");
         QFile file(filename);
         qDebug() << "madefile with name :" << filename;
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
             QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getPvmessages().constBegin(); it != pvPtr->getPvmessages().constEnd(); ++it) {
+            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getMessages().constBegin(); it != pvPtr->getMessages().constEnd(); ++it) {
                 QJsonObject messageObject;
                 messageObject["timestamp"] = it.key();
                 messageObject["src"] = it.value().first;
@@ -230,7 +230,7 @@ void PvRepository::ReadPvsmessages() {
                     QString timestamp = messageObj.value("timestamp").toString();
                     QString message = messageObj.value("message").toString();
                     QString src = messageObj.value("src").toString();
-                    pv->setPvmessages(src, message, timestamp);
+                    pv->setMessage(src, message, timestamp);
                 }
 
                 // Add the Pv object to the list using the unique_ptr
@@ -289,10 +289,10 @@ void PvRepository::RemovePvsDir(){
 void PvRepository::display() {
     qDebug() << "Display called";
     for (auto& pvPtr : Pvs_list) {
-        if (pvPtr->getPvname() == "nah123123") {
-            QMultiMap<QString, QPair<QString, QString>> map = pvPtr->getPvmessages();
+        if (pvPtr->getName() == "nah123123") {
+            QMultiMap<QString, QPair<QString, QString>> map = pvPtr->getMessages();
             if (map.size() == 0) {
-                qDebug() << "No messages in pv " << pvPtr->getPvname();
+                qDebug() << "No messages in pv " << pvPtr->getName();
             } else {
                 QMultiMapIterator<QString, QPair<QString, QString>> i(map);
                 while (i.hasNext()) {

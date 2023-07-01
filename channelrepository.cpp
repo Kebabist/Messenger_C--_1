@@ -30,7 +30,7 @@ ChannelRepository::~ChannelRepository()
 void ChannelRepository::setChannelsList(std::unique_ptr<Channel> newChannel) {
     bool found = false;
     for (const auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == newChannel->getChannelname()) {
+        if (ChannelPtr->getName() == newChannel->getName()) {
             found = true;
             break;
         }
@@ -164,8 +164,8 @@ void ChannelRepository::sendmessageChannel(QString token, QString ChannelName , 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
 const QString ChannelRepository::findLatestdate(QString ChannelName) const {
     for (auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == ChannelName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = ChannelPtr->getChannelmessages();
+        if (ChannelPtr->getName() == ChannelName) {
+            QMultiMap<QString, QPair<QString, QString>> temp = ChannelPtr->getMessages();
             if (!temp.empty()) {
                 const QString lastdate = temp.lastKey();
                 return lastdate;
@@ -213,8 +213,8 @@ void ChannelRepository::getChannelchats(QString token, QString ChannelName , QSt
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
                             for (auto& ChannelPtr : Channels_list) {
-                                if (ChannelPtr->getChannelname() == ChannelName) {
-                                    ChannelPtr->setChannelmessages(src, body, strDate);
+                                if (ChannelPtr->getName() == ChannelName) {
+                                    ChannelPtr->setMessage(src, body, strDate);
                                 }
                             }
                         }
@@ -236,11 +236,11 @@ void ChannelRepository::WriteChannelsmessages() {
     }
     qDebug() << "made file";
     for (auto& ChannelPtr : Channels_list){
-        filename = clientDir.filePath(ChannelPtr->getChannelname() + ".json");
+        filename = clientDir.filePath(ChannelPtr->getName() + ".json");
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
             QJsonArray messageArray;
-            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = ChannelPtr->getChannelmessages().constBegin(); it != ChannelPtr->getChannelmessages().constEnd(); ++it) {
+            for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = ChannelPtr->getMessages().constBegin(); it != ChannelPtr->getMessages().constEnd(); ++it) {
                 QJsonObject messageObject;
                 messageObject["timestamp"] = it.key();
                 messageObject["src"] = it.value().first;
@@ -290,7 +290,7 @@ void ChannelRepository::ReadChannelsmessages() {
                     QString timestamp = messageObj.value("timestamp").toString();
                     QString message = messageObj.value("message").toString();
                     QString src = messageObj.value("src").toString();
-                    channel->setChannelmessages(src, message, timestamp);
+                    channel->setMessage(src, message, timestamp);
                 }
 
                 // Add the Channel object to the list using the unique_ptr
@@ -349,10 +349,10 @@ void ChannelRepository::RemoveChannelsDir(){
 void ChannelRepository::display() {
     qDebug() << "Display called";
     for (auto& ChannelPtr : Channels_list) {
-        if (ChannelPtr->getChannelname() == "nah123123") {
-            QMultiMap<QString, QPair<QString, QString>> map = ChannelPtr->getChannelmessages();
+        if (ChannelPtr->getName() == "nah123123") {
+            QMultiMap<QString, QPair<QString, QString>> map = ChannelPtr->getMessages();
             if (map.size() == 0) {
-                qDebug() << "No messages in Channel " << ChannelPtr->getChannelname();
+                qDebug() << "No messages in Channel " << ChannelPtr->getName();
             } else {
                 QMultiMapIterator<QString, QPair<QString, QString>> i(map);
                 while (i.hasNext()) {
