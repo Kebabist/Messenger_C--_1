@@ -1,6 +1,4 @@
 #include <QDateTime>
-#include <QWidget>
-#include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDir>
@@ -207,7 +205,7 @@ void GroupRepository::writeMessages() {
     // Create a file for each group and add their messages to them
     QString filename;
     QString homeDir = QDir::homePath();
-    QDir clientDir(homeDir + QDir::separator() + "groups");
+    QDir clientDir(homeDir + QDir::separator() + "Groups");
     if (!clientDir.exists()) {
         clientDir.mkpath(".");
     }
@@ -239,7 +237,7 @@ void GroupRepository::readMessages() {
     try {
         // Create a directory for the group files, if it doesn't already exist
         QString homeDir = QDir::homePath();
-        QDir groupsDir(homeDir + QDir::separator() + "groups");
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
         if (!groupsDir.exists()) {
             groupsDir.mkpath(".");
         }
@@ -293,7 +291,7 @@ void GroupRepository::readMessages() {
 void GroupRepository::removeDir(){
     try {
         QString homeDir = QDir::homePath();
-        QDir groupsDir(homeDir + QDir::separator() + "groups");
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
 
         // Remove all the files in the directory
         QFileInfoList fileList = groupsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);

@@ -90,6 +90,26 @@ for (const auto& pvPtr : pvList) {
     qDebug() << "Pv Name: " << pvPtr->getName();
     qDebug() << "Messages: ";
     const QMultiMap<QString, QPair<QString, QString>>& messages = pvPtr->getMessages();
+//cr.join("41c0089068b863e6a14ccc5d6dcda514","lmao");
+//cr.join("41c0089068b863e6a14ccc5d6dcda514","newchannel");
+//cr.create("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha");
+cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","123salam Alekom");
+cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","321alakom salam");
+cr.sendMessage("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","231oh yeaaaah");
+cr.readMessages();
+//cr.getList("41c0089068b863e6a14ccc5d6dcda514");
+//cr.getChats("41c0089068b863e6a14ccc5d6dcda514","lmaochannel","");
+//cr.getChats("41c0089068b863e6a14ccc5d6dcda514","newchannel","");
+cr.getChats("41c0089068b863e6a14ccc5d6dcda514","yuhahahahaha","");
+cr.writeMessages();
+//cr.removeDir();
+
+const std::vector<std::unique_ptr<DTO>>& channelList = cr.Repository::getList();
+qDebug()<<"====================================";
+for (const auto& channelPtr : channelList) {
+    qDebug() << "Channel Name: " << channelPtr->getName();
+    qDebug() << "Messages: ";
+    const QMultiMap<QString, QPair<QString, QString>>& messages = channelPtr->getMessages();
     for (auto it = messages.constBegin(); it != messages.constEnd(); ++it) {
         qDebug() << "Time: " << it.key() << ", sender: " << it.value().first << ", text" << it.value().second;
     }
