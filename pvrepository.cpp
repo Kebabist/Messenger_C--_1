@@ -25,65 +25,10 @@ PvRepository::~PvRepository()
 {}
 
 //create new Pv
-void PvRepository::create(QString token, QString pvName){
-    HttpHandler http;
-    QString arguments = "group_name="+pvName;
-    urlmaker newurl("createchat", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        QJsonDocument doc(jsonObj);
-        QString jsonString = doc.toJson(QJsonDocument::Indented);
-        qDebug().noquote() << jsonString;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
-
-                // Create the Pv object using std::make_unique
-                std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
-
-                // Add the Pv object to the list using the unique_ptr
-                setList(std::move(pv));
-            }
-            else if (code != "200") {  //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
-            }
-        }
-    }
-}
+void PvRepository::create(QString token, QString pvName){}
 
 //join pv
-void PvRepository::join(QString token , QString pvName){
-    HttpHandler http;
-    QString arguments = "group_name="+pvName;
-    urlmaker newurl("joingroup", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
-
-                // Create the Pv object using std::make_unique
-                std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
-
-                // Add the Pv object to the list using the unique_ptr
-                setList(std::move(pv));
-            }
-            else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
-            }
-        }
-    }
-}
+void PvRepository::join(QString token , QString pvName){}
 
 //get list of joined Pvs
 void PvRepository::getList(QString token){
