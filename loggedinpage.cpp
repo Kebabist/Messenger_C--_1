@@ -19,14 +19,9 @@ loggedinpage::loggedinpage(Client& client,
     channelRepo(channelRepo),
     pvRepo(pvRepo)
 {
-    //parent->hide();
     ui->setupUi(this);
-    //connect(ui->toggleview, SIGNAL(clicked(bool)), this, SLOT(onToggleviewClicked(bool)));
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
-    addtopage(groupRepo.get_List()); // Add group chats to the list widget
-    addtopage(channelRepo.get_List()); // Add channel chats to the list widget
-    addtopage(pvRepo.get_List()); // Add pv chats to the list widget
 
     QThreadPool* threadPool = QThreadPool::globalInstance();
     threadPool->setMaxThreadCount(4);
@@ -70,11 +65,8 @@ void loggedinpage::updatelists(){
     groupRepo.getList(client.getToken());
     channelRepo.getList(client.getToken());
     pvRepo.getList(client.getToken());
-    addtopage(groupRepo.get_List()); // Add group chats to the list widget
-    addtopage(channelRepo.get_List()); // Add channel chats to the list widget
-    addtopage(pvRepo.get_List()); // Add pv chats to the list widget
+    addtopage(); // Add group chats to the list widget
 }
-
 //update group messages
 void loggedinpage::updateGroupMessages(){
     for(auto &groupPtr : groupRepo.get_List()){
@@ -233,23 +225,27 @@ void loggedinpage::on_logoutbutton_clicked()
 }
 
 //add to page
-void loggedinpage::addtopage(const std::vector<std::unique_ptr<DTO>>& List){
-    for (const auto& item : List) {
-        const auto& Name = item->getName();
-        const auto& Title = item->getTitle();
-        // Check if an item with the same name already exists in the list widget
-        bool found = false;
-        for (int i = 0; i < ui->allchats->count(); i++) {
-            QListWidgetItem* existingItem = ui->allchats->item(i);
-            if (existingItem->text().startsWith(Title + ": " + Name)) {
-                found = true;
-                break;
+void loggedinpage::addtopage(){
+   std::vector<Repository*> repos = { &groupRepo, &channelRepo, &pvRepo };
+   for (std::size_t i = 0; i < repos.size(); ++i) {
+        const std::vector<std::unique_ptr<DTO>>& List =repos[i]->get_List();
+        for (const auto& item : List) {
+            const auto& Name = item->getName();
+            const auto& Title = item->getTitle();
+            // Check if an item with the same name already exists in the list widget
+            bool found = false;
+            for (int i = 0; i < ui->allchats->count(); i++) {
+                QListWidgetItem* existingItem = ui->allchats->item(i);
+                if (existingItem->text().startsWith(Title + ": " + Name)) {
+                    found = true;
+                    break;
+                }
             }
-        }
-        // If a match is not found, add the new item to the list widget
-        if (!found) {
-            QListWidgetItem* newItem = new QListWidgetItem(Title + ": " + Name);
-            ui->allchats->addItem(newItem);
+            // If a match is not found, add the new item to the list widget
+            if (!found) {
+                QListWidgetItem* newItem = new QListWidgetItem(Title + ": " + Name);
+                ui->allchats->addItem(newItem);
+            }
         }
     }
 }

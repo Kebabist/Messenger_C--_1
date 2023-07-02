@@ -16,7 +16,6 @@ MainWindow::MainWindow(Client & client,
     pvRepo(pvRepo)
 {
     ui->setupUi(this);
-    client.ReadClient();
     if (!client.getToken().isEmpty()) {
         // The client data was successfully read and contains a token, redirect to the logged in page
         loggedin = new loggedinpage(client, groupRepo, channelRepo,pvRepo);

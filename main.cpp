@@ -80,10 +80,10 @@ int main(int argc, char *argv[]){
     //the other person is kebab4
     //the given token is for kebab3
     PvRepository pvRepo;
-    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
-    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab5","");
-    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab2","20230630170702");
-    pvRepo.writeMessages();
+//    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
+//    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab5","");
+//    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab2","20230630170702");
+//    pvRepo.writeMessages();
 //    pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931","kebab4","alan ferestadam");
 //    pvRepo.readMessages();
     const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::get_List();

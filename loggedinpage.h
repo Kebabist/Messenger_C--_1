@@ -24,7 +24,7 @@ public:
                           GroupRepository& groupRepo,
                           ChannelRepository& channelRepo,
                           PvRepository& pvRepo, QWidget *parent = nullptr);
-    void addtopage(const std::vector<std::unique_ptr<DTO>>& List);
+    void addtopage();
     ~loggedinpage();
 
 private slots:
@@ -58,9 +58,6 @@ private:
     GroupRepository& groupRepo;
     ChannelRepository& channelRepo;
     PvRepository& pvRepo;
-    QMultiMap<QString, QPair<QString , QString>> group_messages;
-    QMultiMap<QString, QPair<QString , QString>> channel_messages;
-    QMultiMap<QString, QPair<QString , QString>> pv_messages;
     QThread *messageThread;
 };
 
