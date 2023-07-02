@@ -6,6 +6,7 @@
 #include <qlistwidget.h>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QThreadPool>
+#include <QTimer>
 #include "grouprepository.h"
 #include "channelrepository.h"
 #include "pvrepository.h"
@@ -19,16 +20,17 @@ class loggedinpage : public QWidget
     Q_OBJECT
 
 public:
-    explicit loggedinpage(const std::vector<std::unique_ptr<DTO>>& groupList,
-                          const std::vector<std::unique_ptr<DTO>>& pvList,
-                          const std::vector<std::unique_ptr<DTO>>& channelList, GroupRepository& groupRepo,
-                          ChannelRepository& channelRepo,PvRepository& pvRepo, Client &client , QWidget *parent = nullptr);
-    void addtopage(const std::vector<std::unique_ptr<DTO>>& groupList);
+    explicit loggedinpage(Client& client,
+                          GroupRepository& groupRepo,
+                          ChannelRepository& channelRepo,
+                          PvRepository& pvRepo, QWidget *parent = nullptr);
+    void addtopage(const std::vector<std::unique_ptr<DTO>>& List);
     ~loggedinpage();
 
 private slots:
     void on_toggleview_clicked(bool checked);
     void handleListItemClicked(QListWidgetItem* item);
+    void updateSelectedChat();
     void on_logoutbutton_clicked();
     void on_joingroupbtton_clicked();
     void on_creategroupbutton_clicked();
@@ -45,17 +47,14 @@ signals:
     void logoutbuttonclicked();
 
 private:
-
     void updatelists();
     void updateGroupMessages();
     void updateChannelMessages();
     void updatePvMessages();
+    Client& client;
     Ui::loggedinpage *ui;
-    Client cl;
+    QTimer *updateTimer;
     QPair<QString , QString> selected; //first one is the type //second one is the name //Like : <group , groupName>
-    const std::vector<std::unique_ptr<DTO>>& pvList;
-    const std::vector<std::unique_ptr<DTO>>& groupList;
-    const std::vector<std::unique_ptr<DTO>>& channelList;
     GroupRepository& groupRepo;
     ChannelRepository& channelRepo;
     PvRepository& pvRepo;

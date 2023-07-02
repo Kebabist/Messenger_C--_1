@@ -3,33 +3,25 @@
 #include <qmessagebox.h>
 
 
-MainWindow::MainWindow( const std::vector<std::unique_ptr<DTO>>& passedgroupList,
-                       const std::vector<std::unique_ptr<DTO>>& passedchannelList,
-                       const std::vector<std::unique_ptr<DTO>>& passedpvList,
+MainWindow::MainWindow(Client & client,
                        GroupRepository& groupRepo,
                        ChannelRepository& channelRepo,
                        PvRepository& pvRepo,
                        QWidget *parent)
     : QMainWindow(parent),
     ui(new Ui::MainWindow),
-    pvList(passedpvList),
-    groupList(passedgroupList),
-    channelList(passedchannelList),
+    client(client),
     groupRepo(groupRepo),
     channelRepo(channelRepo),
     pvRepo(pvRepo)
 {
-
     ui->setupUi(this);
-    Client client;
     client.ReadClient();
     if (!client.getToken().isEmpty()) {
         // The client data was successfully read and contains a token, redirect to the logged in page
-        //QWidget* loggedInPageParent = new QWidget();
-        loggedin = new loggedinpage( groupList, channelList , pvList ,groupRepo, channelRepo,pvRepo, client );
+        loggedin = new loggedinpage(client, groupRepo, channelRepo,pvRepo);
         loggedin->show();
         connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
-        //loggedin->setWindowFlags(Qt::Tool);
         // Hide the main window after the logged in window is shown
         loggedin->show();
         loggedin->isActiveWindow();
@@ -53,11 +45,11 @@ void MainWindow::handleSignupApproved()
 }
 
 //handle login signal
-void MainWindow::handleloginApproved(Client& client)
+void MainWindow::handleloginApproved()
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(groupList, channelList , pvList , groupRepo, channelRepo,pvRepo, client);
+    loggedin = new loggedinpage(client, groupRepo, channelRepo, pvRepo);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }
@@ -92,7 +84,7 @@ void MainWindow::onMainWindowClosed()
 }
 
 void MainWindow::writeAll(){
-    qDebug()<<"Caleed write all!";
+    qDebug()<<"Caled write all!";
     pvRepo.writeMessages();
     groupRepo.writeMessages();
     channelRepo.writeMessages();

@@ -7,19 +7,14 @@
 #include <qmessagebox.h>
 #include <QTimer>
 
-loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupList,
-                           const std::vector<std::unique_ptr<DTO>>& passedpvList,
-                           const std::vector<std::unique_ptr<DTO>>& passedchannelList,
+loggedinpage::loggedinpage(Client& client,
                            GroupRepository& groupRepo,
                            ChannelRepository& channelRepo,
                            PvRepository& pvRepo,
-                           Client& client, QWidget* parent) :
+                           QWidget* parent) :
     QWidget(parent),
+    client(client),
     ui(new Ui::loggedinpage),
-    cl(client),
-    pvList(passedpvList),
-    groupList(passedgroupList),
-    channelList(passedchannelList),
     groupRepo(groupRepo),
     channelRepo(channelRepo),
     pvRepo(pvRepo)
@@ -29,9 +24,9 @@ loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupL
     //connect(ui->toggleview, SIGNAL(clicked(bool)), this, SLOT(onToggleviewClicked(bool)));
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
-    addtopage(groupList); // Add group chats to the list widget
-    addtopage(channelList); // Add channel chats to the list widget
-    addtopage(pvList); // Add pv chats to the list widget
+    addtopage(groupRepo.get_List()); // Add group chats to the list widget
+    addtopage(channelRepo.get_List()); // Add channel chats to the list widget
+    addtopage(pvRepo.get_List()); // Add pv chats to the list widget
 
     QThreadPool* threadPool = QThreadPool::globalInstance();
     threadPool->setMaxThreadCount(4);
@@ -72,9 +67,9 @@ loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupL
 
 //list updator function
 void loggedinpage::updatelists(){
-    groupRepo.getList("6f72830134afcffe5fefba61c3216931");;
-    channelRepo.getList("6f72830134afcffe5fefba61c3216931");
-    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
+    groupRepo.getList(client.getToken());
+    channelRepo.getList(client.getToken());
+    pvRepo.getList(client.getToken());
     addtopage(groupRepo.get_List()); // Add group chats to the list widget
     addtopage(channelRepo.get_List()); // Add channel chats to the list widget
     addtopage(pvRepo.get_List()); // Add pv chats to the list widget
@@ -82,27 +77,24 @@ void loggedinpage::updatelists(){
 
 //update group messages
 void loggedinpage::updateGroupMessages(){
-    groupRepo.getList("6f72830134afcffe5fefba61c3216931");
-    for(auto &groupPtr : groupList){
-        groupRepo.getChats("6f72830134afcffe5fefba61c3216931" , groupPtr->getName());
+    for(auto &groupPtr : groupRepo.get_List()){
+        groupRepo.getChats(client.getToken() , groupPtr->getName());
         QMultiMap<QString, QPair<QString , QString>> groupMessages = groupPtr->getMessages();
     }
 }
 
 //update channel messages
 void loggedinpage::updateChannelMessages(){
-    channelRepo.getList("6f72830134afcffe5fefba61c3216931");
-    for(auto &channelPtr : channelList){
-        channelRepo.getChats("6f72830134afcffe5fefba61c3216931" , channelPtr->getName());
+    for(auto &channelPtr : channelRepo.get_List()){
+        channelRepo.getChats(client.getToken() , channelPtr->getName());
         QMultiMap<QString, QPair<QString , QString>> channelMessages = channelPtr->getMessages();
     }
 }
 
 //update pv messages
 void loggedinpage::updatePvMessages(){
-    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
-    for(auto &p : pvList){
-        pvRepo.getChats("6f72830134afcffe5fefba61c3216931" , p->getName());
+    for(auto &p : pvRepo.get_List()){
+        pvRepo.getChats(client.getToken() , p->getName());
         QMultiMap<QString, QPair<QString , QString>> pvMessages = p->getMessages();
     }
 }
@@ -135,11 +127,10 @@ void loggedinpage::on_toggleview_clicked(bool checked)
 
 
 //handle the clicked item
+//handle the clicked item
 void loggedinpage::handleListItemClicked(QListWidgetItem* item)
 {
     QString text = item->text();
-
-
 
     QString substrgr = "G: ";
     QString substrch = "C: ";
@@ -171,15 +162,27 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
         }
     }
 
-    if (groupName != ""){
+    // Delete the last timer
+    if (updateTimer != nullptr) {
+        updateTimer->stop();
+        updateTimer->deleteLater();
+        updateTimer = nullptr;
+    }
+    // Create a new timer for updating the selected chat
+    updateTimer = new QTimer(this);
+    connect(updateTimer, &QTimer::timeout, this, &loggedinpage::updateSelectedChat);
+    updateTimer->start(5000);
+}
+
+void loggedinpage::updateSelectedChat()
+{
+    ui->messages->clear();
+    if (selected.first == "group" && selected.second != ""){
         // Find the group object from the grouplist that matches the clicked group name
-        for (auto& g : groupList) {
-            if (g->getName() == groupName) {
-                // Get the group messages from the found group object
-                QMultiMap<QString, QPair<QString , QString>> groupMessages = g->getMessages();
+        for (auto& groupPtr : groupRepo.get_List()) {
+            if (groupPtr->getName() == selected.second) {
                 // Show the group messages in a text widget
-                ui->messages->clear();
-                for (auto it =groupMessages.begin() ; it != groupMessages.end(); ++it) {
+                for (auto it =groupPtr->getMessages().begin(); it != groupPtr->getMessages().end(); ++it) {
                     QString sender = it.value().first;
                     QString text = it.value().second;
                     ui->messages->appendPlainText(sender + ": " + text);
@@ -187,16 +190,12 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
                 break;
             }
         }
-    }else if (channelName != ""){
+    } else if (selected.first == "channel" && selected.second != "") {
         // Find the channel object from the channellist that matches the clicked channel name
-        for (auto& c : channelList) {
-            if (c->getName() == channelName) {
-                // Get the channel messages from the found channel object
-                QMultiMap<QString, QPair<QString , QString>> channelMessages = c->getMessages();
-
+        for (auto& channelPtr : channelRepo.get_List()) {
+            if (channelPtr->getName() == selected.second) {
                 // Show the channel messages in a text widget
-                ui->messages->clear();
-                for (auto it =channelMessages.begin() ; it != channelMessages.end(); ++it) {
+                for (auto it = channelPtr->getMessages().begin(); it != channelPtr->getMessages().end(); ++it) {
                     QString sender = it.value().first;
                     QString text = it.value().second;
                     ui->messages->appendPlainText(sender + ": " + text);
@@ -204,16 +203,13 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
                 break;
             }
         }
-    }else if (pvName != ""){
+    }
+    else if (selected.first == "pv" && selected.second != "") {
         // Find the PV object from the PV_list that matches the clicked PV name
-        for (auto& p : pvList) {
-            if (p->getName() == pvName) {
-                // Get the pv messages from the found pv object
-                QMultiMap<QString, QPair<QString , QString>> pvMessages = p->getMessages();
-
+        for (auto& pvPtr : pvRepo.get_List()) {
+            if (pvPtr->getName() == selected.second) {
                 // Show the pv messages in a text widget
-                ui->messages->clear();
-                for (auto it = pvMessages.begin(); it != pvMessages.end(); ++it) {
+                for (auto it = pvPtr->getMessages().begin(); it != pvPtr->getMessages().end(); ++it) {
                     QString sender = it.value().first;
                     QString text = it.value().second;
                     ui->messages->appendPlainText(sender + ": " + text);
@@ -228,7 +224,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
 void loggedinpage::on_logoutbutton_clicked()
 {
     try {
-        QPair<QString , QString> response = cl.Logout(); // Pass the correct password parameter
+        QPair<QString , QString> response = client.Logout(); // Pass the correct password parameter
         QMessageBox::information(this, "Information", response.second);
         emit logoutbuttonclicked();
     }catch (const ExceptionHandler &e) { //handle these later
@@ -264,7 +260,7 @@ void loggedinpage::on_joingroupbtton_clicked()
     bool ok;
     QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
     if (ok && !inputText.isEmpty()) {
-        QString response = groupRepo.join("6f72830134afcffe5fefba61c3216931" , inputText);
+        QString response = groupRepo.join(client.getToken() , inputText);
         if (response == "Successfully Joined" ){
             QMessageBox::information(this , "Information" , response);
             updatelists();
@@ -280,7 +276,7 @@ void loggedinpage::on_creategroupbutton_clicked()
     bool ok;
     QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
     if (ok && !inputText.isEmpty()) {
-        QString response = groupRepo.create("6f72830134afcffe5fefba61c3216931" , inputText);
+        QString response = groupRepo.create(client.getToken() , inputText);
         if (response == "Group Created Successfully"){
             QMessageBox::information(this , "Information" , response);
             updatelists();
@@ -296,7 +292,7 @@ void loggedinpage::on_joinchannelbutton_clicked()
     bool ok;
     QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
     if (ok && !inputText.isEmpty()) {
-        QString response = channelRepo.join("6f72830134afcffe5fefba61c3216931" , inputText);
+        QString response = channelRepo.join(client.getToken() , inputText);
         if (response == "Successfully Joined"){
             QMessageBox::information(this , "Information" , response);
             updatelists();
@@ -312,7 +308,7 @@ void loggedinpage::on_createchannelbutton_clicked()
     bool ok;
     QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
     if (ok && !inputText.isEmpty()) {
-        QString response = channelRepo.create("6f72830134afcffe5fefba61c3216931" , inputText);
+        QString response = channelRepo.create(client.getToken() , inputText);
         if (response == "Channel Created Successfully"){
             QMessageBox::information(this , "Information" , response);
             updatelists();
@@ -329,12 +325,12 @@ void loggedinpage::on_newchatbutton_clicked()
     QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter recipient name:", QLineEdit::Normal, "", &ok);
     if (ok && !inputText.isEmpty()) {
         QString body = QInputDialog::getMultiLineText(this, "Input Dialog", "Enter message body:");
-        QString response = pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931", inputText, body);
+        QString response = pvRepo.sendMessage(client.getToken(), inputText, body);
         if (response == "Message Sent Successfully"){
             updatelists();
             QMessageBox::information(this , "Information" , response);
             updatePvMessages();
-            for (auto& pvPtr : pvList) {
+            for (auto& pvPtr : pvRepo.get_List()) {
                 if (pvPtr->getName() == selected.second) {
                     // Get the pv messages from the found group object
                     QMultiMap<QString, QPair<QString , QString>> pvMessages = pvPtr->getMessages();
@@ -360,11 +356,11 @@ void loggedinpage::on_sendmessagebutton_clicked()
 {
     if (selected.first == "group"){
         QString inputText = ui->sendmessageLE->text();
-        QString response = groupRepo.sendMessage("6f72830134afcffe5fefba61c3216931" , selected.second ,inputText);
+        QString response = groupRepo.sendMessage(client.getToken() , selected.second ,inputText);
         if(response =="Message Sent Successfully" ){
             QMessageBox::information(this , "Information" , response);
             updateGroupMessages();
-            for (auto& g : groupList) {
+            for (auto& g : groupRepo.get_List()) {
                 if (g->getName() == selected.second) {
                     // Get the group messages from the found group object
                     QMultiMap<QString, QPair<QString , QString>> groupMessages = g->getMessages();
@@ -383,11 +379,11 @@ void loggedinpage::on_sendmessagebutton_clicked()
         }
     }else if (selected.first == "channel"){
         QString inputText = ui->sendmessageLE->text();
-        QString response = channelRepo.sendMessage("6f72830134afcffe5fefba61c3216931" , selected.second ,inputText);
+        QString response = channelRepo.sendMessage(client.getToken() , selected.second ,inputText);
         if (response == "Message Successfully Sent"){
             QMessageBox::information(this , "Information" , response);
             updateChannelMessages();
-            for (auto& channelPtr : channelList) {
+            for (auto& channelPtr : channelRepo.get_List()) {
                 if (channelPtr->getName() == selected.second) {
                     // Get the channel messages from the found group object
                     QMultiMap<QString, QPair<QString , QString>> channelMessages = channelPtr->getMessages();
@@ -406,12 +402,12 @@ void loggedinpage::on_sendmessagebutton_clicked()
         }
     }else if (selected.first == "pv"){
         QString inputText = ui->sendmessageLE->text();
-        QString response = pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931" , selected.second ,inputText);
+        QString response = pvRepo.sendMessage(client.getToken() , selected.second ,inputText);
         if (response == "Message Sent Successfully"){
             updatePvMessages();
             QMessageBox::information(this , "Information" , response);
             updatePvMessages();
-            for (auto& pvPtr : pvList) {
+            for (auto& pvPtr : pvRepo.get_List()) {
                 if (pvPtr->getName() == selected.second) {
                     // Get the pv messages from the found group object
                     QMultiMap<QString, QPair<QString , QString>> pvMessages = pvPtr->getMessages();

@@ -23,10 +23,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(const std::vector<std::unique_ptr<DTO>>& groupList,
-               const std::vector<std::unique_ptr<DTO>>& pvList,
-               const std::vector<std::unique_ptr<DTO>>& channelList,
-               GroupRepository& groupRepo,
+    MainWindow(Client& client , GroupRepository& groupRepo,
                ChannelRepository& channelRepo,
                PvRepository& pvRepo ,
                QWidget *parent = nullptr);
@@ -39,12 +36,13 @@ private slots:
 
     //handle the pages signals
     void handleSignupApproved();
-    void handleloginApproved(Client& client);
+    void handleloginApproved();
     void handleLogoutClicked();
 public slots:
     void onMainWindowClosed();
 
 private:
+    Client& client;
     Ui::MainWindow *ui;
     //create signup page object
     signupui *signup;
@@ -56,9 +54,5 @@ private:
     GroupRepository& groupRepo;
     ChannelRepository& channelRepo;
     PvRepository& pvRepo;
-    const std::vector<std::unique_ptr<DTO>>& pvList;
-    const std::vector<std::unique_ptr<DTO>>& groupList;
-    const std::vector<std::unique_ptr<DTO>>& channelList;
-
 };
 #endif // MAINWINDOW_H

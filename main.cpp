@@ -19,8 +19,8 @@
 
 int main(int argc, char *argv[]){
     QApplication app(argc, argv);
-    Client cl1("kebab","6kebab","kebab","kebab");
-
+    Client client;
+    client.ReadClient();
     GroupRepository groupRepo;
 //    groupRepo.getList("6f72830134afcffe5fefba61c3216931");
 //    groupRepo.getChats("6f72830134afcffe5fefba61c3216931","lmao","");
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]){
 //        }
 //    }
 
-    MainWindow w(groupList , pvList , channelList , groupRepo , channelRepo , pvRepo );
+    MainWindow w(client ,groupRepo , channelRepo , pvRepo);
 
     QPointer<MainWindow> mainWindowPtr(&w);
     // Connect the destroyed() signal of the MainWindow object to a slot that calls another function
