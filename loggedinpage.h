@@ -34,6 +34,12 @@ private slots:
     void on_creategroupbutton_clicked();
     void on_sendmessagebutton_clicked();
 
+    void on_joinchannelbutton_clicked();
+
+    void on_createchannelbutton_clicked();
+
+    void on_newchatbutton_clicked();
+
 signals:
     //emit when the button is clicked
     void logoutbuttonclicked();

@@ -70,6 +70,7 @@ loggedinpage::loggedinpage(const std::vector<std::unique_ptr<DTO>>& passedgroupL
 }
 
 
+//list updator function
 void loggedinpage::updatelists(){
     groupRepo.getList("6f72830134afcffe5fefba61c3216931");;
     channelRepo.getList("6f72830134afcffe5fefba61c3216931");
@@ -82,6 +83,7 @@ void loggedinpage::updatelists(){
     addtopage(pvList); // Add pv chats to the list widget
 }
 
+//update group messages
 void loggedinpage::updateGroupMessages(){
     for(auto &groupPtr : groupList){
         groupRepo.getChats("6f72830134afcffe5fefba61c3216931" , groupPtr->getName());
@@ -89,6 +91,7 @@ void loggedinpage::updateGroupMessages(){
     }
 }
 
+//update channel messages
 void loggedinpage::updateChannelMessages(){
     for(auto &channelPtr : channelList){
         channelRepo.getChats("6f72830134afcffe5fefba61c3216931" , channelPtr->getName());
@@ -96,6 +99,7 @@ void loggedinpage::updateChannelMessages(){
     }
 }
 
+//update pv messages
 void loggedinpage::updatePvMessages(){
     for(auto &p : pvList){
         pvRepo.getChats("6f72830134afcffe5fefba61c3216931" , p->getName());
@@ -103,11 +107,14 @@ void loggedinpage::updatePvMessages(){
     }
 }
 
+
+//destructor
 loggedinpage::~loggedinpage()
 {
     delete ui;
 }
 
+//toggle the dock widget
 void loggedinpage::on_toggleview_clicked(bool checked)
 {
     // Get the current size of the button
@@ -127,7 +134,7 @@ void loggedinpage::on_toggleview_clicked(bool checked)
 
 
 
-
+//handle the clicked item
 void loggedinpage::handleListItemClicked(QListWidgetItem* item)
 {
     QString text = item->text();
@@ -217,6 +224,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
     }
 }
 
+//logout
 void loggedinpage::on_logoutbutton_clicked()
 {
     try {
@@ -250,6 +258,7 @@ void loggedinpage::addtopage(const std::vector<std::unique_ptr<DTO>>& List){
     }
 }
 
+//join group button
 void loggedinpage::on_joingroupbtton_clicked()
 {
     bool ok;
@@ -265,7 +274,7 @@ void loggedinpage::on_joingroupbtton_clicked()
     }
 }
 
-
+//create group button
 void loggedinpage::on_creategroupbutton_clicked()
 {
     bool ok;
@@ -281,8 +290,72 @@ void loggedinpage::on_creategroupbutton_clicked()
     }
 }
 
+//join channel button
+void loggedinpage::on_joinchannelbutton_clicked()
+{
+    bool ok;
+    QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
+    if (ok && !inputText.isEmpty()) {
+        QString response = channelRepo.join("6f72830134afcffe5fefba61c3216931" , inputText);
+        if (response == "Successfully Joined"){
+            QMessageBox::information(this , "Information" , response);
+            updatelists();
+        }else {
+            QMessageBox::critical(this , "Error" , response);
+        }
+    }
+}
+
+//create new channel button
+void loggedinpage::on_createchannelbutton_clicked()
+{
+    bool ok;
+    QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter input:", QLineEdit::Normal, "", &ok);
+    if (ok && !inputText.isEmpty()) {
+        QString response = channelRepo.create("6f72830134afcffe5fefba61c3216931" , inputText);
+        if (response == "Channel Created Successfully"){
+            QMessageBox::information(this , "Information" , response);
+            updatelists();
+        }else {
+            QMessageBox::critical(this , "Error" , response);
+        }
+    }
+}
+
+//start chat with a new user
+void loggedinpage::on_newchatbutton_clicked()
+{
+    bool ok;
+    QString inputText = QInputDialog::getText(this, "Input Dialog", "Enter recipient name:", QLineEdit::Normal, "", &ok);
+    if (ok && !inputText.isEmpty()) {
+        QString body = QInputDialog::getMultiLineText(this, "Input Dialog", "Enter message body:");
+        QString response = pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931", inputText, body);
+        if (response == "Message Sent Successfully"){
+            updatelists();
+            QMessageBox::information(this , "Information" , response);
+            updatePvMessages();
+            for (auto& pvPtr : pvList) {
+                if (pvPtr->getName() == selected.second) {
+                    // Get the pv messages from the found group object
+                    QMultiMap<QString, QPair<QString , QString>> pvMessages = pvPtr->getMessages();
+                    // Show the pv messages in a text widget
+                    ui->messages->clear();
+                    for (QMultiMap<QString, QPair<QString , QString>>::Iterator it =pvMessages.begin() ; it != pvMessages.end(); ++it) {
+                        QString sender = it.value().first;
+                        QString text = it.value().second;
+                        ui->messages->appendPlainText(sender + ": " + text);
+                    }
+                    break;
+                }
+            }
+        }else {
+            QMessageBox::critical(this , "Error" , response);
+        }
+    }
+}
 
 
+//send message to the selected item
 void loggedinpage::on_sendmessagebutton_clicked()
 {
     if (selected.first == "group"){
@@ -360,4 +433,5 @@ void loggedinpage::on_sendmessagebutton_clicked()
     }
 
 }
+
 
