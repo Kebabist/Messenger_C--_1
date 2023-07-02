@@ -4,6 +4,8 @@
 #include <QWidget>
 #include "client.h"
 #include <qlistwidget.h>
+#include <QtConcurrent/qtconcurrentrun.h>
+#include <QThreadPool>
 #include "grouprepository.h"
 #include "channelrepository.h"
 #include "pvrepository.h"
@@ -29,9 +31,7 @@ private slots:
     void handleListItemClicked(QListWidgetItem* item);
     void on_logoutbutton_clicked();
     void on_joingroupbtton_clicked();
-
     void on_creategroupbutton_clicked();
-
     void on_sendmessagebutton_clicked();
 
 signals:
@@ -39,7 +39,11 @@ signals:
     void logoutbuttonclicked();
 
 private:
-    void updatorfunc();
+
+    void updatelists();
+    void updateGroupMessages();
+    void updateChannelMessages();
+    void updatePvMessages();
     Ui::loggedinpage *ui;
     Client cl;
     QPair<QString , QString> selected; //first one is the type //second one is the name //Like : <group , groupName>
@@ -52,6 +56,7 @@ private:
     QMultiMap<QString, QPair<QString , QString>> group_messages;
     QMultiMap<QString, QPair<QString , QString>> channel_messages;
     QMultiMap<QString, QPair<QString , QString>> pv_messages;
+    QThread *messageThread;
 };
 
 #endif // LOGGEDINPAGE_H
