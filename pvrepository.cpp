@@ -25,10 +25,10 @@ PvRepository::~PvRepository()
 {}
 
 //create new Pv
-void PvRepository::create(QString token, QString pvName){}
+QString PvRepository::create(QString token, QString pvName){}
 
 //join pv
-void PvRepository::join(QString token , QString pvName){}
+QString PvRepository::join(QString token , QString pvName){}
 
 //get list of joined Pvs
 void PvRepository::getList(QString token){
@@ -64,25 +64,27 @@ void PvRepository::getList(QString token){
 }
 
 //send message in a pv chat
-void PvRepository::sendMessage(QString token, QString pvName , QString message){
+QString PvRepository::sendMessage(QString token, QString pvName , QString message){
     HttpHandler http;
     QString arguments = "dst="+pvName+"&"+"body="+message;
     urlmaker newurl("sendmessageuser", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){ //handled by UI (every time we send a message we call getPvmessage method and get the rest of the messages from the saerver
-                QString message = jsonObj.value("message").toString();
+                responseMessage = jsonObj.value("message").toString();
                 qDebug() <<message;
             }else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
+                responseMessage = jsonObj.value("message").toString();
                 qDebug()  <<message << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it

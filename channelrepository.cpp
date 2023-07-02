@@ -23,12 +23,13 @@ ChannelRepository::~ChannelRepository()
 {}
 
 //create new Channel
-void ChannelRepository::create(QString token, QString channelName){
+QString ChannelRepository::create(QString token, QString channelName){
     HttpHandler http;
     QString arguments = "channel_name="+channelName;
     urlmaker newurl("createchannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         QJsonDocument doc(jsonObj);
@@ -37,8 +38,8 @@ void ChannelRepository::create(QString token, QString channelName){
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
 
                 // Create the Channel object using std::make_unique
                 std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
@@ -47,27 +48,29 @@ void ChannelRepository::create(QString token, QString channelName){
                 setList(std::move(channel));
             }
             else if (code != "200") {  //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 ////join Channel
-void ChannelRepository::join(QString token , QString channelName){
+QString ChannelRepository::join(QString token , QString channelName){
     HttpHandler http;
     QString arguments = "channel_name="+channelName;
     urlmaker newurl("joinchannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
 
                 // Create the Channel object using std::make_unique
                 std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
@@ -76,11 +79,12 @@ void ChannelRepository::join(QString token , QString channelName){
                 setList(std::move(channel));
             }
             else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 //get list of joined Channels
@@ -117,25 +121,27 @@ void ChannelRepository::getList(QString token){
 }
 
 //send message in a Channel chat
-void ChannelRepository::sendMessage(QString token, QString channelName , QString message){
+QString ChannelRepository::sendMessage(QString token, QString channelName , QString message){
     HttpHandler http;
     QString arguments = "dst="+channelName+"&"+"body="+message;
     urlmaker newurl("sendmessagechannel", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){ //handled by UI (every time we send a message we call getmessage method and get the rest of the messages from the saerver
-                QString message = jsonObj.value("message").toString();
+                responseMessage = jsonObj.value("message").toString();
                 qDebug() <<message;
             }else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
+                responseMessage = jsonObj.value("message").toString();
                 qDebug()  <<message << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
