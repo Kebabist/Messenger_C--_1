@@ -84,4 +84,16 @@ void MainWindow::on_loginbutton_clicked()
     connect(login, &loginui::loginApproved, this, &MainWindow::handleloginApproved);
 }
 
+//for when the program exits
+void MainWindow::onMainWindowClosed()
+{
+    // Called when the MainWindow is closed
+    writeAll();
+}
 
+void MainWindow::writeAll(){
+    qDebug()<<"Caleed write all!";
+    pvRepo.writeMessages();
+    groupRepo.writeMessages();
+    channelRepo.writeMessages();
+}

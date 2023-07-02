@@ -2,6 +2,7 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QThread>
+#include <QPointer>
 #include "mainwindow.h"
 #include "httphandler.h"
 #include "urlmaker.h"
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]){
 //    groupRepo.join("6f72830134afcffe5fefba61c3216931","ahhhhhhsfsdhhh546456hhert");
 //    qDebug()<<"=======================================";
 //    groupRepo.readMessages();
-    const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.get_List();
 //    for (const auto& groupPtr : groupList) {
 //        qDebug() << "Group Name: " << groupPtr->getName();
 //        qDebug() << "Messages: ";
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]){
 //    channelRepo.getChats("6f72830134afcffe5fefba61c3216931","newchannel","");
 //    channelRepo.getChats("6f72830134afcffe5fefba61c3216931","yuhahahahaha","");
 //    channelRepo.writeMessages();
-    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.get_List();
 //    qDebug()<<"====================================";
 //    for (const auto& channelPtr : channelList) {
 //        qDebug() << "Channel Name: " << channelPtr->getName();
@@ -79,13 +80,13 @@ int main(int argc, char *argv[]){
     //the other person is kebab4
     //the given token is for kebab3
     PvRepository pvRepo;
-//    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
-//    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab5","");
-//    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab2","20230630170702");
-//    pvRepo.writeMessages();
+    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
+    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab5","");
+    pvRepo.getChats("6f72830134afcffe5fefba61c3216931","kebab2","20230630170702");
+    pvRepo.writeMessages();
 //    pvRepo.sendMessage("6f72830134afcffe5fefba61c3216931","kebab4","alan ferestadam");
 //    pvRepo.readMessages();
-    const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
+    const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::get_List();
 //    for (const auto& pvPtr : pvList) {
 //        qDebug() << "Pv Name: " << pvPtr->getName();
 //        qDebug() << "Messages: ";
@@ -110,6 +111,14 @@ int main(int argc, char *argv[]){
 //    }
 
     MainWindow w(groupList , pvList , channelList , groupRepo , channelRepo , pvRepo );
+
+    QPointer<MainWindow> mainWindowPtr(&w);
+    // Connect the destroyed() signal of the MainWindow object to a slot that calls another function
+    QObject::connect(&w, &QMainWindow::destroyed, [&mainWindowPtr]() {
+        if (mainWindowPtr) {
+            mainWindowPtr->onMainWindowClosed();
+        }
+    });
     w.show();
     return app.exec();
 

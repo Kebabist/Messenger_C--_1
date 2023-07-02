@@ -36,7 +36,7 @@ public:
     void setList(std::unique_ptr<DTO> newDTO);
 
     // Getter
-    const std::vector<std::unique_ptr<DTO>>& getList() const;
+    const std::vector<std::unique_ptr<DTO>>& get_List() const;
 
 protected:
     HttpHandler http;

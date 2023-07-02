@@ -48,5 +48,11 @@ const QMultiMap<QString, QPair<QString, QString>> &DTO::getMessages() const
 //Setters
 void DTO::setMessage(QString src, QString message, QString date)
 {
+    if (!messages.isEmpty() && messages.lastKey() == date &&
+        messages.last().first == src && messages.last().second == message) {
+        // Last key, src, and message are the same as the new values, do nothing
+        return;
+    }
+    // Add a new key-value pair to the map
     messages.insert(date, QPair<QString, QString>(src, message));
 }

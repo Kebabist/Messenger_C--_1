@@ -31,7 +31,7 @@ public:
                PvRepository& pvRepo ,
                QWidget *parent = nullptr);
     ~MainWindow();
-
+    void writeAll();
 private slots:
     //buttons
     void on_signupbutton_clicked();
@@ -41,6 +41,8 @@ private slots:
     void handleSignupApproved();
     void handleloginApproved(Client& client);
     void handleLogoutClicked();
+public slots:
+    void onMainWindowClosed();
 
 private:
     Ui::MainWindow *ui;

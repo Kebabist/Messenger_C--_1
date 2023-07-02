@@ -75,16 +75,14 @@ void loggedinpage::updatelists(){
     groupRepo.getList("6f72830134afcffe5fefba61c3216931");;
     channelRepo.getList("6f72830134afcffe5fefba61c3216931");
     pvRepo.getList("6f72830134afcffe5fefba61c3216931");
-    const std::vector<std::unique_ptr<DTO>>& groupList = groupRepo.Repository::getList();
-    const std::vector<std::unique_ptr<DTO>>& channelList = channelRepo.Repository::getList();
-    const std::vector<std::unique_ptr<DTO>>& pvList = pvRepo.Repository::getList();
-    addtopage(groupList); // Add group chats to the list widget
-    addtopage(channelList); // Add channel chats to the list widget
-    addtopage(pvList); // Add pv chats to the list widget
+    addtopage(groupRepo.get_List()); // Add group chats to the list widget
+    addtopage(channelRepo.get_List()); // Add channel chats to the list widget
+    addtopage(pvRepo.get_List()); // Add pv chats to the list widget
 }
 
 //update group messages
 void loggedinpage::updateGroupMessages(){
+    groupRepo.getList("6f72830134afcffe5fefba61c3216931");
     for(auto &groupPtr : groupList){
         groupRepo.getChats("6f72830134afcffe5fefba61c3216931" , groupPtr->getName());
         QMultiMap<QString, QPair<QString , QString>> groupMessages = groupPtr->getMessages();
@@ -93,6 +91,7 @@ void loggedinpage::updateGroupMessages(){
 
 //update channel messages
 void loggedinpage::updateChannelMessages(){
+    channelRepo.getList("6f72830134afcffe5fefba61c3216931");
     for(auto &channelPtr : channelList){
         channelRepo.getChats("6f72830134afcffe5fefba61c3216931" , channelPtr->getName());
         QMultiMap<QString, QPair<QString , QString>> channelMessages = channelPtr->getMessages();
@@ -101,6 +100,7 @@ void loggedinpage::updateChannelMessages(){
 
 //update pv messages
 void loggedinpage::updatePvMessages(){
+    pvRepo.getList("6f72830134afcffe5fefba61c3216931");
     for(auto &p : pvList){
         pvRepo.getChats("6f72830134afcffe5fefba61c3216931" , p->getName());
         QMultiMap<QString, QPair<QString , QString>> pvMessages = p->getMessages();
