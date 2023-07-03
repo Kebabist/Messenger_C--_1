@@ -2,6 +2,7 @@
 #define LOGGEDINPAGE_H
 
 #include <QWidget>
+#include <QtConcurrent/QtConcurrentRun>
 #include "client.h"
 #include <qlistwidget.h>
 #include <QtConcurrent/qtconcurrentrun.h>
@@ -11,6 +12,10 @@
 #include "channelrepository.h"
 #include "pvrepository.h"
 #include <QShortcut>
+#include "qwaitcondition.h"
+#include <QWaitCondition>
+#include <QMutex>
+#include <QFutureWatcher>
 
 namespace Ui {
 class loggedinpage;
@@ -27,6 +32,10 @@ public:
                           PvRepository& pvRepo, QWidget *parent = nullptr);
     void addtopage();
     ~loggedinpage();
+    void writeAll();
+    void removeAll();
+    void closeEvent(QCloseEvent *event);
+    bool stopThreads;
 
 private slots:
     void on_toggleview_clicked(bool checked);
@@ -36,16 +45,15 @@ private slots:
     void on_joingroupbtton_clicked();
     void on_creategroupbutton_clicked();
     void on_sendmessagebutton_clicked();
-
     void on_joinchannelbutton_clicked();
-
     void on_createchannelbutton_clicked();
-
     void on_newchatbutton_clicked();
+    void handleLoggedinpageClosed();
 
 signals:
     //emit when the button is clicked
     void logoutbuttonclicked();
+    void loggedinpageClosed();
 
 private:
     const QString findLatestDate(QString Name);

@@ -44,6 +44,14 @@ void Client::setToken(QString token){
     this->token = token;
 }
 
+void Client::setPassword(QString password){
+    this->password = password;
+}
+
+void Client::setUsername(QString username){
+    this->username = username;
+}
+
 
 //lets the user signup in messenger
 QPair<QString, QString> Client::Signup(){
@@ -126,8 +134,8 @@ QPair<QString , QString> Client::Logout(){
                 }
             }
         }
-    RemoveClientDir();
-    return qMakePair(code ,message);
+RemoveClientDir();
+return qMakePair(code ,message);
 }
 
 
@@ -286,16 +294,5 @@ void Client::RemoveClientDir() {
         } catch (...) {
             // Handle any other exceptions
             qDebug() << "Unknown error occurred";
-        }
-}
-
-//Checks the State of the User at Program startup
-void Client::ClientState(){
-        ReadClient();
-        if(token != ""){
-            //do sth
-        }
-        else{
-            //do sth
         }
 }

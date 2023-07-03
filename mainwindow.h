@@ -28,20 +28,22 @@ public:
                PvRepository& pvRepo ,
                QWidget *parent = nullptr);
     ~MainWindow();
-    void writeAll();
+    void ClientState();
+
 private slots:
     //buttons
     void on_signupbutton_clicked();
     void on_loginbutton_clicked();
+    void handleLoggedinpageClosed();
+    void handleAboutToQuit();
 
     //handle the pages signals
     void handleSignupApproved();
-    void handleloginApproved(Client* loginClient);
+    void handleloginApproved(Client *loginClient);
     void handleLogoutClicked();
-public slots:
-    void onMainWindowClosed();
 
 private:
+    bool flag;
     Client& client;
     Ui::MainWindow *ui;
     //create signup page object

@@ -1,10 +1,8 @@
 #include "loggedinpage.h"
-#include "mainwindow.h"
-#include "exceptionhandler.h"
-#include <QVector>
 #include "ui_loggedinpage.h"
 #include <QInputDialog>
 #include <qmessagebox.h>
+#include <QVector>
 #include <QTimer>
 
 loggedinpage::loggedinpage(Client& client,
@@ -13,7 +11,8 @@ loggedinpage::loggedinpage(Client& client,
                            PvRepository& pvRepo,
                            QWidget* parent) :
     QWidget(parent),
-    client(client),
+    stopThreads(false),
+    client(client) ,
     ui(new Ui::loggedinpage),
     groupRepo(groupRepo),
     channelRepo(channelRepo),
@@ -48,56 +47,113 @@ loggedinpage::loggedinpage(Client& client,
                 qDebug() << "Exception @ future1: " << exception.what();
             }
             QThread::msleep(5000);
+    channelRepo(channelRepo), pvRepo(pvRepo)
+{   try{
+        ui->setupUi(this);
+        connect(this, &loggedinpage::loggedinpageClosed, this, &loggedinpage::handleLoggedinpageClosed);
+        connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
+        ui->dockWidget->setTitleBarWidget(ui->widget_3);
+    }catch (...) {
+        qDebug() << "Unknown exception caught in mainwindow";
+    }
+
+    QMutex mutex;
+    QWaitCondition waitCondition;
+
+    QThreadPool* threadPool = QThreadPool::globalInstance();
+    threadPool->setMaxThreadCount(4);
+
+     QFuture<void> future1 = QtConcurrent::run(threadPool, [&]() {
+        while (!stopThreads) {
+            try {
+                updatelists();
+            } catch (...) {
+                // Handle exception
+                qDebug()<<"Exception @ future1";
+            }
+            QThread::msleep(3000);
         }
+        // Signal the wait condition and release the mutex when the thread is finished
+                mutex.lock();
+                waitCondition.wakeAll();
+                mutex.unlock();
     });
 
     // Execute the update group messages function asynchronously
-    QFuture<void> future2 = QtConcurrent::run(threadPool, [this]() {
+    QFuture<void> future2 = QtConcurrent::run(threadPool, [&]() {
         while (!stopThreads) {
             try {
                 updateGroupMessages();
-            } catch (const QException& exception) {
+            } catch (...) {
                 // Handle exception
-                qDebug() << "Exception @ future2: " << exception.what();
+                qDebug()<<"Exception @ future1";
             }
-            QThread::msleep(5000);
+            QThread::msleep(3000);
         }
+        // Signal the wait condition and release the mutex when the thread is finished
+                mutex.lock();
+                waitCondition.wakeAll();
+                mutex.unlock();
     });
 
 
-
     // Execute the update channel messages function asynchronously
-    QFuture<void> future3 = QtConcurrent::run(threadPool, [this]() {
+    QFuture<void> future3 = QtConcurrent::run(threadPool, [&]() {
         while (!stopThreads) {
             try {
                 updateChannelMessages();
             } catch (...) {
                 // Handle exception
-                qDebug()<<"Exception @ future3";
+                qDebug()<<"Exception @ future1";
             }
-            QThread::msleep(5000);
+            QThread::msleep(3000);
         }
+        // Signal the wait condition and release the mutex when the thread is finished
+                mutex.lock();
+                waitCondition.wakeAll();
+                mutex.unlock();
     });
     // Execute the update private messages function asynchronously
-    QFuture<void> future4 = QtConcurrent::run(threadPool, [this]() {
+    QFuture<void> future4 = QtConcurrent::run(threadPool, [&]() {
         while (!stopThreads) {
             try {
                 updatePvMessages();
             } catch (...) {
                 // Handle exception
-                qDebug()<<"Exception @ future4";
+                qDebug()<<"Exception @ future1";
             }
-            QThread::msleep(5000);
+            QThread::msleep(3000);
         }
+        // Signal the wait condition and release the mutex when the thread is finished
+                mutex.lock();
+                waitCondition.wakeAll();
+                mutex.unlock();
     });
     // Connect logout button to stop threads
-    connect(ui->logoutbutton, &QPushButton::clicked, this, [=]() {
-        stopThreads = true;
-        const_cast<QFuture<void>&>(future1).waitForFinished();
-        const_cast<QFuture<void>&>(future2).waitForFinished();
-        const_cast<QFuture<void>&>(future3).waitForFinished();
-        const_cast<QFuture<void>&>(future4).waitForFinished();
-        loggedinpage::on_logoutbutton_clicked();
+    connect(ui->logoutbutton, &QPushButton::clicked, this, [&]() {
+        try{
+            stopThreads = true;
+            // Lock the mutex and wait for the threads to finish
+            mutex.lock();
+            waitCondition.wakeAll(); // Wake all waiting threads
+            mutex.unlock();
+
+            QFutureWatcher<void> watcher;
+            // Wait for all futures to finish
+            watcher.setFuture(future1);
+            watcher.setFuture(future2);
+            watcher.setFuture(future3);
+            watcher.setFuture(future4);
+            watcher.waitForFinished();
+            // Wait for all threads in the thread pool to finish executing
+            QThreadPool::globalInstance()->waitForDone();
+
+            // Clear the thread pool to delete all threads
+            QThreadPool::globalInstance()->clear();
+            loggedinpage::on_logoutbutton_clicked();
+        }catch (...) {
+            qDebug() << "Unknown exception caught in loggedin window constructor";
+        }
     });
 }
 
@@ -206,7 +262,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
     // Create a new timer for updating the selected chat
     updateTimer = new QTimer(this);
     connect(updateTimer, &QTimer::timeout, this, &loggedinpage::updateSelectedChat);
-    updateTimer->start(1000);
+    updateTimer->start(500);
 }
 
 void loggedinpage::updateSelectedChat()
@@ -407,19 +463,23 @@ void loggedinpage::updateSelectedChat()
     }
 }
 
-//logout
+//slot for logout signal
 void loggedinpage::on_logoutbutton_clicked()
 {
     try {
+        disconnect(this, &loggedinpage::loggedinpageClosed, this, &loggedinpage::handleLoggedinpageClosed);
         QPair<QString , QString> response = client.Logout(); // Pass the correct password parameter
         if (response.second == "Logged Out Successfully"){
             QMessageBox::information(this, "Information", response.second);
+            removeAll();
             emit logoutbuttonclicked();
-        }else {
+        }/*else{
             throw response.second;
-        }
-    }catch (const ExceptionHandler &e) { //handle these later
-        QMessageBox::critical(this, "Error", e.message());
+        }*/
+    }/*catch (const std::exception& e) {
+        qDebug() << "Exception caught in logout clicked:" << e.what();
+    }*/catch (...) {
+        qDebug() << "Unknown exception caught in on_logoutbutton_clicked";
     }
 }
 
@@ -614,4 +674,38 @@ void loggedinpage::on_sendmessagebutton_clicked()
     }
 }
 
+// handleLoggedinpageClosed slot
+void loggedinpage::handleLoggedinpageClosed()
+{
+    // Called when the loggedinpage is closed
+    writeAll();
+}
 
+void loggedinpage::closeEvent(QCloseEvent *event) {
+    emit loggedinpageClosed();
+    QWidget::closeEvent(event);
+}
+
+//Writes all files when program is closed
+void loggedinpage::writeAll(){
+    try{
+        pvRepo.writeMessages();
+        groupRepo.writeMessages();
+        channelRepo.writeMessages();
+        qDebug()<<"Wrote all chat Data on Disk";
+    }catch (...) {
+        qDebug() << "Unknown exception caught in WriteALL";
+    }
+}
+
+//removes all user chat files/Directories on user logou
+void loggedinpage::removeAll(){
+    try{
+        pvRepo.removeDir();
+        groupRepo.removeDir();
+        channelRepo.removeDir();
+        qDebug()<<"removed all user files/Dirs on Disk";
+    }catch (...) {
+        qDebug() << "Unknown exception caught in RemoveALL";
+    }
+}
