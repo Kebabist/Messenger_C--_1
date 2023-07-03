@@ -18,6 +18,7 @@
 
 
 int main(int argc, char *argv[]){
+    QApplication::setWindowIcon(QIcon(":/icon.ico"));
     QApplication app(argc, argv);
     Client client;
     client.ReadClient();
