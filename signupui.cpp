@@ -10,6 +10,12 @@ signupui::signupui(QWidget *parent) :
 {
     ui->setupUi(this);
     setWindowTitle("SignUp");
+    QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
+    shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    // Connect enter to sendbutton
+    connect(shortcut, &QShortcut::activated, ui->submitbutton, [this]() {
+        ui->submitbutton->click();
+    });
 }
 
 signupui::~signupui()

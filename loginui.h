@@ -2,6 +2,7 @@
 #define LOGINUI_H
 
 #include <QWidget>
+#include <QShortcut>
 #include "client.h"
 
 namespace Ui {
