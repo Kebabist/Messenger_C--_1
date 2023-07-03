@@ -11,15 +11,15 @@ loggedinpage::loggedinpage(Client& client,
                            PvRepository& pvRepo,
                            QWidget* parent) :
     QWidget(parent),
-    stopThreads(false),
-    client(client) ,
+    client(client),
+    existingGroupMessages("") ,
+    existingChannelMessages(""),
+    existingPvMessages(""),
     ui(new Ui::loggedinpage),
     groupRepo(groupRepo),
     channelRepo(channelRepo),
     pvRepo(pvRepo),
-    existingGroupMessages(""),
-    existingChannelMessages(""),
-    existingPvMessages("")
+    stopThreads(false)
 {
     try{
         ui->setupUi(this);
@@ -34,7 +34,6 @@ loggedinpage::loggedinpage(Client& client,
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     shortcut->setContext(Qt::WidgetWithChildrenShortcut);
-    ui->usernamelabel->setText("logged in as : " + client.getUsername());
     ui->messages->setVerticalScrollBar(ui->verticalScrollBar);
     ui->verticalScrollBar->setValue(ui->verticalScrollBar->maximum());
     // Connect enter to sendbutton
@@ -42,7 +41,6 @@ loggedinpage::loggedinpage(Client& client,
         ui->sendmessagebutton->click();
     });
     updateTimer = new QTimer(nullptr);
-    ui->usernamelabel->setText("logged in as : " + client.getUsername()); // Update the text with the user's name
 
     QMutex mutex;
     QWaitCondition waitCondition;
@@ -54,6 +52,7 @@ loggedinpage::loggedinpage(Client& client,
         while (!stopThreads) {
             try {
                 updatelists();
+                ui->usernamelabel->setText("logged in as : " + client.getUsername()); // Update the text with the user's name
             } catch (...) {
                 // Handle exception
                 qDebug()<<"Exception @ future1";
