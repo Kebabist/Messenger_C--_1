@@ -2,7 +2,7 @@
 
 # Overview:
 
-Welcome to Aim High with Messenger, a C++ and Qt project that aims to provide users with a seamless and intuitive messaging experience. Our project caters to individuals seeking a reliable and efficient messaging platform, and it does so through the use of design patterns and programming concepts that are unparalleled in the industry.
+Welcome Friends, This is a C++ backed and Qt fronted project that aims to provide users with a seamless and intuitive messaging experience. Our project caters to individuals seeking a reliable and efficient messaging platform, and it does so through the use of different design patterns and programming concepts.
 
 # Design Patterns and Programming Concepts:
 
@@ -159,4 +159,4 @@ I am pleased to inform you that our project is released under the GPL license. T
 
 We hope that this README provides you with a clear and concise understanding of our Messenger project. We remain committed to providing users with a messaging experience that is efficient, reliable, and intuitive.
 
-# This is Our Project for Advanced Programming Course @ IUT.ac\Spring 2023
+# This is Our Project for Advanced Programming Course @ IUT.ac\Spring 2023\
