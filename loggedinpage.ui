@@ -268,7 +268,7 @@ gridline-color: rgb(121, 121, 121);</string>
       </size>
      </property>
      <property name="text">
-      <string>logged in as : </string>
+      <string/>
      </property>
      <property name="alignment">
       <set>Qt::AlignHCenter|Qt::AlignTop</set>
