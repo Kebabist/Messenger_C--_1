@@ -20,10 +20,11 @@ private slots:
     //submit button clicl
     void on_submitbutton_clicked();
 signals:
-//correct credentials signal (sent to mainwindow)
-    void loginApproved(Client &);
+    //correct credentials signal (sent to mainwindow)
+    void loginApproved(Client *loginclient);
 private:
     Ui::loginui *ui;
 };
 
 #endif // LOGINUI_H
+

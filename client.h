@@ -24,6 +24,8 @@ public:
 
     //setter Methods
     void setToken(QString);
+    void setPassword(QString);
+    void setUsername(QString);
 
 private:
     QString username;

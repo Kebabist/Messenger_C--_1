@@ -1,7 +1,13 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <qmessagebox.h>
-
+#include <QtCore/QProcess>
+#include <QApplication>
+#include <QMainWindow>
+#include <QProcess>
+#include <signal.h>
+#include <QCoreApplication>
+#include <QDir>
 
 MainWindow::MainWindow(Client & client,
                        GroupRepository& groupRepo,
@@ -9,30 +15,35 @@ MainWindow::MainWindow(Client & client,
                        PvRepository& pvRepo,
                        QWidget *parent)
     : QMainWindow(parent),
-    ui(new Ui::MainWindow),
+    flag(false),
     client(client),
+    ui(new Ui::MainWindow),
     groupRepo(groupRepo),
     channelRepo(channelRepo),
     pvRepo(pvRepo)
 {
-    ui->setupUi(this);
-    if (!client.getToken().isEmpty()) {
-        // The client data was successfully read and contains a token, redirect to the logged in page
-        loggedin = new loggedinpage(client, groupRepo, channelRepo,pvRepo);
-        loggedin->show();
+    try{
+        ui->setupUi(this);
+        loggedin = new loggedinpage(client, groupRepo, channelRepo, pvRepo);
+        // Establish connections to the loggedinpage signals and slots
         connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
-        // Hide the main window after the logged in window is shown
-        loggedin->show();
-        loggedin->isActiveWindow();
-        return;
-    } else {
-        // The client data could not be read or does not contain a token, stay on the main window
-        show();
+        // connect the loggedinpageClosed() signal to the handleLoggedinpageClosed() slot
+        connect(loggedin, &loggedinpage::loggedinpageClosed, this, &MainWindow::handleLoggedinpageClosed);
+
+        // connect the aboutToClose() signal of the QApplication object to a slot in the MainWindow class
+        connect(qApp, &QApplication::aboutToQuit, this, &MainWindow::handleAboutToQuit);
+
+        ClientState();
+    }catch (...) {
+        qDebug() << "Unknown exception caught in mainwindow constructor";
     }
 }
 
 MainWindow::~MainWindow()
 {
+    delete signup;
+    delete login;
+    delete loggedin;
     delete ui;
 }
 
@@ -44,19 +55,27 @@ void MainWindow::handleSignupApproved()
 }
 
 //handle login signal
-void MainWindow::handleloginApproved()
+void MainWindow::handleloginApproved(Client* loginClient)
 {
-
     login->close(); // Close the login page
-    loggedin = new loggedinpage(client, groupRepo, channelRepo, pvRepo);
-    loggedin->show();
-    connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
+    client.setToken(loginClient->getToken());
+    client.setPassword(loginClient->getPassword());
+    client.setUsername(loginClient->getUsername());
+    loggedin->show(); // Show the loggedin page
+    qDebug() << "Logged in page shown"; // Debug message
 }
 
-void MainWindow::handleLogoutClicked()
-{
+void MainWindow::handleLogoutClicked(){
+    flag =true;
     loggedin->close(); // Close the loggedin page
-
+    // Launch a new instance of the app in a separate process group
+    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+    // Quit the Qt event loop
+    qApp->quit();
+    // Wait for the event loop to finish processing events
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 5000);
+    // Fully terminate the current process
+    std::exit(0);
 }
 
 //open new page for signup
@@ -71,20 +90,51 @@ void MainWindow::on_signupbutton_clicked()
 void MainWindow::on_loginbutton_clicked()
 {
     login = new loginui(nullptr);
+    hide();
     login->show();
     connect(login, &loginui::loginApproved, this, &MainWindow::handleloginApproved);
 }
 
-//for when the program exits
-void MainWindow::onMainWindowClosed()
-{
-    // Called when the MainWindow is closed
-    writeAll();
+//closes mainwindow when the loggedinpage is closed
+void MainWindow::handleLoggedinpageClosed() {
+    try{
+        if(!flag){
+            // Quit the Qt event loop
+            qApp->quit();
+            // Wait for the event loop to finish processing events
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 5000);
+
+            // Fully terminate the current process
+            close();
+            std::exit(0);
+        }
+    }catch (...) {
+        qDebug() << "Unknown exception caught in handleLoggedinpageClosed()";
+    }
 }
 
-void MainWindow::writeAll(){
-    qDebug()<<"Caled write all!";
-    pvRepo.writeMessages();
-    groupRepo.writeMessages();
-    channelRepo.writeMessages();
+//Checks the State of the User at Program startup
+void MainWindow::ClientState(){
+    try{
+        client.ReadClient();
+        //tries to find client data on disk and see if the user has already logged in or not
+        if(client.getToken() != ""){
+            hide();
+            loggedin->show();
+            return;
+        }
+        else{
+            // The client data could not be read or does not contain a token, stay on the main window
+            show();
+        }
+    }catch (...) {
+        qDebug() << "Unknown exception caught in mainwindow";
+    }
+}
+
+//finishes the program background tasks
+void MainWindow::handleAboutToQuit()
+{
+    // call the quit() method of the QApplication object to quit the application
+    qApp->quit();
 }
