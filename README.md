@@ -21,6 +21,8 @@ Our project uses DTO_CRUD Repository Design to handle private chats groups and c
 
 5. Security: By using DTOs to transfer data between layers, you can ensure that sensitive data is not exposed to unauthorized users or processes. This can help you maintain the security and integrity of your application's data.
 
+![image](https://github.com/Kebabist/Messenger_C--_1/assets/83098161/40319308-214c-4451-b849-060d11f2ca80)
+
 Overall, the use of DTO CRUD repo concept can help you build more scalable, flexible, and maintainable applications by separating concerns between the data layer and the business logic layer.
 
 ## B. Abstract OOP:

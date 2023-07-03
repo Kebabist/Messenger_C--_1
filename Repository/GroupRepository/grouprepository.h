@@ -8,8 +8,8 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include <vector>
-#include"group.h"
-#include "repository.h"
+#include "Repository/Repository/repository.h"
+#include "DTO/Group/group.h"
 
 class GroupRepository : public Repository
 {

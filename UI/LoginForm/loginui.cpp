@@ -1,7 +1,7 @@
 #include "loginui.h"
 #include "ui_loginui.h"
-#include "client.h"
-#include "exceptionhandler.h"
+#include "Client/client.h"
+#include "ExceotionHandler/exceptionhandler.h"
 #include <QMessageBox>
 
 loginui::loginui(QWidget *parent) :

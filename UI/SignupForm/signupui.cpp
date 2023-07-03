@@ -1,7 +1,7 @@
 #include "signupui.h"
 #include "ui_signupui.h"
-#include "client.h"
-#include "exceptionhandler.h"
+#include "Client/client.h"
+#include "ExceotionHandler/exceptionhandler.h"
 #include <QMessageBox>
 
 signupui::signupui(QWidget *parent) :

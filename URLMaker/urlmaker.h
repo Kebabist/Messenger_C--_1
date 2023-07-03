@@ -1,5 +1,6 @@
 #ifndef URLMAKER_H
 #define URLMAKER_H
+
 #include <QString>
 
 //creates the required urls

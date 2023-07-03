@@ -10,9 +10,9 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include <vector>
-#include "httpHandler.h"
-#include "urlmaker.h"
-#include "dto.h"
+#include "HTTPHandler/httphandler.h"
+#include "URLMaker/urlmaker.h"
+#include "DTO/DTOParent/dto.h"
 
 class Repository
 {

@@ -1,7 +1,7 @@
 #ifndef GROUP_H
 #define GROUP_H
 
-#include "dto.h"
+#include "DTO/DTOParent/dto.h"
 
 class Group : public DTO
 {
