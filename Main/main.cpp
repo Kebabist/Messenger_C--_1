@@ -4,11 +4,11 @@
 #include <QThread>
 #include <QPointer>
 #include <QProcess>
-#include "mainwindow.h"
-#include "client.h"
-#include "grouprepository.h"
-#include "channelrepository.h"
-#include "pvrepository.h"
+#include "Client/client.h"
+#include "Repository/ChannelRepository/channelrepository.h"
+#include "Repository/GroupRepository/grouprepository.h"
+#include "Repository/PVRepository/PVrepository.h"
+#include "UI/MainWindow/mainwindow.h"
 
 
 int main(int argc, char *argv[]){

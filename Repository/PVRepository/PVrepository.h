@@ -10,8 +10,8 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include <vector>
-#include "pv.h"
-#include "repository.h"
+#include <Repository/Repository/repository.h>
+#include "DTO/PV/pv.h"
 
 class PvRepository : public Repository
 {

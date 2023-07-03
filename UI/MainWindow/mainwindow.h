@@ -2,17 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "signupui.h"
-#include "loginui.h"
-#include "loggedinpage.h"
-#include "Client.h"
-#include "exceptionhandler.h"
-#include "group.h"
-#include "grouprepository.h"
-#include "channel.h"
-#include "channelrepository.h"
-#include "pv.h"
-#include "pvrepository.h"
+#include "Repository/ChannelRepository/channelrepository.h"
+#include "Repository/GroupRepository/grouprepository.h"
+#include "Repository/PVRepository/PVrepository.h"
+#include "ui/SignupForm/signupui.h"
+#include "ui/LoginForm/loginui.h"
+#include "ui/LoggedinForm/loggedinpage.h"
+#include "ExceotionHandler/exceptionhandler.h"
+#include "DTO/Group/group.h"
+#include "DTO/Channel/channel.h"
+#include "DTO/Channel/channel.h"
+#include "Client/client.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

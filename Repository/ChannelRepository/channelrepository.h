@@ -8,8 +8,8 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include <vector>
-#include "channel.h"
-#include "repository.h"
+#include "Repository/Repository/repository.h"
+#include "DTO/Channel/channel.h"
 
 class ChannelRepository : public Repository
 {

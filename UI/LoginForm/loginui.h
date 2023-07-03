@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QShortcut>
-#include "client.h"
+#include "Client/client.h"
 
 namespace Ui {
 class loginui;

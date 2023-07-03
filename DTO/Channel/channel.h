@@ -1,7 +1,7 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-#include "dto.h"
+#include "DTO/DTOParent/dto.h"
 
 class Channel: public DTO
 {

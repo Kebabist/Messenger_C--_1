@@ -1,5 +1,5 @@
 #include "httphandler.h"
-#include "exceptionhandler.h"
+#include "ExceotionHandler/exceptionhandler.h"
 
 //handles server Queries
 QPair<QJsonObject, bool> HttpHandler::makeRequest(const QString &urlString) {

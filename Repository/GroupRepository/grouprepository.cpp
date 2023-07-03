@@ -1,6 +1,4 @@
 #include <QDateTime>
-#include <QWidget>
-#include <QList>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDir>
@@ -10,31 +8,90 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "PVrepository.h"
-#include "PV.h"
-#include "exceptionhandler.h"
-#include "httpHandler.h"
-#include "urlmaker.h"
+#include "Repository/GroupRepository/grouprepository.h"
+#include "DTO/Group/group.h"
+#include "ExceotionHandler/exceptionhandler.h"
+#include "HTTPHandler/httphandler.h"
+#include "URLMaker/urlmaker.h"
 
-//PvRepository default constructor
-PvRepository::PvRepository()
+//GroupRepository default constructor
+GroupRepository::GroupRepository()
 {}
 
 //destructor
-PvRepository::~PvRepository()
+GroupRepository::~GroupRepository()
 {}
 
-//create new Pv
-QString PvRepository::create(QString token, QString pvName){}
+//create new group
+QString GroupRepository::create(QString token, QString groupName){
+    HttpHandler http;
+    QString arguments = "group_name="+groupName;
+    urlmaker newurl("creategroup", token , arguments);
+    const QString url = newurl.generate();
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
+    if(response.second){
+        QJsonObject jsonObj = response.first;
+        QJsonDocument doc(jsonObj);
+        QString jsonString = doc.toJson(QJsonDocument::Indented);
+        qDebug().noquote() << jsonString;
+        if (jsonObj.contains("code")){
+            QString code = jsonObj.value("code").toString();
+            if (code == "200"){
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
 
-//join pv
-QString PvRepository::join(QString token , QString pvName){}
+                // Create the Group object using std::make_unique
+                std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
-//get list of joined Pvs
-void PvRepository::getList(QString token){
+                // Add the Group object to the list using the unique_ptr
+                setList(std::move(group));
+            }
+            else if (code != "200") {  //handled by UI
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
+            }
+        }
+    }
+    return responseMessage;
+}
+
+////join group
+QString GroupRepository::join(QString token , QString groupName){
+    HttpHandler http;
+    QString arguments = "group_name="+groupName;
+    urlmaker newurl("joingroup", token , arguments);
+    const QString url = newurl.generate();
+    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
+    if(response.second){
+        QJsonObject jsonObj = response.first;
+        if (jsonObj.contains("code")){
+            QString code = jsonObj.value("code").toString();
+            if (code == "200"){
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
+
+                // Create the Group object using std::make_unique
+                std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
+
+                // Add the Group object to the list using the unique_ptr
+                setList(std::move(group));
+            }
+            else if (code != "200") { //handled by UI
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
+            }
+        }
+    }
+    return responseMessage;
+}
+
+//get list of joined groupes
+void GroupRepository::getList(QString token){
     HttpHandler http;
     QString arguments="";
-    urlmaker newurl("getuserlist", token , arguments);
+    urlmaker newurl("getgrouplist", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     if(response.second){
@@ -45,15 +102,15 @@ void PvRepository::getList(QString token){
                 QString key = it.key();
                 if (key.startsWith("block")) {
                     QJsonObject blockObject = it.value().toObject();
-                    if (blockObject.contains("src")) {
-                        QString pvName = blockObject.value("src").toString();
+                    if (blockObject.contains("group_name")) {
+                        QString groupName = blockObject.value("group_name").toString();
 
-                        // Create the pv object using std::make_unique
-                        std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
+                        // Create the Group object using std::make_unique
+                        std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
-                        // Add the pv object to the list using the unique_ptr
-                        setList(std::move(pv));
-                        qDebug() << "pv Name:" << pvName;
+                        // Add the Group object to the list using the unique_ptr
+                        setList(std::move(group));
+                        qDebug() << "Group Name:" << groupName;
                     }
                 }
             }
@@ -63,11 +120,11 @@ void PvRepository::getList(QString token){
     }
 }
 
-//send message in a pv chat
-QString PvRepository::sendMessage(QString token, QString pvName , QString message){
+//send message in a group chat
+QString GroupRepository::sendMessage(QString token, QString groupName , QString message){
     HttpHandler http;
-    QString arguments = "dst="+pvName+"&"+"body="+message;
-    urlmaker newurl("sendmessageuser", token , arguments);
+    QString arguments = "dst="+groupName+"&"+"body="+message;
+    urlmaker newurl("sendmessagegroup", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     QString responseMessage;
@@ -75,12 +132,12 @@ QString PvRepository::sendMessage(QString token, QString pvName , QString messag
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
-            if (code == "200"){ //handled by UI (every time we send a message we call getPvmessage method and get the rest of the messages from the saerver
+            if (code == "200"){ //handled by UI (every time we send a message we call getgroupmessage method and get the rest of the messages from the saerver
                 responseMessage = jsonObj.value("message").toString();
-                qDebug() <<message;
+                qDebug() <<responseMessage;
             }else if (code != "200") { //handled by UI
                 responseMessage = jsonObj.value("message").toString();
-                qDebug()  <<message << "Error code : " << code;
+                qDebug()  <<responseMessage << "Error code : " << code;
             }
         }
     }
@@ -88,11 +145,11 @@ QString PvRepository::sendMessage(QString token, QString pvName , QString messag
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
-const QString PvRepository::findLatestDate(QString pvName) {
+const QString GroupRepository::findLatestDate(QString groupName){
     readMessages();
-    for (auto& pvPtr : list) {
-        if (pvPtr->getName() == pvName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getMessages();
+    for (auto& groupPtr : list) {
+        if (groupPtr->getName() == groupName) {
+            QMultiMap<QString, QPair<QString, QString>> temp = groupPtr->getMessages();
             if (!temp.empty()) {
                 const QString lastdate = temp.lastKey();
                 return lastdate;
@@ -102,21 +159,21 @@ const QString PvRepository::findLatestDate(QString pvName) {
     return "";
 }
 
-//get pv messages
-void PvRepository::getChats(QString token, QString pvName , QString date){
+//get group messages
+void GroupRepository::getChats(QString token, QString groupName , QString date){
     HttpHandler http;
     QString arguments;
     if (date !=""){
-        arguments = "dst="+pvName+"&"+"date="+date;
+        arguments = "dst="+groupName+"&"+"date="+date;
     }
     else{
-        QString lastdate = findLatestDate(pvName);
+        QString lastdate = findLatestDate(groupName);
         if(lastdate != ""){
-            arguments = "dst="+pvName+"&"+"date="+lastdate;
+           arguments = "dst="+groupName+"&"+"date="+lastdate;
         }
-        else arguments = "dst="+pvName;
+        else arguments = "dst="+groupName;
     }
-    urlmaker newurl("getuserchats", token , arguments);
+    urlmaker newurl("getgroupchats", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
     if(response.second){
@@ -137,9 +194,9 @@ void PvRepository::getChats(QString token, QString pvName , QString date){
                             QString Date = blockObject.value("date").toString();
                             QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
                             QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& pvPtr : list) {
-                                if (pvPtr->getName() == pvName) {
-                                    pvPtr->setMessage(src, body, strDate);
+                            for (auto& groupPtr : list) {
+                                if (groupPtr->getName() == groupName) {
+                                    groupPtr->setMessage(src, body, strDate);
                                 }
                             }
                         }
@@ -150,22 +207,22 @@ void PvRepository::getChats(QString token, QString pvName , QString date){
     }
 }
 
-//Writes pv data to a file
-void PvRepository::writeMessages() {
+//Writes Group data to a file
+void GroupRepository::writeMessages() {
     try{
-        // Create a file for each pv and add their messages to them
+        // Create a file for each group and add their messages to them
         QString filename;
         QString homeDir = QDir::homePath();
-        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
-        if (!pvsDir.exists()) {
-            pvsDir.mkpath(".");
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
+        if (!groupsDir.exists()) {
+            groupsDir.mkpath(".");
         }
-        for (auto& pvPtr : list){
-            filename = pvsDir.filePath(pvPtr->getName() + ".json");
+        for (auto& groupPtr : list){
+            filename = groupsDir.filePath(groupPtr->getName() + ".json");
             QFile file(filename);
             if (file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
                 QJsonArray messageArray;
-                for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = pvPtr->getMessages().constBegin(); it != pvPtr->getMessages().constEnd(); ++it) {
+                for (QMultiMap<QString, QPair<QString, QString>>::const_iterator it = groupPtr->getMessages().constBegin(); it != groupPtr->getMessages().constEnd(); ++it) {
                     QJsonObject messageObject;
                     messageObject["timestamp"] = it.key();
                     messageObject["src"] = it.value().first;
@@ -196,43 +253,43 @@ void PvRepository::writeMessages() {
     }
 }
 
-//reades pv data from a file
-void PvRepository::readMessages() {
+//reades Group data from a file
+void GroupRepository::readMessages() {
     try {
-        // Create a directory for the pv files, if it doesn't already exist
+        // Create a directory for the group files, if it doesn't already exist
         QString homeDir = QDir::homePath();
-        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
-        if (!pvsDir.exists()) {
-            pvsDir.mkpath(".");
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
+        if (!groupsDir.exists()) {
+            groupsDir.mkpath(".");
         }
         // Get a list of all the JSON files in the directory
         QStringList filters;
         filters << "*.json";
-        QStringList pvFiles = pvsDir.entryList(filters, QDir::Files);
+        QStringList groupFiles = groupsDir.entryList(filters, QDir::Files);
 
-        // Read each pv file and create a pv object from its data
-        for (const QString& pvFile : pvFiles) {
-            QString pvName = pvFile.left(pvFile.lastIndexOf(".json"));
-            // Create the pv object using std::make_unique
-            std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
+        // Read each group file and create a Group object from its data
+        for (const QString& groupFile : groupFiles) {
+            QString groupName = groupFile.left(groupFile.lastIndexOf(".json"));
+            // Create the Group object using std::make_unique
+            std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
 
-            QString filename = pvsDir.filePath(pvFile);
+            QString filename = groupsDir.filePath(groupFile);
             QFile file(filename);
 
             if (file.open(QIODevice::ReadOnly)) {
-                QJsonDocument pvDoc = QJsonDocument::fromJson(file.readAll());
-                QJsonArray messageArray = pvDoc.array();
+                QJsonDocument groupDoc = QJsonDocument::fromJson(file.readAll());
+                QJsonArray messageArray = groupDoc.array();
 
                 for (int i = 0; i < messageArray.size(); ++i) {
                     QJsonObject messageObj = messageArray.at(i).toObject();
                     QString timestamp = messageObj.value("timestamp").toString();
                     QString message = messageObj.value("message").toString();
                     QString src = messageObj.value("src").toString();
-                    pv->setMessage(src, message, timestamp);
+                    group->setMessage(src, message, timestamp);
                 }
 
-                // Add the pv object to the list using the unique_ptr
-                setList(std::move(pv));
+                // Add the Group object to the list using the unique_ptr
+                setList(std::move(group));
                 file.close();
             }
             else {
@@ -256,26 +313,26 @@ void PvRepository::readMessages() {
 }
 
 
-//removes pv directory & its files after logout
-void PvRepository::removeDir(){
+//removes Group directory & its files after logout
+void GroupRepository::removeDir(){
     try {
         QString homeDir = QDir::homePath();
-        QDir pvsDir(homeDir + QDir::separator() + "Pvs");
+        QDir groupsDir(homeDir + QDir::separator() + "Groups");
 
         // Remove all the files in the directory
-        QFileInfoList fileList = pvsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
+        QFileInfoList fileList = groupsDir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden | QDir::Files);
         for (const QFileInfo& fileInfo : fileList) {
             if (!fileInfo.dir().remove(fileInfo.fileName())) {
                 QString message = "Could not remove file " + fileInfo.absoluteFilePath();
-                QString code = "NO_PV_FILE";
+                QString code = "NO_GROUP_FILE";
                 throw ExceptionHandler(message, code);
             }
         }
 
         // Remove the directory itself
-        if (!pvsDir.rmdir(".")) {
-            QString message = "Could not remove directory " + pvsDir.absolutePath();
-            QString code = "NO_PV_DIRECTORY";
+        if (!groupsDir.rmdir(".")) {
+            QString message = "Could not remove directory " + groupsDir.absolutePath();
+            QString code = "NO_GROUP_DIRECTORY";
             throw ExceptionHandler(message, code);
         }
     } catch (const ExceptionHandler& e) {
@@ -290,13 +347,13 @@ void PvRepository::removeDir(){
 }
 
 //Test Display function
-void PvRepository::display() {
+void GroupRepository::display() {
     qDebug() << "Display called";
-    for (auto& pvPtr : list) {
-        if (pvPtr->getName() == "nah123123") {
-            QMultiMap<QString, QPair<QString, QString>> map = pvPtr->getMessages();
+    for (auto& groupPtr : list) {
+        if (groupPtr->getName() == "nah123123") {
+            QMultiMap<QString, QPair<QString, QString>> map = groupPtr->getMessages();
             if (map.size() == 0) {
-                qDebug() << "No messages in pv " << pvPtr->getName();
+                qDebug() << "No messages in group " << groupPtr->getName();
             } else {
                 QMultiMapIterator<QString, QPair<QString, QString>> i(map);
                 while (i.hasNext()) {

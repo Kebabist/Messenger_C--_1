@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <QCoreApplication>
 #include <QDir>
+#include "Client/client.h"
 
 MainWindow::MainWindow(Client & client,
                        GroupRepository& groupRepo,

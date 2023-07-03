@@ -8,11 +8,11 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
-#include "channelrepository.h"
-#include "channel.h"
-#include "exceptionhandler.h"
-#include "httpHandler.h"
-#include "urlmaker.h"
+#include "HTTPHandler/httphandler.h"
+#include "URLMaker/urlmaker.h"
+#include "Repository/ChannelRepository/channelrepository.h"
+#include "DTO/Channel/channel.h"
+#include "ExceotionHandler/exceptionhandler.h"
 
 //ChannelRepository default constructor
 ChannelRepository::ChannelRepository()

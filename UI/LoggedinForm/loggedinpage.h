@@ -3,19 +3,18 @@
 
 #include <QWidget>
 #include <QtConcurrent/QtConcurrentRun>
-#include "client.h"
-#include <qlistwidget.h>
 #include <QtConcurrent/qtconcurrentrun.h>
 #include <QThreadPool>
 #include <QTimer>
-#include "grouprepository.h"
-#include "channelrepository.h"
-#include "pvrepository.h"
 #include <QShortcut>
-#include "qwaitcondition.h"
+#include <qlistwidget.h>
 #include <QWaitCondition>
 #include <QMutex>
 #include <QFutureWatcher>
+#include "Client/client.h"
+#include "Repository/ChannelRepository/channelrepository.h"
+#include "Repository/GroupRepository/grouprepository.h"
+#include "Repository/PVRepository/PVrepository.h"
 
 namespace Ui {
 class loggedinpage;

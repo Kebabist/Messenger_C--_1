@@ -6,9 +6,9 @@
 #include <QByteArray>
 #include <QStandardPaths>
 #include "client.h"
-#include "httphandler.h"
-#include "urlmaker.h"
-#include "exceptionhandler.h"
+#include "HTTPHandler/httphandler.h"
+#include "URLMaker/urlmaker.h"
+#include "ExceotionHandler/exceptionhandler.h"
 
 //default constructor
 Client::Client()
