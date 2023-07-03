@@ -1,9 +1,11 @@
 QT       += core gui
 QT       += network
 QT       += core
+QT       += concurrent
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
+RC_ICONS += icon3.ico
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -18,10 +20,13 @@ SOURCES += \
     group.cpp \
     grouprepository.cpp \
     httphandler.cpp \
+    loggedinpage.cpp \
+    loginui.cpp \
     main.cpp \
     mainwindow.cpp \
     pv.cpp \
     pvrepository.cpp \
+    signupui.cpp \
     repository.cpp \
     urlmaker.cpp
 
@@ -34,9 +39,12 @@ HEADERS += \
     group.h \
     grouprepository.h \
     httphandler.h \
+    loggedinpage.h \
+    loginui.h \
     mainwindow.h \
     pv.h \
     pvrepository.h \
+    signupui.h \
     repository.h \
     urlmaker.h
 
@@ -44,7 +52,11 @@ FORMS += \
     exceptionhandler.ui \
     group.ui \
     grouprepository.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    loggedinpage.ui \
+    loginui.ui \
+    mainwindow.ui \
+    signupui.ui
 
 # Default rules for deployment.
 #qnx: target.path = /tmp/$${TARGET}/bin

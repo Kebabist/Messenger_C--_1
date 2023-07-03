@@ -24,6 +24,6 @@ void Repository::setList(std::unique_ptr<DTO> newDTO) {
 }
 
 //getter function
-const std::vector<std::unique_ptr<DTO>>& Repository::getList() const {
+const std::vector<std::unique_ptr<DTO>>& Repository::get_List() const {
     return list;
 }

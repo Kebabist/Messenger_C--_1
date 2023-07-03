@@ -8,20 +8,24 @@ class Client
 public:
     Client();
     Client(QString, QString , QString , QString);
-    Client(QString, QString);//login constructor
+    Client(QString, QString);//object for login
 
     QPair<QString, QString> Signup();
     QPair<QString , QString> Login();
-    void Logout();
+    QPair<QString , QString> Logout();
     void WriteClient();
     void ReadClient();
     void RemoveClientDir();
     void ClientState();
     //getter Merhods
     QString getToken();
+    QString getUsername();
+    QString getPassword();
 
     //setter Methods
     void setToken(QString);
+    void setPassword(QString);
+    void setUsername(QString);
 
 private:
     QString username;

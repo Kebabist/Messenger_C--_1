@@ -15,14 +15,15 @@ class ChannelRepository : public Repository
 {
 public:
     ChannelRepository();
+    ChannelRepository(const ChannelRepository& other);
     ~ChannelRepository();
 
-    void create(QString token, QString name) override;
-    void join(QString token, QString name) override;
+    QString join(QString token, QString name) override;
+    QString create(QString token, QString name) override;
     void getList(QString token) override;
-    void sendMessage(QString token, QString name, QString message) override;
+    QString sendMessage(QString token, QString name, QString message) override;
     const QString findLatestDate(QString name) override;
-    void getChats(QString token, QString name, QString date) override;
+    void getChats(QString token, QString name, QString date= "") override;
     void removeDir() override;
     void writeMessages() override;
     void readMessages() override;

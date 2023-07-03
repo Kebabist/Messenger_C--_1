@@ -23,12 +23,13 @@ GroupRepository::~GroupRepository()
 {}
 
 //create new group
-void GroupRepository::create(QString token, QString groupName){
+QString GroupRepository::create(QString token, QString groupName){
     HttpHandler http;
     QString arguments = "group_name="+groupName;
     urlmaker newurl("creategroup", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         QJsonDocument doc(jsonObj);
@@ -37,8 +38,8 @@ void GroupRepository::create(QString token, QString groupName){
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
 
                 // Create the Group object using std::make_unique
                 std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
@@ -47,27 +48,29 @@ void GroupRepository::create(QString token, QString groupName){
                 setList(std::move(group));
             }
             else if (code != "200") {  //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 ////join group
-void GroupRepository::join(QString token , QString groupName){
+QString GroupRepository::join(QString token , QString groupName){
     HttpHandler http;
     QString arguments = "group_name="+groupName;
     urlmaker newurl("joingroup", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
 
                 // Create the Group object using std::make_unique
                 std::unique_ptr<Group> group = std::make_unique<Group>(groupName);
@@ -76,11 +79,12 @@ void GroupRepository::join(QString token , QString groupName){
                 setList(std::move(group));
             }
             else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message << "Error code : " << code;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 //get list of joined groupes
@@ -117,25 +121,27 @@ void GroupRepository::getList(QString token){
 }
 
 //send message in a group chat
-void GroupRepository::sendMessage(QString token, QString groupName , QString message){
+QString GroupRepository::sendMessage(QString token, QString groupName , QString message){
     HttpHandler http;
     QString arguments = "dst="+groupName+"&"+"body="+message;
     urlmaker newurl("sendmessagegroup", token , arguments);
     const QString url = newurl.generate();
     QPair<QJsonObject, bool> response = http.makeRequest(url);
+    QString responseMessage;
     if(response.second){
         QJsonObject jsonObj = response.first;
         if (jsonObj.contains("code")){
             QString code = jsonObj.value("code").toString();
             if (code == "200"){ //handled by UI (every time we send a message we call getgroupmessage method and get the rest of the messages from the saerver
-                QString message = jsonObj.value("message").toString();
-                qDebug() <<message;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug() <<responseMessage;
             }else if (code != "200") { //handled by UI
-                QString message = jsonObj.value("message").toString();
-                qDebug()  <<message << "Error code : " << code;
+                responseMessage = jsonObj.value("message").toString();
+                qDebug()  <<responseMessage << "Error code : " << code;
             }
         }
     }
+    return responseMessage;
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
