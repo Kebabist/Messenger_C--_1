@@ -32,114 +32,128 @@ QString PvRepository::join(QString token , QString pvName){}
 
 //get list of joined Pvs
 void PvRepository::getList(QString token){
-    HttpHandler http;
-    QString arguments="";
-    urlmaker newurl("getuserlist", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
-                // Check if the current key starts with "block"
-                QString key = it.key();
-                if (key.startsWith("block")) {
-                    QJsonObject blockObject = it.value().toObject();
-                    if (blockObject.contains("src")) {
-                        QString pvName = blockObject.value("src").toString();
+    try{
+        HttpHandler http;
+        QString arguments="";
+        urlmaker newurl("getuserlist", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")){
+                for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                    // Check if the current key starts with "block"
+                    QString key = it.key();
+                    if (key.startsWith("block")) {
+                        QJsonObject blockObject = it.value().toObject();
+                        if (blockObject.contains("src")) {
+                            QString pvName = blockObject.value("src").toString();
 
-                        // Create the pv object using std::make_unique
-                        std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
+                            // Create the pv object using std::make_unique
+                            std::unique_ptr<Pv> pv = std::make_unique<Pv>(pvName);
 
-                        // Add the pv object to the list using the unique_ptr
-                        setList(std::move(pv));
-                        qDebug() << "pv Name:" << pvName;
+                            // Add the pv object to the list using the unique_ptr
+                            setList(std::move(pv));
+                            qDebug() << "pv Name:" << pvName;
+                        }
                     }
                 }
+                QString message = jsonObj.value("message").toString();
+                qDebug() <<message;
             }
-            QString message = jsonObj.value("message").toString();
-            qDebug() <<message;
         }
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
 }
 
 //send message in a pv chat
 QString PvRepository::sendMessage(QString token, QString pvName , QString message){
-    HttpHandler http;
-    QString arguments = "dst="+pvName+"&"+"body="+message;
-    urlmaker newurl("sendmessageuser", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    QString responseMessage;
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){ //handled by UI (every time we send a message we call getPvmessage method and get the rest of the messages from the saerver
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<message;
-            }else if (code != "200") { //handled by UI
-                responseMessage = jsonObj.value("message").toString();
-                qDebug()  <<message << "Error code : " << code;
+    try{
+        HttpHandler http;
+        QString arguments = "dst="+pvName+"&"+"body="+message;
+        urlmaker newurl("sendmessageuser", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        QString responseMessage;
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")){
+                QString code = jsonObj.value("code").toString();
+                if (code == "200"){ //handled by UI (every time we send a message we call getPvmessage method and get the rest of the messages from the saerver
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<message;
+                }else if (code != "200") { //handled by UI
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug()  <<message << "Error code : " << code;
+                }
             }
         }
+        return responseMessage;
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
-    return responseMessage;
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
 const QString PvRepository::findLatestDate(QString pvName) {
-    readMessages();
-    for (auto& pvPtr : list) {
-        if (pvPtr->getName() == pvName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getMessages();
-            if (!temp.empty()) {
-                const QString lastdate = temp.lastKey();
-                return lastdate;
+    try{
+        readMessages();
+        for (auto& pvPtr : list) {
+            if (pvPtr->getName() == pvName) {
+                QMultiMap<QString, QPair<QString, QString>> temp = pvPtr->getMessages();
+                if (!temp.empty()) {
+                    const QString lastdate = temp.lastKey();
+                    return lastdate;
+                }
             }
         }
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
     return "";
 }
 
 //get pv messages
 void PvRepository::getChats(QString token, QString pvName , QString date){
-    HttpHandler http;
-    QString arguments;
-    if (date !=""){
-        arguments = "dst="+pvName+"&"+"date="+date;
-    }
-    else{
-        QString lastdate = findLatestDate(pvName);
-        if(lastdate != ""){
-            arguments = "dst="+pvName+"&"+"date="+lastdate;
+    try{
+        HttpHandler http;
+        QString arguments;
+        if (date !=""){
+            arguments = "dst="+pvName+"&"+"date="+date;
         }
-        else arguments = "dst="+pvName;
-    }
-    urlmaker newurl("getuserchats", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")) {
-            QString code = jsonObj.value("code").toString();
-            if (code == "200") {
-                QString message = jsonObj.value("message").toString();
-                qDebug() << message;
-                for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
-                    QString key = it.key();
-                    if (key.startsWith("block")) {
-                        QJsonObject blockObject = it.value().toObject();
-                        if (blockObject.contains("body") && blockObject.contains("src")) {
-                            QString body = blockObject.value("body").toString();
-                            QString src = blockObject.value("src").toString();
-                            qDebug() << "message: " << body << " sent by : " << src;
-                            QString Date = blockObject.value("date").toString();
-                            QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
-                            QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& pvPtr : list) {
-                                if (pvPtr->getName() == pvName) {
-                                    pvPtr->setMessage(src, body, strDate);
+        else{
+            QString lastdate = findLatestDate(pvName);
+            if(lastdate != ""){
+                arguments = "dst="+pvName+"&"+"date="+lastdate;
+            }
+            else arguments = "dst="+pvName;
+        }
+        urlmaker newurl("getuserchats", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")) {
+                QString code = jsonObj.value("code").toString();
+                if (code == "200") {
+                    QString message = jsonObj.value("message").toString();
+                    qDebug() << message;
+                    for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                        QString key = it.key();
+                        if (key.startsWith("block")) {
+                            QJsonObject blockObject = it.value().toObject();
+                            if (blockObject.contains("body") && blockObject.contains("src")) {
+                                QString body = blockObject.value("body").toString();
+                                QString src = blockObject.value("src").toString();
+                                qDebug() << "message: " << body << " sent by : " << src;
+                                QString Date = blockObject.value("date").toString();
+                                QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
+                                QString strDate = date.toString("yyyyMMddhhmmss");
+                                for (auto& pvPtr : list) {
+                                    if (pvPtr->getName() == pvName) {
+                                        pvPtr->setMessage(src, body, strDate);
+                                    }
                                 }
                             }
                         }
@@ -147,6 +161,8 @@ void PvRepository::getChats(QString token, QString pvName , QString date){
                 }
             }
         }
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
 }
 

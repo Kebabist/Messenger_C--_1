@@ -55,87 +55,99 @@ void Client::setUsername(QString username){
 
 //lets the user signup in messenger
 QPair<QString, QString> Client::Signup(){
-    HttpHandler http;
-    QString arguments;
-    arguments = "username="+username+"&"+"password="+password+"&"+"firstname="+firstname+"&"+"lastname="+lastname;
-    urlmaker newurl("signup", "token" , arguments);
-    const QString url = newurl.generate();
-    QString code , message;
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        message = jsonObj.value("message").toString();
-        code = jsonObj.value("code").toString();
-        if (jsonObj.contains("message") && jsonObj.contains("code")){
-            if (message ==  "Signed Up Successfully" && code == "200"){
-                message = jsonObj.value("message").toString();
-                qDebug() <<message << "code : " << code;
-                WriteClient();
-            }
-            else if (code != "200") {
-                qDebug() <<message << "Error code : " << code;
-                //user already exists implement with gui
+    try{
+        HttpHandler http;
+        QString arguments;
+        arguments = "username="+username+"&"+"password="+password+"&"+"firstname="+firstname+"&"+"lastname="+lastname;
+        urlmaker newurl("signup", "token" , arguments);
+        const QString url = newurl.generate();
+        QString code , message;
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            message = jsonObj.value("message").toString();
+            code = jsonObj.value("code").toString();
+            if (jsonObj.contains("message") && jsonObj.contains("code")){
+                if (message ==  "Signed Up Successfully" && code == "200"){
+                    message = jsonObj.value("message").toString();
+                    qDebug() <<message << "code : " << code;
+                    WriteClient();
+                }
+                else if (code != "200") {
+                    qDebug() <<message << "Error code : " << code;
+                    //user already exists implement with gui
+                }
             }
         }
+        return qMakePair(code , message);
+    }catch (...) {
+    qDebug() << "Unknown exception caught";
     }
-    return qMakePair(code , message);
 }
 
 //lets the users login using their username and password
 QPair<QString , QString> Client::Login() {
-    //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
-    QString arguments = "username="+this->username+"&password="+this->password;
-    urlmaker login_url("login" , arguments);
-    const QString url = login_url.generate();
-    QString code , message;
-    HttpHandler http;
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
+    try{
+        //Request Example: http://api.barafardayebehtar.ml:8080/login?username=sara&password=1234
+        QString arguments = "username="+this->username+"&password="+this->password;
+        urlmaker login_url("login" , arguments);
+        const QString url = login_url.generate();
+        QString code , message;
+        HttpHandler http;
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
 
-    if (response.second) {
-        QJsonObject jsonObj = response.first;
-        message = jsonObj.value("message").toString();
-        code = jsonObj.value("code").toString();
-                if (jsonObj.contains("message") && jsonObj.contains("code")) {
-                    if(message ==  "Logged in Successfully" && code == "200"){
-                        QString token = jsonObj.value("token").toString();
-                        setToken(token);
-                        qDebug() <<message << "code : " << code;
-                        qDebug()<<"token assigned :"<< token;
-                        WriteClient();
+        if (response.second) {
+            QJsonObject jsonObj = response.first;
+            message = jsonObj.value("message").toString();
+            code = jsonObj.value("code").toString();
+                    if (jsonObj.contains("message") && jsonObj.contains("code")) {
+                        if(message ==  "Logged in Successfully" && code == "200"){
+                            QString token = jsonObj.value("token").toString();
+                            setToken(token);
+                            qDebug() <<message << "code : " << code;
+                            qDebug()<<"token assigned :"<< token;
+                            WriteClient();
+                        }
+                        else if (code != "200") { //handled by UI
+                            qDebug() <<message << "Error code : " << code;
+                        }
                     }
-                    else if (code != "200") { //handled by UI
-                        qDebug() <<message << "Error code : " << code;
-                    }
-                }
+        }
+        return qMakePair(code , message);
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
-    return qMakePair(code , message);
 }
 
 
 //lets the user logout of messenger client
 QPair<QString , QString> Client::Logout(){
-    QString arguments = "username="+this->username+"&password="+this->password;
-    urlmaker login_url("logout" , arguments);
-    const QString url = login_url.generate();
-    HttpHandler http;
-    QString code , message;
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-        if (response.second) {
-            QJsonObject jsonObj = response.first;
-            message = jsonObj.value("message").toString();
-            code = jsonObj.value("code").toString();
-            if (jsonObj.contains("message") && jsonObj.contains("code")) {
-                if(message ==  "Logged Out Successfully" && code == "200"){
-                qDebug() <<message << "code : " << code;
-                }
-                else if (code != "200") {
-                QString code = jsonObj.value("code").toString();
-                qDebug() << "Code:" << code;
+    try{
+        QString arguments = "username="+this->username+"&password="+this->password;
+        urlmaker login_url("logout" , arguments);
+        const QString url = login_url.generate();
+        HttpHandler http;
+        QString code , message;
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+            if (response.second) {
+                QJsonObject jsonObj = response.first;
+                message = jsonObj.value("message").toString();
+                code = jsonObj.value("code").toString();
+                if (jsonObj.contains("message") && jsonObj.contains("code")) {
+                    if(message ==  "Logged Out Successfully" && code == "200"){
+                    qDebug() <<message << "code : " << code;
+                    }
+                    else if (code != "200") {
+                    QString code = jsonObj.value("code").toString();
+                    qDebug() << "Code:" << code;
+                    }
                 }
             }
-        }
-RemoveClientDir();
-return qMakePair(code ,message);
+        RemoveClientDir();
+        return qMakePair(code ,message);
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
+    }
 }
 
 

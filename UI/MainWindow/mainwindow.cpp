@@ -41,11 +41,14 @@ MainWindow::MainWindow(Client & client,
 }
 
 MainWindow::~MainWindow()
-{
-    delete signup;
-    delete login;
-    delete loggedin;
-    delete ui;
+{   try{
+        delete signup;
+        delete login;
+        delete loggedin;
+        delete ui;
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
+    }
 }
 
 //handle signup signal
@@ -57,43 +60,56 @@ void MainWindow::handleSignupApproved()
 
 //handle login signal
 void MainWindow::handleloginApproved(Client* loginClient)
-{
-    login->close(); // Close the login page
-    client.setToken(loginClient->getToken());
-    client.setPassword(loginClient->getPassword());
-    client.setUsername(loginClient->getUsername());
-    loggedin->show(); // Show the loggedin page
-    qDebug() << "Logged in page shown"; // Debug message
+{   try{
+        login->close(); // Close the login page
+        client.setToken(loginClient->getToken());
+        client.setPassword(loginClient->getPassword());
+        client.setUsername(loginClient->getUsername());
+        loggedin->show(); // Show the loggedin page
+        qDebug() << "Logged in page shown"; // Debug message
+    }catch (...) {
+        qDebug() << "Unknown exception caught ";
+    }
 }
 
 void MainWindow::handleLogoutClicked(){
-    flag =true;
-    loggedin->close(); // Close the loggedin page
-    // Launch a new instance of the app in a separate process group
-    QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
-    // Quit the Qt event loop
-    qApp->quit();
-    // Wait for the event loop to finish processing events
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 5000);
-    // Fully terminate the current process
-    std::exit(0);
+    try{
+        flag =true;
+        loggedin->close(); // Close the loggedin page
+        // Launch a new instance of the app in a separate process group
+        QProcess::startDetached(qApp->arguments()[0], qApp->arguments());
+        // Quit the Qt event loop
+        qApp->quit();
+        // Wait for the event loop to finish processing events
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 5000);
+        // Fully terminate the current process
+        std::exit(0);
+    }catch (...) {
+    qDebug() << "Unknown exception caught";
+    }
 }
 
 //open new page for signup
 void MainWindow::on_signupbutton_clicked()
-{
-    signup = new signupui(nullptr);
-    signup->show();
-    connect(signup, &signupui::signupApproved, this, &MainWindow::handleSignupApproved);
+{   try{
+        signup = new signupui(nullptr);
+        signup->show();
+        connect(signup, &signupui::signupApproved, this, &MainWindow::handleSignupApproved);
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
+    }
 }
 
 //open new page for login
 void MainWindow::on_loginbutton_clicked()
-{
-    login = new loginui(nullptr);
-    hide();
-    login->show();
-    connect(login, &loginui::loginApproved, this, &MainWindow::handleloginApproved);
+{   try{
+        login = new loginui(nullptr);
+        hide();
+        login->show();
+        connect(login, &loginui::loginApproved, this, &MainWindow::handleloginApproved);
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
+    }
 }
 
 //closes mainwindow when the loggedinpage is closed

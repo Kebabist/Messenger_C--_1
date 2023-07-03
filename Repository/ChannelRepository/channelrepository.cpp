@@ -24,179 +24,201 @@ ChannelRepository::~ChannelRepository()
 
 //create new Channel
 QString ChannelRepository::create(QString token, QString channelName){
-    HttpHandler http;
-    QString arguments = "channel_name="+channelName;
-    urlmaker newurl("createchannel", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    QString responseMessage;
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        QJsonDocument doc(jsonObj);
-        QString jsonString = doc.toJson(QJsonDocument::Indented);
-        qDebug().noquote() << jsonString;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<responseMessage;
+    try{
+        HttpHandler http;
+        QString arguments = "channel_name="+channelName;
+        urlmaker newurl("createchannel", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        QString responseMessage;
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            QJsonDocument doc(jsonObj);
+            QString jsonString = doc.toJson(QJsonDocument::Indented);
+            qDebug().noquote() << jsonString;
+            if (jsonObj.contains("code")){
+                QString code = jsonObj.value("code").toString();
+                if (code == "200"){
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<responseMessage;
 
-                // Create the Channel object using std::make_unique
-                std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
+                    // Create the Channel object using std::make_unique
+                    std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
-                // Add the Channel object to the list using the unique_ptr
-                setList(std::move(channel));
-            }
-            else if (code != "200") {  //handled by UI
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<responseMessage << "Error code : " << code;
+                    // Add the Channel object to the list using the unique_ptr
+                    setList(std::move(channel));
+                }
+                else if (code != "200") {  //handled by UI
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<responseMessage << "Error code : " << code;
+                }
             }
         }
+        return responseMessage;
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
-    return responseMessage;
 }
 
 ////join Channel
 QString ChannelRepository::join(QString token , QString channelName){
-    HttpHandler http;
-    QString arguments = "channel_name="+channelName;
-    urlmaker newurl("joinchannel", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    QString responseMessage;
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<responseMessage;
+    try{
+        HttpHandler http;
+        QString arguments = "channel_name="+channelName;
+        urlmaker newurl("joinchannel", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        QString responseMessage;
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")){
+                QString code = jsonObj.value("code").toString();
+                if (code == "200"){
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<responseMessage;
 
-                // Create the Channel object using std::make_unique
-                std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
+                    // Create the Channel object using std::make_unique
+                    std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
-                // Add the Channel object to the list using the unique_ptr
-                setList(std::move(channel));
-            }
-            else if (code != "200") { //handled by UI
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<responseMessage << "Error code : " << code;
+                    // Add the Channel object to the list using the unique_ptr
+                    setList(std::move(channel));
+                }
+                else if (code != "200") { //handled by UI
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<responseMessage << "Error code : " << code;
+                }
             }
         }
+        return responseMessage;
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
-    return responseMessage;
 }
 
 //get list of joined Channels
 void ChannelRepository::getList(QString token){
-    HttpHandler http;
-    QString arguments="";
-    urlmaker newurl("getchannellist", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
-                // Check if the current key starts with "block"
-                QString key = it.key();
-                if (key.startsWith("block")) {
-                    QJsonObject blockObject = it.value().toObject();
-                    if (blockObject.contains("channel_name")) {
-                        QString channelName = blockObject.value("channel_name").toString();
+    try{
+        HttpHandler http;
+        QString arguments="";
+        urlmaker newurl("getchannellist", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")){
+                for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                    // Check if the current key starts with "block"
+                    QString key = it.key();
+                    if (key.startsWith("block")) {
+                        QJsonObject blockObject = it.value().toObject();
+                        if (blockObject.contains("channel_name")) {
+                            QString channelName = blockObject.value("channel_name").toString();
 
-                        // Create the Channel object using std::make_unique
-                        std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
+                            // Create the Channel object using std::make_unique
+                            std::unique_ptr<Channel> channel = std::make_unique<Channel>(channelName);
 
-                        // Add the Channel object to the list using the unique_ptr
-                        setList(std::move(channel));
-                        qDebug() << "Channel Name:" << channelName;
+                            // Add the Channel object to the list using the unique_ptr
+                            setList(std::move(channel));
+                            qDebug() << "Channel Name:" << channelName;
+                        }
                     }
                 }
+                QString message = jsonObj.value("message").toString();
+                qDebug() <<message;
             }
-            QString message = jsonObj.value("message").toString();
-            qDebug() <<message;
         }
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
 }
 
 //send message in a Channel chat
 QString ChannelRepository::sendMessage(QString token, QString channelName , QString message){
-    HttpHandler http;
-    QString arguments = "dst="+channelName+"&"+"body="+message;
-    urlmaker newurl("sendmessagechannel", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    QString responseMessage;
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")){
-            QString code = jsonObj.value("code").toString();
-            if (code == "200"){ //handled by UI (every time we send a message we call getmessage method and get the rest of the messages from the saerver
-                responseMessage = jsonObj.value("message").toString();
-                qDebug() <<message;
-            }else if (code != "200") { //handled by UI
-                responseMessage = jsonObj.value("message").toString();
-                qDebug()  <<message << "Error code : " << code;
+    try{
+        HttpHandler http;
+        QString arguments = "dst="+channelName+"&"+"body="+message;
+        urlmaker newurl("sendmessagechannel", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        QString responseMessage;
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")){
+                QString code = jsonObj.value("code").toString();
+                if (code == "200"){ //handled by UI (every time we send a message we call getmessage method and get the rest of the messages from the saerver
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug() <<message;
+                }else if (code != "200") { //handled by UI
+                    responseMessage = jsonObj.value("message").toString();
+                    qDebug()  <<message << "Error code : " << code;
+                }
             }
         }
+        return responseMessage;
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
-    return responseMessage;
 }
 
 //function that checks the state of Messages multimap and returns the latest time stamp available in it
 const QString ChannelRepository::findLatestDate(QString channelName) {
-    readMessages();
-    for (auto& channelPtr : list) {
-        if (channelPtr->getName() == channelName) {
-            QMultiMap<QString, QPair<QString, QString>> temp = channelPtr->getMessages();
-            if (!temp.empty()) {
-                const QString lastdate = temp.lastKey();
-                return lastdate;
+    try{
+        readMessages();
+        for (auto& channelPtr : list) {
+            if (channelPtr->getName() == channelName) {
+                QMultiMap<QString, QPair<QString, QString>> temp = channelPtr->getMessages();
+                if (!temp.empty()) {
+                    const QString lastdate = temp.lastKey();
+                    return lastdate;
+                }
             }
         }
+    }catch (...) {
+    qDebug() << "Unknown exception caught";
     }
     return "";
 }
 
 //get Channel messages
 void ChannelRepository::getChats(QString token, QString channelName , QString date){
-    HttpHandler http;
-    QString arguments;
-    if (date !=""){
-        arguments = "dst="+channelName+"&"+"date="+date;
-    }
-    else{
-        QString lastdate = findLatestDate(channelName);
-        if(lastdate != ""){
-            arguments = "dst="+channelName+"&"+"date="+lastdate;
+    try{
+        HttpHandler http;
+        QString arguments;
+        if (date !=""){
+            arguments = "dst="+channelName+"&"+"date="+date;
         }
-        else arguments = "dst="+channelName;
-    }
-    urlmaker newurl("getchannelchats", token , arguments);
-    const QString url = newurl.generate();
-    QPair<QJsonObject, bool> response = http.makeRequest(url);
-    if(response.second){
-        QJsonObject jsonObj = response.first;
-        if (jsonObj.contains("code")) {
-            QString code = jsonObj.value("code").toString();
-            if (code == "200") {
-                QString message = jsonObj.value("message").toString();
-                qDebug() << message;
-                for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
-                    QString key = it.key();
-                    if (key.startsWith("block")) {
-                        QJsonObject blockObject = it.value().toObject();
-                        if (blockObject.contains("body") && blockObject.contains("src")) {
-                            QString body = blockObject.value("body").toString();
-                            QString src = blockObject.value("src").toString();
-                            qDebug() << "message: " << body << " sent by : " << src;
-                            QString Date = blockObject.value("date").toString();
-                            QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
-                            QString strDate = date.toString("yyyyMMddhhmmss");
-                            for (auto& channelPtr : list) {
-                                if (channelPtr->getName() == channelName) {
-                                    channelPtr->setMessage(src, body, strDate);
+        else{
+            QString lastdate = findLatestDate(channelName);
+            if(lastdate != ""){
+                arguments = "dst="+channelName+"&"+"date="+lastdate;
+            }
+            else arguments = "dst="+channelName;
+        }
+        urlmaker newurl("getchannelchats", token , arguments);
+        const QString url = newurl.generate();
+        QPair<QJsonObject, bool> response = http.makeRequest(url);
+        if(response.second){
+            QJsonObject jsonObj = response.first;
+            if (jsonObj.contains("code")) {
+                QString code = jsonObj.value("code").toString();
+                if (code == "200") {
+                    QString message = jsonObj.value("message").toString();
+                    qDebug() << message;
+                    for (auto it = jsonObj.begin(); it != jsonObj.end(); ++it) {
+                        QString key = it.key();
+                        if (key.startsWith("block")) {
+                            QJsonObject blockObject = it.value().toObject();
+                            if (blockObject.contains("body") && blockObject.contains("src")) {
+                                QString body = blockObject.value("body").toString();
+                                QString src = blockObject.value("src").toString();
+                                qDebug() << "message: " << body << " sent by : " << src;
+                                QString Date = blockObject.value("date").toString();
+                                QDateTime date = QDateTime::fromString(Date, "yyyy-MM-dd hh:mm:ss");
+                                QString strDate = date.toString("yyyyMMddhhmmss");
+                                for (auto& channelPtr : list) {
+                                    if (channelPtr->getName() == channelName) {
+                                        channelPtr->setMessage(src, body, strDate);
+                                    }
                                 }
                             }
                         }
@@ -204,6 +226,8 @@ void ChannelRepository::getChats(QString token, QString channelName , QString da
                 }
             }
         }
+    }catch (...) {
+        qDebug() << "Unknown exception caught";
     }
 }
 
