@@ -17,17 +17,24 @@ loggedinpage::loggedinpage(Client& client,
     groupRepo(groupRepo),
     channelRepo(channelRepo),
     pvRepo(pvRepo),
-    stopThreads(false),
     existingGroupMessages(""),
     existingChannelMessages(""),
     existingPvMessages("")
 {
-    ui->setupUi(this);
-    setWindowTitle("Messenger");
+    try{
+        ui->setupUi(this);
+        setWindowTitle("Messenger");
+        connect(this, &loggedinpage::loggedinpageClosed, this, &loggedinpage::handleLoggedinpageClosed);
+        connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
+        ui->dockWidget->setTitleBarWidget(ui->widget_3);
+    }catch (...) {
+        qDebug() << "Unknown exception caught in mainwindow";
+    }
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);
     shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+    ui->usernamelabel->setText("logged in as : " + client.getUsername());
     ui->messages->setVerticalScrollBar(ui->verticalScrollBar);
     ui->verticalScrollBar->setValue(ui->verticalScrollBar->maximum());
     // Connect enter to sendbutton
@@ -35,27 +42,7 @@ loggedinpage::loggedinpage(Client& client,
         ui->sendmessagebutton->click();
     });
     updateTimer = new QTimer(nullptr);
-    QThreadPool* threadPool = QThreadPool::globalInstance();
-    threadPool->setMaxThreadCount(4);
     ui->usernamelabel->setText("logged in as : " + client.getUsername()); // Update the text with the user's name
-    QFuture<void> future1 = QtConcurrent::run(threadPool, [this]() {
-        while (!stopThreads) {
-            try {
-                updatelists();
-            } catch (const QException& exception) {
-                // Handle exception
-                qDebug() << "Exception @ future1: " << exception.what();
-            }
-            QThread::msleep(5000);
-    channelRepo(channelRepo), pvRepo(pvRepo)
-{   try{
-        ui->setupUi(this);
-        connect(this, &loggedinpage::loggedinpageClosed, this, &loggedinpage::handleLoggedinpageClosed);
-        connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
-        ui->dockWidget->setTitleBarWidget(ui->widget_3);
-    }catch (...) {
-        qDebug() << "Unknown exception caught in mainwindow";
-    }
 
     QMutex mutex;
     QWaitCondition waitCondition;
@@ -63,7 +50,7 @@ loggedinpage::loggedinpage(Client& client,
     QThreadPool* threadPool = QThreadPool::globalInstance();
     threadPool->setMaxThreadCount(4);
 
-     QFuture<void> future1 = QtConcurrent::run(threadPool, [&]() {
+    QFuture<void> future1 = QtConcurrent::run(threadPool, [&]() {
         while (!stopThreads) {
             try {
                 updatelists();
@@ -74,9 +61,9 @@ loggedinpage::loggedinpage(Client& client,
             QThread::msleep(3000);
         }
         // Signal the wait condition and release the mutex when the thread is finished
-                mutex.lock();
-                waitCondition.wakeAll();
-                mutex.unlock();
+        mutex.lock();
+        waitCondition.wakeAll();
+        mutex.unlock();
     });
 
     // Execute the update group messages function asynchronously
@@ -91,9 +78,9 @@ loggedinpage::loggedinpage(Client& client,
             QThread::msleep(3000);
         }
         // Signal the wait condition and release the mutex when the thread is finished
-                mutex.lock();
-                waitCondition.wakeAll();
-                mutex.unlock();
+        mutex.lock();
+        waitCondition.wakeAll();
+        mutex.unlock();
     });
 
 
@@ -109,9 +96,9 @@ loggedinpage::loggedinpage(Client& client,
             QThread::msleep(3000);
         }
         // Signal the wait condition and release the mutex when the thread is finished
-                mutex.lock();
-                waitCondition.wakeAll();
-                mutex.unlock();
+        mutex.lock();
+        waitCondition.wakeAll();
+        mutex.unlock();
     });
     // Execute the update private messages function asynchronously
     QFuture<void> future4 = QtConcurrent::run(threadPool, [&]() {
@@ -125,9 +112,9 @@ loggedinpage::loggedinpage(Client& client,
             QThread::msleep(3000);
         }
         // Signal the wait condition and release the mutex when the thread is finished
-                mutex.lock();
-                waitCondition.wakeAll();
-                mutex.unlock();
+        mutex.lock();
+        waitCondition.wakeAll();
+        mutex.unlock();
     });
     // Connect logout button to stop threads
     connect(ui->logoutbutton, &QPushButton::clicked, this, [&]() {
@@ -155,7 +142,9 @@ loggedinpage::loggedinpage(Client& client,
             qDebug() << "Unknown exception caught in loggedin window constructor";
         }
     });
+
 }
+
 
 //list updator function
 void loggedinpage::updatelists(){
@@ -233,6 +222,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
         groupName = text;
         selected = qMakePair("group" , groupName);
         ui->messages->clear();
+        existingGroupMessages.clear();
     }else{
         index = text.indexOf(substrch);
         if (index != -1) {
@@ -240,6 +230,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
             channelName = text;
             selected = qMakePair("channel" , channelName);
             ui->messages->clear();
+            existingChannelMessages.clear();
         }else {
             index = text.indexOf(substrpv);
             if (index != -1) {
@@ -247,6 +238,7 @@ void loggedinpage::handleListItemClicked(QListWidgetItem* item)
                 pvName = text;
                 selected = qMakePair("pv" , pvName);
                 ui->messages->clear();
+                existingPvMessages.clear();
             }
         }
     }

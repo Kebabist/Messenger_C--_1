@@ -35,7 +35,6 @@ public:
     void writeAll();
     void removeAll();
     void closeEvent(QCloseEvent *event);
-    bool stopThreads;
 
 private slots:
     void on_toggleview_clicked(bool checked);
