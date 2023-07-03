@@ -126,7 +126,8 @@ QPair<QString , QString> Client::Logout(){
                 }
             }
         }
-RemoveClientDir();
+    RemoveClientDir();
+    return qMakePair(code ,message);
 }
 
 

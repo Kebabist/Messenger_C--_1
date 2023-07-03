@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(97, 97, 97);
+color: rgb(255, 151, 23);</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="3" colspan="2">
     <spacer name="horizontalSpacer">
@@ -60,6 +64,9 @@
        <width>450</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(24, 52, 81);</string>
      </property>
     </widget>
    </item>
@@ -124,6 +131,11 @@
    </item>
    <item row="2" column="1" colspan="3">
     <widget class="QPushButton" name="submitbutton">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(3, 0, 76);
+color: rgb(202, 0, 3);
+</string>
+     </property>
      <property name="text">
       <string>Submit!</string>
      </property>
@@ -142,6 +154,9 @@
        <width>450</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(24, 52, 81);</string>
      </property>
      <property name="echoMode">
       <enum>QLineEdit::Password</enum>

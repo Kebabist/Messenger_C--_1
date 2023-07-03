@@ -44,11 +44,11 @@ void MainWindow::handleSignupApproved()
 }
 
 //handle login signal
-void MainWindow::handleloginApproved()
+void MainWindow::handleloginApproved(Client* loginClient)
 {
 
     login->close(); // Close the login page
-    loggedin = new loggedinpage(client, groupRepo, channelRepo, pvRepo);
+    loggedin = new loggedinpage(*loginClient, groupRepo, channelRepo, pvRepo);
     loggedin->show();
     connect(loggedin, &loggedinpage::logoutbuttonclicked, this, &MainWindow::handleLogoutClicked);
 }
@@ -56,7 +56,6 @@ void MainWindow::handleloginApproved()
 void MainWindow::handleLogoutClicked()
 {
     loggedin->close(); // Close the loggedin page
-
 }
 
 //open new page for signup
@@ -70,7 +69,7 @@ void MainWindow::on_signupbutton_clicked()
 //open new page for login
 void MainWindow::on_loginbutton_clicked()
 {
-    login = new loginui(nullptr);
+    login = new loginui();
     login->show();
     connect(login, &loginui::loginApproved, this, &MainWindow::handleloginApproved);
 }

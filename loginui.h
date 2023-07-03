@@ -21,7 +21,7 @@ private slots:
     void on_submitbutton_clicked();
 signals:
 //correct credentials signal (sent to mainwindow)
-    void loginApproved(Client &);
+    void loginApproved(Client *loginclient);
 private:
     Ui::loginui *ui;
 };

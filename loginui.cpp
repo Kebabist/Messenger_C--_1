@@ -21,9 +21,9 @@ void loginui::on_submitbutton_clicked()
 {
     QString username = ui->usernameLE->text();
     QString password = ui->passwordLE->text();
-    Client client(username , password);
+    Client *client = new Client(username, password);
     try {
-        QPair<QString , QString> response = client.Login();
+        QPair<QString , QString> response = client->Login();
         if (response.second == "Logged in Successfully"){
             QMessageBox::information(this, "Information", response.second);
             emit loginApproved(client);

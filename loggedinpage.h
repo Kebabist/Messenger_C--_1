@@ -10,6 +10,7 @@
 #include "grouprepository.h"
 #include "channelrepository.h"
 #include "pvrepository.h"
+#include <QShortcut>
 
 namespace Ui {
 class loggedinpage;
@@ -47,11 +48,15 @@ signals:
     void logoutbuttonclicked();
 
 private:
+    const QString findLatestDate(QString Name);
     void updatelists();
     void updateGroupMessages();
     void updateChannelMessages();
     void updatePvMessages();
     Client& client;
+    QString existingGroupMessages;
+    QString existingChannelMessages;
+    QString existingPvMessages;
     Ui::loggedinpage *ui;
     QTimer *updateTimer;
     QPair<QString , QString> selected; //first one is the type //second one is the name //Like : <group , groupName>
@@ -59,6 +64,8 @@ private:
     ChannelRepository& channelRepo;
     PvRepository& pvRepo;
     QThread *messageThread;
+    bool stopThreads;
+    int prevsize;
 };
 
 #endif // LOGGEDINPAGE_H

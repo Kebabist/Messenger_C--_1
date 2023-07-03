@@ -36,7 +36,7 @@ private slots:
 
     //handle the pages signals
     void handleSignupApproved();
-    void handleloginApproved();
+    void handleloginApproved(Client* loginClient);
     void handleLogoutClicked();
 public slots:
     void onMainWindowClosed();
