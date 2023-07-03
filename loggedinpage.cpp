@@ -24,6 +24,7 @@ loggedinpage::loggedinpage(Client& client,
     existingPvMessages("")
 {
     ui->setupUi(this);
+    setWindowTitle("Messenger");
     connect(ui->allchats, &QListWidget::itemClicked, this, &loggedinpage::handleListItemClicked);
     ui->dockWidget->setTitleBarWidget(ui->widget_3);
     QShortcut* shortcut = new QShortcut(QKeySequence(Qt::Key_Return), this);

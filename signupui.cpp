@@ -9,6 +9,7 @@ signupui::signupui(QWidget *parent) :
     ui(new Ui::signupui)
 {
     ui->setupUi(this);
+    setWindowTitle("SignUp");
 }
 
 signupui::~signupui()

@@ -9,6 +9,7 @@ loginui::loginui(QWidget *parent) :
     ui(new Ui::loginui)
 {
     ui->setupUi(this);
+    setWindowTitle("Login");
 }
 
 loginui::~loginui()
