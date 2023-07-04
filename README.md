@@ -150,6 +150,8 @@ There are two ways to install our project:
 
 Note: the exact commands may vary depending on your operating system and the specific configuration of your project. It's also possible to use an Integrated Development Environment (IDE) such as Qt Creator to compile and run your project. However, the general steps outlined above should work for most Qt C++ projects.
 
+If you Use QTcreator, Open the project folder and then open the project's .pro file after QTcreator opens up select your compiler and then click Configure Project (right under where you select your Compiler).
+
 We hope that these installation instructions are clear and easy to follow. Please feel free to reach out to us if you encounter any issues during the installation process.
 
 
