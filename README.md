@@ -2,7 +2,7 @@
 
 # Overview:
 
-Welcome Friends, This is a C++ backed and Qt fronted project that aims to provide users with a seamless and intuitive messaging experience. Our project caters to individuals seeking a reliable and efficient messaging platform, and it does so through the use of different design patterns and programming concepts.
+Welcome Friends, This is a C++ backed and Qt fronted project. We've also incorporated different design patterns and programming concepts that form the backbone of our app.
 
 # Design Patterns and Programming Concepts:
 
